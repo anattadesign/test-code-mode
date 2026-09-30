@@ -1,0 +1,187 @@
+{%- doc -%}
+  AP-49 · Ascent Design System — typography foundation.
+
+  Source: Figma "AP - Design System" › Typescale — Desktop (2004:12092),
+  Typescale — Mobile (2004:12745), Typescale — WCAG 2.2 AA (2271:2).
+
+  Rendered once in layout/theme.liquid, directly after 'theme-styles-variables',
+  so these values win over Horizon's generated preset variables (same :root
+  specificity, later source order).
+
+  What it does
+  1. H1–H6 + paragraph: keeps Horizon's settings-driven family/weight, but pins
+     the exact Figma size, line-height and letter-spacing (Horizon's keyword
+     enums can't express 0.96 / -2.5% etc.). Desktop at >= 750px, mobile below.
+  2. Adds the Figma-only styles as extra text-block presets:
+     ap-display, ap-subheading, ap-title-card, ap-body-lg, ap-body-sm,
+     ap-label-lg, ap-label-sm, ap-button, ap-button-sm, ap-nav-link
+     (prefixed so they can never collide with Horizon classes such as the
+     existing .button-text span inside cart buttons).
+     Each gets the same variable contract as h1–h6
+     (--font-<preset>--family/style/weight/size/line-height/letter-spacing/case/spacing)
+     so the preset classes in base.css / text-block-styles work identically.
+
+  Font roles (free look-alikes until licensed files are supplied):
+  - heading    → Inter            (stands in for Neue Haas Grotesk Display Pro)
+  - body       → Montserrat 400   (stands in for Proxima Nova)
+  - subheading → Montserrat 700   (Proxima Nova Bold)
+  - accent     → IBM Plex Mono    (exact Figma font)
+  Swap a family in Theme settings › Typography and every token follows.
+
+  Sizes are rem at a 16px root; line-heights are unitless; letter-spacing is
+  the Figma percentage expressed in em.
+{%- enddoc -%}
+
+{% style %}
+  :root {
+    /* ---------- Mobile (default, < 750px) — Typescale — Mobile ---------- */
+
+    /* Display · 104 / 0.8 / -4% · heading role · Black 900 */
+    --font-ap-display--family: var(--font-heading--family);
+    --font-ap-display--style: var(--font-heading--style);
+    --font-ap-display--weight: 900;
+    --font-ap-display--size: 6.5rem;
+    --font-ap-display--line-height: 0.8;
+    --font-ap-display--letter-spacing: -0.04em;
+    --font-ap-display--case: none;
+    --font-ap-display--spacing: 0.25em;
+
+    /* H1 · 40 / 0.96 / -2.5% */
+    --font-h1--size: 2.5rem;
+    --font-h1--line-height: 0.96;
+    --font-h1--letter-spacing: -0.025em;
+
+    /* H2 · 32 / 0.94 / -2.5% */
+    --font-h2--size: 2rem;
+    --font-h2--line-height: 0.94;
+    --font-h2--letter-spacing: -0.025em;
+
+    /* H3 · 26 / 1 / -1.5% */
+    --font-h3--size: 1.625rem;
+    --font-h3--line-height: 1;
+    --font-h3--letter-spacing: -0.015em;
+
+    /* H4 · 22 / 1 / -2% */
+    --font-h4--size: 1.375rem;
+    --font-h4--line-height: 1;
+    --font-h4--letter-spacing: -0.02em;
+
+    /* H5 · 20 / 1 / -2% */
+    --font-h5--size: 1.25rem;
+    --font-h5--line-height: 1;
+    --font-h5--letter-spacing: -0.02em;
+
+    /* H6 · 16 / 1.2 / 0 */
+    --font-h6--size: 1rem;
+    --font-h6--line-height: 1.2;
+    --font-h6--letter-spacing: 0em;
+
+    /* Paragraph = Body Medium · 14 / 1.5 / 0 · body role */
+    --font-paragraph--size: 0.875rem;
+    --font-paragraph--line-height: 1.5;
+    --font-paragraph--letter-spacing: 0em;
+
+    /* Subheading · 20 / 1.3 / 0 · subheading role (Bold 700) */
+    --font-ap-subheading--family: var(--font-subheading--family);
+    --font-ap-subheading--style: var(--font-subheading--style);
+    --font-ap-subheading--weight: var(--font-subheading--weight);
+    --font-ap-subheading--size: 1.25rem;
+    --font-ap-subheading--line-height: 1.3;
+    --font-ap-subheading--letter-spacing: 0em;
+    --font-ap-subheading--case: none;
+    --font-ap-subheading--spacing: 0.5em;
+
+    /* Title Card · 20 / 1.2 / -1.5% · heading role · Bold 700 */
+    --font-ap-title-card--family: var(--font-heading--family);
+    --font-ap-title-card--style: var(--font-heading--style);
+    --font-ap-title-card--weight: 700;
+    --font-ap-title-card--size: 1.25rem;
+    --font-ap-title-card--line-height: 1.2;
+    --font-ap-title-card--letter-spacing: -0.015em;
+    --font-ap-title-card--case: none;
+    --font-ap-title-card--spacing: 0.5em;
+
+    /* Body Large · 16 / 1.4 / 0 · body role */
+    --font-ap-body-lg--family: var(--font-body--family);
+    --font-ap-body-lg--style: var(--font-body--style);
+    --font-ap-body-lg--weight: var(--font-body--weight);
+    --font-ap-body-lg--size: 1rem;
+    --font-ap-body-lg--line-height: 1.4;
+    --font-ap-body-lg--letter-spacing: 0em;
+    --font-ap-body-lg--case: none;
+    --font-ap-body-lg--spacing: 1em;
+
+    /* Body Small · 12 / 1.5 / 0 · body role */
+    --font-ap-body-sm--family: var(--font-body--family);
+    --font-ap-body-sm--style: var(--font-body--style);
+    --font-ap-body-sm--weight: var(--font-body--weight);
+    --font-ap-body-sm--size: 0.75rem;
+    --font-ap-body-sm--line-height: 1.5;
+    --font-ap-body-sm--letter-spacing: 0em;
+    --font-ap-body-sm--case: none;
+    --font-ap-body-sm--spacing: 1em;
+
+    /* Label Large · 14 / 1.45 / 10% · accent role (IBM Plex Mono) · Reg 400 */
+    --font-ap-label-lg--family: var(--font-accent--family);
+    --font-ap-label-lg--style: var(--font-accent--style);
+    --font-ap-label-lg--weight: 400;
+    --font-ap-label-lg--size: 0.875rem;
+    --font-ap-label-lg--line-height: 1.45;
+    --font-ap-label-lg--letter-spacing: 0.1em;
+    --font-ap-label-lg--case: none;
+    --font-ap-label-lg--spacing: 0.5em;
+
+    /* Label Small · 12 / 1.45 / 10% · accent role · Reg 400 */
+    --font-ap-label-sm--family: var(--font-accent--family);
+    --font-ap-label-sm--style: var(--font-accent--style);
+    --font-ap-label-sm--weight: 400;
+    --font-ap-label-sm--size: 0.75rem;
+    --font-ap-label-sm--line-height: 1.45;
+    --font-ap-label-sm--letter-spacing: 0.1em;
+    --font-ap-label-sm--case: none;
+    --font-ap-label-sm--spacing: 0.5em;
+
+    /* Button · 16 / 1.2 / 10% · accent role · Bold 700 */
+    --font-ap-button--family: var(--font-accent--family);
+    --font-ap-button--style: var(--font-accent--style);
+    --font-ap-button--weight: 700;
+    --font-ap-button--size: 1rem;
+    --font-ap-button--line-height: 1.2;
+    --font-ap-button--letter-spacing: 0.1em;
+    --font-ap-button--case: none;
+    --font-ap-button--spacing: 0.5em;
+
+    /* Button Small · 14 / 1.2 / 10% (designer comment in Figma) */
+    --font-ap-button-sm--family: var(--font-accent--family);
+    --font-ap-button-sm--style: var(--font-accent--style);
+    --font-ap-button-sm--weight: 700;
+    --font-ap-button-sm--size: 0.875rem;
+    --font-ap-button-sm--line-height: 1.2;
+    --font-ap-button-sm--letter-spacing: 0.1em;
+    --font-ap-button-sm--case: none;
+    --font-ap-button-sm--spacing: 0.5em;
+
+    /* Nav / Link · 16 / 1 / 0 · heading role · Bold 700 (Medium 500 alt) */
+    --font-ap-nav-link--family: var(--font-heading--family);
+    --font-ap-nav-link--style: var(--font-heading--style);
+    --font-ap-nav-link--weight: 700;
+    --font-ap-nav-link--size: 1rem;
+    --font-ap-nav-link--line-height: 1;
+    --font-ap-nav-link--letter-spacing: 0em;
+    --font-ap-nav-link--case: none;
+    --font-ap-nav-link--spacing: 0.5em;
+  }
+
+  /* ---------- Desktop (>= 750px) — Typescale — Desktop ---------- */
+  @media screen and (min-width: 750px) {
+    :root {
+      --font-ap-display--size: 11.875rem; /* 190 */
+      --font-h1--size: 4rem;          /* 64 */
+      --font-h2--size: 3rem;          /* 48 */
+      --font-h3--size: 2.5rem;        /* 40 */
+      --font-h4--size: 2rem;          /* 32 */
+      --font-h5--size: 1.625rem;      /* 26 */
+      --font-h6--size: 1.375rem;      /* 22 */
+    }
+  }
+{% endstyle %}

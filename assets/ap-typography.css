@@ -1,0 +1,195 @@
+/*
+ * AP-49 · Ascent Design System — typography presets.
+ * Tokens live in snippets/ap-typography-tokens.liquid.
+ * Each preset mirrors Horizon's h1–h6 selector contract in base.css, so it works
+ * in every block whose "Preset" setting routes through snippets/text.liquid,
+ * and as a plain utility class anywhere (e.g. <p class="ap-label-sm">).
+ * Generated — keep the ten blocks below in sync with the preset list in the block schemas.
+ */
+
+/* Display */
+.ap-display.ap-display,
+.text-block.ap-display > *,
+.text-block.ap-display :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-display--family);
+  font-style: var(--font-ap-display--style);
+  font-weight: var(--font-ap-display--weight);
+  font-size: var(--font-ap-display--size);
+  line-height: var(--font-ap-display--line-height);
+  letter-spacing: var(--font-ap-display--letter-spacing);
+  text-transform: var(--font-ap-display--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-display > * {
+  margin-block: var(--font-ap-display--spacing);
+}
+
+/* Subheading */
+.ap-subheading.ap-subheading,
+.text-block.ap-subheading > *,
+.text-block.ap-subheading :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-subheading--family);
+  font-style: var(--font-ap-subheading--style);
+  font-weight: var(--font-ap-subheading--weight);
+  font-size: var(--font-ap-subheading--size);
+  line-height: var(--font-ap-subheading--line-height);
+  letter-spacing: var(--font-ap-subheading--letter-spacing);
+  text-transform: var(--font-ap-subheading--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-subheading > * {
+  margin-block: var(--font-ap-subheading--spacing);
+}
+
+/* Title card */
+.ap-title-card.ap-title-card,
+.text-block.ap-title-card > *,
+.text-block.ap-title-card :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-title-card--family);
+  font-style: var(--font-ap-title-card--style);
+  font-weight: var(--font-ap-title-card--weight);
+  font-size: var(--font-ap-title-card--size);
+  line-height: var(--font-ap-title-card--line-height);
+  letter-spacing: var(--font-ap-title-card--letter-spacing);
+  text-transform: var(--font-ap-title-card--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-title-card > * {
+  margin-block: var(--font-ap-title-card--spacing);
+}
+
+/* Body large */
+.ap-body-lg.ap-body-lg,
+.text-block.ap-body-lg > *,
+.text-block.ap-body-lg :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-body-lg--family);
+  font-style: var(--font-ap-body-lg--style);
+  font-weight: var(--font-ap-body-lg--weight);
+  font-size: var(--font-ap-body-lg--size);
+  line-height: var(--font-ap-body-lg--line-height);
+  letter-spacing: var(--font-ap-body-lg--letter-spacing);
+  text-transform: var(--font-ap-body-lg--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-body-lg > * {
+  margin-block: var(--font-ap-body-lg--spacing);
+}
+
+/* Body small */
+.ap-body-sm.ap-body-sm,
+.text-block.ap-body-sm > *,
+.text-block.ap-body-sm :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-body-sm--family);
+  font-style: var(--font-ap-body-sm--style);
+  font-weight: var(--font-ap-body-sm--weight);
+  font-size: var(--font-ap-body-sm--size);
+  line-height: var(--font-ap-body-sm--line-height);
+  letter-spacing: var(--font-ap-body-sm--letter-spacing);
+  text-transform: var(--font-ap-body-sm--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-body-sm > * {
+  margin-block: var(--font-ap-body-sm--spacing);
+}
+
+/* Label large */
+.ap-label-lg.ap-label-lg,
+.text-block.ap-label-lg > *,
+.text-block.ap-label-lg :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-label-lg--family);
+  font-style: var(--font-ap-label-lg--style);
+  font-weight: var(--font-ap-label-lg--weight);
+  font-size: var(--font-ap-label-lg--size);
+  line-height: var(--font-ap-label-lg--line-height);
+  letter-spacing: var(--font-ap-label-lg--letter-spacing);
+  text-transform: var(--font-ap-label-lg--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-label-lg > * {
+  margin-block: var(--font-ap-label-lg--spacing);
+}
+
+/* Label small */
+.ap-label-sm.ap-label-sm,
+.text-block.ap-label-sm > *,
+.text-block.ap-label-sm :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-label-sm--family);
+  font-style: var(--font-ap-label-sm--style);
+  font-weight: var(--font-ap-label-sm--weight);
+  font-size: var(--font-ap-label-sm--size);
+  line-height: var(--font-ap-label-sm--line-height);
+  letter-spacing: var(--font-ap-label-sm--letter-spacing);
+  text-transform: var(--font-ap-label-sm--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-label-sm > * {
+  margin-block: var(--font-ap-label-sm--spacing);
+}
+
+/* Button */
+.ap-button.ap-button,
+.text-block.ap-button > *,
+.text-block.ap-button :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-button--family);
+  font-style: var(--font-ap-button--style);
+  font-weight: var(--font-ap-button--weight);
+  font-size: var(--font-ap-button--size);
+  line-height: var(--font-ap-button--line-height);
+  letter-spacing: var(--font-ap-button--letter-spacing);
+  text-transform: var(--font-ap-button--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-button > * {
+  margin-block: var(--font-ap-button--spacing);
+}
+
+/* Button small */
+.ap-button-sm.ap-button-sm,
+.text-block.ap-button-sm > *,
+.text-block.ap-button-sm :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-button-sm--family);
+  font-style: var(--font-ap-button-sm--style);
+  font-weight: var(--font-ap-button-sm--weight);
+  font-size: var(--font-ap-button-sm--size);
+  line-height: var(--font-ap-button-sm--line-height);
+  letter-spacing: var(--font-ap-button-sm--letter-spacing);
+  text-transform: var(--font-ap-button-sm--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-button-sm > * {
+  margin-block: var(--font-ap-button-sm--spacing);
+}
+
+/* Nav / link */
+.ap-nav-link.ap-nav-link,
+.text-block.ap-nav-link > *,
+.text-block.ap-nav-link :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-ap-nav-link--family);
+  font-style: var(--font-ap-nav-link--style);
+  font-weight: var(--font-ap-nav-link--weight);
+  font-size: var(--font-ap-nav-link--size);
+  line-height: var(--font-ap-nav-link--line-height);
+  letter-spacing: var(--font-ap-nav-link--letter-spacing);
+  text-transform: var(--font-ap-nav-link--case);
+  color: var(--color, var(--color-foreground));
+}
+
+.text-block.ap-nav-link > * {
+  margin-block: var(--font-ap-nav-link--spacing);
+}
+
+/* Links inside display/heading/label presets inherit the preset look (as Horizon does for h1–h6); body presets keep underlined links. */
+.text-block.text-block:is(.ap-display, .ap-subheading, .ap-title-card, .ap-label-lg, .ap-label-sm, .ap-button, .ap-button-sm, .ap-nav-link) a {
+  text-decoration-line: none;
+  color: currentColor;
+}
+

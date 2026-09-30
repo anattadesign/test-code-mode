@@ -225,8 +225,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -245,12 +253,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -263,6 +279,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "72"
@@ -373,8 +393,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -393,12 +421,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -411,6 +447,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "48"
@@ -529,8 +569,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -549,12 +597,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -567,6 +623,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "32"
@@ -685,8 +745,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -705,12 +773,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -723,6 +799,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "24"
@@ -841,8 +921,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -861,12 +949,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -879,6 +975,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "18"
@@ -997,8 +1097,16 @@
             "label": "20px"
           },
           {
+            "value": "22",
+            "label": "22px"
+          },
+          {
             "value": "24",
             "label": "24px"
+          },
+          {
+            "value": "26",
+            "label": "26px"
           },
           {
             "value": "32",
@@ -1017,12 +1125,20 @@
             "label": "56px"
           },
           {
+            "value": "64",
+            "label": "64px"
+          },
+          {
             "value": "72",
             "label": "72px"
           },
           {
             "value": "88",
             "label": "88px"
+          },
+          {
+            "value": "104",
+            "label": "104px"
           },
           {
             "value": "120",
@@ -1035,6 +1151,10 @@
           {
             "value": "184",
             "label": "184px"
+          },
+          {
+            "value": "190",
+            "label": "190px"
           }
         ],
         "default": "16"
