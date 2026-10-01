@@ -469,7 +469,7 @@
         "show_search": true,
         "search_position": "right",
         "search_row": "top",
-        "search_display": "icon",
+        "search_display": "field",
         "show_country": false,
         "country_selector_style": false,
         "show_language": false,
