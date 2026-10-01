@@ -74,7 +74,372 @@
             "drawer_accordion_expand_first": false,
             "drawer_dividers": false
           },
-          "blocks": {}
+          "blocks": {
+            "shop_panel": {
+              "type": "_ap-mega-panel",
+              "settings": {
+                "menu_item": "Shop",
+                "mobile_expanded": true,
+                "gap": 32,
+                "gap_mobile": 12
+              },
+              "blocks": {
+                "products_1": {
+                  "type": "_ap-mega-column",
+                  "settings": {
+                    "layout": "stack",
+                    "layout_mobile": "stack",
+                    "width": "fixed",
+                    "fixed_width": 416,
+                    "gap": 28,
+                    "gap_mobile": 12,
+                    "divider": true,
+                    "footer_divider": false
+                  },
+                  "blocks": {
+                    "whey": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-whey-protein.jpg",
+                        "image_fit": "cover",
+                        "title": "100% Whey Protein",
+                        "description": "25g of clean, fast-digesting native whey protein",
+                        "link": "shopify://collections/all",
+                        "badge": "#1 Bestseller",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    },
+                    "casein": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-micellar-casein.jpg",
+                        "image_fit": "cover",
+                        "title": "Micellar Casein",
+                        "description": "Slow-digesting protein to help your body recover",
+                        "link": "shopify://collections/all",
+                        "badge": "",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    },
+                    "clear": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-clear-whey-isolate.jpg",
+                        "image_fit": "cover",
+                        "title": "Clear Whey Isolate",
+                        "description": "Light, refreshing, and packed with 20g of protein",
+                        "link": "shopify://collections/all",
+                        "badge": "New",
+                        "badge_style": "dark"
+                      },
+                      "blocks": {}
+                    },
+                    "coffee": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-iced-coffee-protein.jpg",
+                        "image_fit": "cover",
+                        "title": "Iced Coffee + Protein",
+                        "description": "Iced coffee with 100mg of caffeine and 20g of protein",
+                        "link": "shopify://collections/all",
+                        "badge": "",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "whey",
+                    "casein",
+                    "clear",
+                    "coffee"
+                  ]
+                },
+                "products_2": {
+                  "type": "_ap-mega-column",
+                  "settings": {
+                    "layout": "stack",
+                    "layout_mobile": "stack",
+                    "width": "fixed",
+                    "fixed_width": 368,
+                    "gap": 28,
+                    "gap_mobile": 12,
+                    "divider": false,
+                    "footer_divider": true
+                  },
+                  "blocks": {
+                    "creatine": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-clean-creatine.jpg",
+                        "image_fit": "cover",
+                        "title": "Clean Creatine",
+                        "description": "Build strength, endurance and lean muscle",
+                        "link": "shopify://collections/all",
+                        "badge": "",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    },
+                    "hydration": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-hydration-energy.jpg",
+                        "image_fit": "cover",
+                        "title": "Hydration + Energy",
+                        "description": "800mg of balanced electrolytes per serving",
+                        "link": "shopify://collections/all",
+                        "badge": "",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    },
+                    "apparel": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-apparel.jpg",
+                        "image_fit": "cover",
+                        "title": "Apparel & Accessories",
+                        "description": "Check out all of the apparel Ascent has to offer",
+                        "link": "shopify://collections/all",
+                        "badge": "",
+                        "badge_style": "accent"
+                      },
+                      "blocks": {}
+                    },
+                    "shop_all": {
+                      "type": "button",
+                      "settings": {
+                        "label": "Shop all",
+                        "link": "shopify://collections/all",
+                        "open_in_new_tab": false,
+                        "style_class": "button-tertiary",
+                        "button_size": "medium",
+                        "show_icon": true,
+                        "width": "fit-content",
+                        "custom_width": 100,
+                        "width_mobile": "fit-content",
+                        "custom_width_mobile": 100
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "creatine",
+                    "hydration",
+                    "apparel",
+                    "shop_all"
+                  ]
+                },
+                "membership": {
+                  "type": "ap-offer-card",
+                  "settings": {
+                    "image": "shopify://shop_images/ap-nav-membership-bundle.jpg",
+                    "heading": "Save 20% when you bundle Creatine",
+                    "checklist": "<ul><li>15% off every bag of native whey</li><li>Free shipping, always</li><li>Skip, swap or cancel anytime</li></ul>",
+                    "background_color": "#fbec00",
+                    "text_color": "#1a1a1a"
+                  },
+                  "blocks": {
+                    "join": {
+                      "type": "button",
+                      "settings": {
+                        "label": "Join membership",
+                        "link": "",
+                        "open_in_new_tab": false,
+                        "style_class": "button-dark",
+                        "button_size": "medium",
+                        "show_icon": false,
+                        "width": "custom",
+                        "custom_width": 100,
+                        "width_mobile": "fit-content",
+                        "custom_width_mobile": 100
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "join"
+                  ]
+                }
+              },
+              "block_order": [
+                "products_1",
+                "products_2",
+                "membership"
+              ]
+            },
+            "learn_panel": {
+              "type": "_ap-mega-panel",
+              "settings": {
+                "menu_item": "Learn",
+                "mobile_expanded": false,
+                "gap": 48,
+                "gap_mobile": 40
+              },
+              "blocks": {
+                "links": {
+                  "type": "_ap-mega-column",
+                  "settings": {
+                    "layout": "stack",
+                    "layout_mobile": "stack",
+                    "width": "fill",
+                    "fixed_width": 384,
+                    "gap": 24,
+                    "gap_mobile": 12,
+                    "divider": false,
+                    "footer_divider": false
+                  },
+                  "blocks": {
+                    "recipes": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-recipes.jpg",
+                        "image_fit": "cover",
+                        "title": "Recipes",
+                        "description": "Delicious recipes made with Ascent protein powders",
+                        "link": "shopify://blogs/news",
+                        "badge": "",
+                        "badge_style": "accent",
+                        "thumb_size_mobile": "large"
+                      },
+                      "blocks": {}
+                    },
+                    "knowledge": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-knowledge-base.jpg",
+                        "image_fit": "cover",
+                        "title": "Knowledge base",
+                        "description": "Health and wellness advice from Ascent",
+                        "link": "shopify://blogs/news",
+                        "badge": "",
+                        "badge_style": "accent",
+                        "thumb_size_mobile": "large"
+                      },
+                      "blocks": {}
+                    },
+                    "press": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-press.jpg",
+                        "image_fit": "cover",
+                        "title": "Press",
+                        "description": "Read the latest news and updates from Ascent",
+                        "link": "shopify://blogs/news",
+                        "badge": "",
+                        "badge_style": "accent",
+                        "thumb_size_mobile": "large"
+                      },
+                      "blocks": {}
+                    },
+                    "story": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-our-story.jpg",
+                        "image_fit": "cover",
+                        "title": "Our Story",
+                        "description": "Learn more about Ascent’s Hard Work story",
+                        "link": "shopify://pages/about",
+                        "badge": "",
+                        "badge_style": "accent",
+                        "thumb_size_mobile": "large"
+                      },
+                      "blocks": {}
+                    },
+                    "athletes": {
+                      "type": "ap-media-link",
+                      "settings": {
+                        "product": "",
+                        "image": "shopify://shop_images/ap-nav-athletes.jpg",
+                        "image_fit": "cover",
+                        "title": "Athletes",
+                        "description": "Read about Ascent’s professional athlete team",
+                        "link": "shopify://blogs/news",
+                        "badge": "",
+                        "badge_style": "accent",
+                        "thumb_size_mobile": "large"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "recipes",
+                    "knowledge",
+                    "press",
+                    "story",
+                    "athletes"
+                  ]
+                },
+                "cards": {
+                  "type": "_ap-mega-column",
+                  "settings": {
+                    "layout": "row",
+                    "layout_mobile": "scroll",
+                    "width": "fixed",
+                    "fixed_width": 712,
+                    "gap": 16,
+                    "gap_mobile": 16,
+                    "divider": false,
+                    "footer_divider": false
+                  },
+                  "blocks": {
+                    "leucine": {
+                      "type": "ap-editorial-card",
+                      "settings": {
+                        "image": "shopify://shop_images/ap-nav-card-leucine.jpg",
+                        "aspect_ratio": "4 / 5",
+                        "eyebrow": "Leucine",
+                        "title": "The recovery trigger",
+                        "text": "2.6g per serving crosses the threshold that tells your muscles to rebuild.",
+                        "link_label": "Read more",
+                        "link": "shopify://blogs/news"
+                      },
+                      "blocks": {}
+                    },
+                    "creapure": {
+                      "type": "ap-editorial-card",
+                      "settings": {
+                        "image": "shopify://shop_images/ap-nav-card-creapure.jpg",
+                        "aspect_ratio": "4 / 5",
+                        "eyebrow": "Creapure®",
+                        "title": "The purest creatine",
+                        "text": "German-made monohydrate under stricter quality control. 5g per serving, unflavoured.",
+                        "link_label": "Read more",
+                        "link": "shopify://blogs/news"
+                      },
+                      "blocks": {}
+                    }
+                  },
+                  "block_order": [
+                    "leucine",
+                    "creapure"
+                  ]
+                }
+              },
+              "block_order": [
+                "links",
+                "cards"
+              ]
+            }
+          },
+          "block_order": [
+            "shop_panel",
+            "learn_panel"
+          ]
         }
       },
       "settings": {

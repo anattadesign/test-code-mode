@@ -11,6 +11,14 @@
   assign effective_submenu_color = block_settings.background_color | default: settings.page_background_color
 %}
 
+{%- comment -%}
+  AP-56: render the mega menu panel blocks once. Each panel is wrapped in
+  <!--ap-mega:handle--> markers and cut out below for the menu item whose handle matches.
+{%- endcomment -%}
+{%- unless variant == 'navigation_bar' -%}
+  {%- capture ap_mega_panels -%}{% content_for 'blocks' %}{%- endcapture -%}
+{%- endunless -%}
+
 {% case variant %}
   {% when 'mobile' %}
     <div
@@ -23,7 +31,8 @@
         linklist: block_settings.menu,
         data_header_drawer_type: 'mobile-drawer',
         block: block,
-        section: section
+        section: section,
+        ap_mega_panels: ap_mega_panels
       %}
     </div>
 
@@ -94,13 +103,26 @@
 
     {% capture children %}
       {% for link in block_settings.menu.links %}
+        {%- liquid
+          # AP-56: a mega menu panel block for this item replaces its default dropdown.
+          assign ap_panel = ''
+          assign ap_open = '<!--ap-mega:' | append: link.handle | append: '-->'
+          if ap_mega_panels contains ap_open
+            assign ap_close = '<!--/ap-mega:' | append: link.handle | append: '-->'
+            assign ap_panel = ap_mega_panels | split: ap_open | last | split: ap_close | first
+          endif
+          assign has_submenu = false
+          if link.links != blank or ap_panel != ''
+            assign has_submenu = true
+          endif
+        -%}
         <li
           class="menu-list__list-item"
           on:blur="/deactivate"
           on:pointerenter="/activate"
           on:pointerleave="/deactivate"
         >
-          {%- if link.links != blank -%}
+          {%- if has_submenu -%}
             <span class="menu-list__trigger">
           {%- endif -%}
           <a
@@ -114,7 +136,7 @@
           >
             <span class="menu-list__link-title">{{- link.title -}}</span>
           </a>
-          {%- if link.links != blank -%}
+          {%- if has_submenu -%}
             <button
               type="button"
               class="menu-list__disclosure button-unstyled"
@@ -146,23 +168,27 @@
                 style="{% render 'submenu-font-styles', settings: block_settings %}"
               >
                 {% assign list_id = 'MegaMenuList-' | append: forloop.index %}
-                <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}">
-                  <div
-                    class="mega-menu__grid"
-                    data-menu-grid-id="{{ list_id }}"
-                  >
-                    {% render 'mega-menu-list',
-                      parent_link: link,
-                      id: list_id,
-                      section: section,
-                      grid_columns_count: 6,
-                      grid_columns_count_tablet: 4,
-                      grid_columns_count_collection_images: 8,
-                      menu_content_type: menu_content_type,
-                      content_aspect_ratio: ratio,
-                      image_border_radius: image_border_radius
-                    %}
-                  </div>
+                <div class="mega-menu section section--full-width-margin section--{{ section.settings.section_width }}{% if ap_panel != '' %} mega-menu--ap{% endif %}">
+                  {%- if ap_panel != '' -%}
+                    {{ ap_panel }}
+                  {%- else -%}
+                    <div
+                      class="mega-menu__grid"
+                      data-menu-grid-id="{{ list_id }}"
+                    >
+                      {% render 'mega-menu-list',
+                        parent_link: link,
+                        id: list_id,
+                        section: section,
+                        grid_columns_count: 6,
+                        grid_columns_count_tablet: 4,
+                        grid_columns_count_collection_images: 8,
+                        menu_content_type: menu_content_type,
+                        content_aspect_ratio: ratio,
+                        image_border_radius: image_border_radius
+                      %}
+                    </div>
+                  {%- endif -%}
                 </div>
               </div>
             </div>
@@ -819,6 +845,7 @@
 {
   "name": "t:names.menu",
   "tag": null,
+  "blocks": [{ "type": "_ap-mega-panel" }],
   "settings": [
     {
       "type": "link_list",

@@ -1,0 +1,212 @@
+{%- doc -%}
+  AP-56 · Mega menu column. Groups links, cards and a footer button inside a
+  mega menu panel. Stacks or lays its children in a row; on mobile a row can
+  become a horizontal scroller.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign classes = 'ap-mega-column ap-mega-column--' | append: s.layout | append: ' ap-mega-column--mobile-' | append: s.layout_mobile
+  if s.width == 'fixed'
+    assign classes = classes | append: ' ap-mega-column--fixed'
+  endif
+  if s.divider
+    assign classes = classes | append: ' ap-mega-column--divider'
+  endif
+  if s.footer_divider
+    assign classes = classes | append: ' ap-mega-column--footer'
+  endif
+-%}
+<div
+  class="{{ classes }}"
+  style="--ap-col-gap: {{ s.gap }}px; --ap-col-gap-mobile: {{ s.gap_mobile }}px; --ap-col-width: {{ s.fixed_width }}px;"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .ap-mega-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ap-col-gap, 1.5rem);
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .ap-mega-column--fixed {
+    flex: 0 1 var(--ap-col-width);
+  }
+
+  .ap-mega-column--row {
+    flex-direction: row;
+  }
+
+  .ap-mega-column--row > * {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .ap-mega-column--divider {
+    padding-inline-end: var(--ap-mega-gap, 2rem);
+    border-inline-end: 1px solid var(--ap-border-decorative, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  /* Footer button (e.g. SHOP ALL): pinned to the bottom, centred under a rule. */
+  .ap-mega-column.ap-mega-column--footer > .size-style:last-child {
+    align-self: stretch;
+    width: auto;
+    justify-content: center;
+    margin-block-start: auto;
+    padding-block-start: 1.5rem;
+    border-block-start: 1px solid var(--ap-border-decorative, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  @media screen and (max-width: 749px) {
+    .ap-mega-column,
+    .ap-mega-column--fixed {
+      flex: none;
+      gap: var(--ap-col-gap-mobile, 0.75rem);
+    }
+
+    .ap-mega-column--mobile-stack {
+      flex-direction: column;
+    }
+
+    .ap-mega-column--mobile-stack > * {
+      flex: none;
+    }
+
+    .ap-mega-column--mobile-scroll {
+      flex-direction: row;
+      overflow-x: auto;
+      overscroll-behavior-x: contain;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--ap-mega-scroll-inset, 1rem);
+      margin-inline: calc(-1 * var(--ap-mega-scroll-inset, 1rem));
+      padding-inline: var(--ap-mega-scroll-inset, 1rem);
+      scrollbar-width: none;
+    }
+
+    .ap-mega-column--mobile-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ap-mega-column--mobile-scroll > * {
+      flex: 0 0 min(16.75rem, 75vw);
+      scroll-snap-align: start;
+    }
+
+    .ap-mega-column--divider {
+      padding-inline-end: 0;
+      border-inline-end: 0;
+    }
+
+    .ap-mega-column.ap-mega-column--footer > .size-style:last-child {
+      align-self: flex-start;
+      justify-content: flex-start;
+      margin-block-start: 0.5rem;
+      padding-block-start: 0;
+      border-block-start: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Mega menu column",
+  "tag": null,
+  "blocks": [
+    { "type": "ap-media-link" },
+    { "type": "ap-editorial-card" },
+    { "type": "button" }
+  ],
+  "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "stack", "label": "Stack" },
+        { "value": "row", "label": "Row" }
+      ],
+      "default": "stack"
+    },
+    {
+      "type": "select",
+      "id": "layout_mobile",
+      "label": "Layout (mobile)",
+      "options": [
+        { "value": "stack", "label": "Stack" },
+        { "value": "scroll", "label": "Horizontal scroll" }
+      ],
+      "default": "stack"
+    },
+    {
+      "type": "select",
+      "id": "width",
+      "label": "Width",
+      "options": [
+        { "value": "fill", "label": "Fill" },
+        { "value": "fixed", "label": "Fixed" }
+      ],
+      "default": "fill"
+    },
+    {
+      "type": "range",
+      "id": "fixed_width",
+      "label": "Fixed width",
+      "min": 160,
+      "max": 960,
+      "step": 8,
+      "unit": "px",
+      "default": 384,
+      "visible_if": "{{ block.settings.width == 'fixed' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "divider",
+      "label": "Divider after column",
+      "default": false,
+      "info": "Desktop only."
+    },
+    {
+      "type": "checkbox",
+      "id": "footer_divider",
+      "label": "Pin last button to the bottom",
+      "default": false,
+      "info": "Centres the last button under a rule, like SHOP ALL. Desktop only."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mega menu column",
+      "blocks": {
+        "link_1": { "type": "ap-media-link" },
+        "link_2": { "type": "ap-media-link" }
+      },
+      "block_order": ["link_1", "link_2"]
+    }
+  ]
+}
+{% endschema %}
