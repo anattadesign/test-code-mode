@@ -61,6 +61,7 @@
           "static": true,
           "settings": {
             "menu": "main-menu",
+            "background_color": "#ffffff",
             "type_font_primary_size": "1rem",
             "menu_font_style": "inverse",
             "type_font_primary_link": "heading",
@@ -72,8 +73,7 @@
             "navigation_bar": false,
             "drawer_accordion": false,
             "drawer_accordion_expand_first": false,
-            "drawer_dividers": false,
-            "background_color": "#ffffff"
+            "drawer_dividers": false
           },
           "blocks": {
             "shop_panel": {
@@ -307,12 +307,12 @@
                         "product": "",
                         "image": "shopify://shop_images/ap-nav-recipes.jpg",
                         "image_fit": "cover",
+                        "thumb_size_mobile": "large",
                         "title": "Recipes",
                         "description": "Delicious recipes made with Ascent protein powders",
                         "link": "shopify://blogs/news",
                         "badge": "",
-                        "badge_style": "accent",
-                        "thumb_size_mobile": "large"
+                        "badge_style": "accent"
                       },
                       "blocks": {}
                     },
@@ -322,12 +322,12 @@
                         "product": "",
                         "image": "shopify://shop_images/ap-nav-knowledge-base.jpg",
                         "image_fit": "cover",
+                        "thumb_size_mobile": "large",
                         "title": "Knowledge base",
                         "description": "Health and wellness advice from Ascent",
                         "link": "shopify://blogs/news",
                         "badge": "",
-                        "badge_style": "accent",
-                        "thumb_size_mobile": "large"
+                        "badge_style": "accent"
                       },
                       "blocks": {}
                     },
@@ -337,12 +337,12 @@
                         "product": "",
                         "image": "shopify://shop_images/ap-nav-press.jpg",
                         "image_fit": "cover",
+                        "thumb_size_mobile": "large",
                         "title": "Press",
                         "description": "Read the latest news and updates from Ascent",
                         "link": "shopify://blogs/news",
                         "badge": "",
-                        "badge_style": "accent",
-                        "thumb_size_mobile": "large"
+                        "badge_style": "accent"
                       },
                       "blocks": {}
                     },
@@ -352,12 +352,12 @@
                         "product": "",
                         "image": "shopify://shop_images/ap-nav-our-story.jpg",
                         "image_fit": "cover",
+                        "thumb_size_mobile": "large",
                         "title": "Our Story",
                         "description": "Learn more about Ascent’s Hard Work story",
                         "link": "shopify://pages/about",
                         "badge": "",
-                        "badge_style": "accent",
-                        "thumb_size_mobile": "large"
+                        "badge_style": "accent"
                       },
                       "blocks": {}
                     },
@@ -367,12 +367,12 @@
                         "product": "",
                         "image": "shopify://shop_images/ap-nav-athletes.jpg",
                         "image_fit": "cover",
+                        "thumb_size_mobile": "large",
                         "title": "Athletes",
                         "description": "Read about Ascent’s professional athlete team",
                         "link": "shopify://blogs/news",
                         "badge": "",
-                        "badge_style": "accent",
-                        "thumb_size_mobile": "large"
+                        "badge_style": "accent"
                       },
                       "blocks": {}
                     }
@@ -463,19 +463,13 @@
         "divider_width": 0,
         "divider_size": "page-width",
         "border_width": 0,
+        "actions_display_style": "icon",
         "background_color_top": "{{ settings.color_palette.background }}",
         "enable_transparent_header_home": true,
-        "enable_transparent_header_product": false,
-        "enable_transparent_header_collection": false,
-        "search_display": "field",
-        "actions_display_style": "icon",
         "home_inverse_logo": true,
         "text_color_transparent_home": "#FFFFFF",
-        "floating_header": true,
-        "floating_inset": 64,
-        "floating_inset_mobile": 12,
-        "floating_offset": 16,
-        "floating_background": "rgba(248, 248, 248, 0.92)"
+        "enable_transparent_header_product": false,
+        "enable_transparent_header_collection": false
       }
     }
   },

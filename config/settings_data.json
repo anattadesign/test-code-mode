@@ -9,10 +9,10 @@
  */
 {
   "current": {
+    "logo": "shopify://shop_images/Ascent_Logo.svg",
     "logo_height": 36,
     "logo_height_mobile": 28,
-    "page_background_color": "{{ settings.color_palette.background }}",
-    "page_width": "narrow",
+    "favicon": "shopify://shop_images/Icon-yellow.svg",
     "page_text_color": "{{ settings.color_palette.foreground }}",
     "type_body_font": "montserrat_n4",
     "type_subheading_font": "montserrat_n7",
@@ -44,6 +44,8 @@
     "type_font_h6": "heading",
     "type_size_h6": "22",
     "type_line_height_h6": "display-loose",
+    "page_background_color": "{{ settings.color_palette.background }}",
+    "page_width": "narrow",
     "page_transition_enabled": false,
     "transition_to_main_product": false,
     "card_hover_effect": "none",
@@ -102,6 +104,7 @@
     "variant_button_border_width": 1,
     "variant_button_radius": 14,
     "variant_button_width": "equal-width-buttons",
+    "content_for_index": [],
     "color_palette": {
       "background": "#F8F8F8",
       "foreground": "#1A1A1A",
