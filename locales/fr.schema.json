@@ -171,6 +171,8 @@
     "disclosures": "Divulgations"
   },
   "settings": {
+    "button_size": "Taille du bouton",
+    "show_icon": "Afficher l’icône",
     "autoplay": "Lecture automatique",
     "background": "Arrière-plan",
     "border_radius": "Rayon de la bordure",
@@ -586,6 +588,7 @@
     "title_preset": "Préréglage du titre"
   },
   "options": {
+    "dark": "Sombre",
     "apple": "Pomme",
     "arrow": "Flèche",
     "banana": "Banane",

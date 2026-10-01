@@ -171,6 +171,8 @@
     "disclosures": "Pflichtangaben"
   },
   "settings": {
+    "button_size": "Schaltflächengröße",
+    "show_icon": "Symbol anzeigen",
     "autoplay": "Autoplay",
     "background": "Hintergrund",
     "border_radius": "Eckenradius",
@@ -586,6 +588,7 @@
     "title_preset": "Titelvoreinstellung"
   },
   "options": {
+    "dark": "Dunkel",
     "apple": "Apfel",
     "arrow": "Pfeil",
     "banana": "Banane",

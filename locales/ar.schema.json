@@ -406,6 +406,7 @@
     "comparison_slider": "شريط تمرير المقارنة"
   },
   "options": {
+    "dark": "داكن",
     "above_carousel": "أعلى العرض الدائري",
     "accent": "تمييز",
     "all": "الكل",
@@ -688,6 +689,8 @@
     "below_media": "أسفل الوسائط"
   },
   "settings": {
+    "button_size": "حجم الزر",
+    "show_icon": "إظهار الأيقونة",
     "accordion": "أكورديون",
     "account": "حساب",
     "actions_display_style": "نمط القائمة",

@@ -1,0 +1,259 @@
+/*
+ * AP-51 · Ascent Design System — Button component.
+ * Figma: AP - Design System › Buttons › Button (component set 2077:130)
+ *   Style = Primary | Secondary | Tertiary | Dark
+ *   Size  = Small | Medium | Large   (Medium is the default)
+ *   Icon  = True | False             (icon sits after the label)
+ *
+ * Class contract (Horizon-compatible):
+ *   .button            Primary   — colours from Theme settings › Primary button (AP-50 palette)
+ *   .button-secondary  Secondary — colours from Theme settings › Secondary button
+ *   .button-dark       Dark      — new, surface/inverse fill
+ *   .button-tertiary   Tertiary  — new, text-only button with optional icon
+ *   .button--sm / --md / --lg    size modifiers
+ *   .button--icon      a label + trailing icon (markup: snippets/ap-button.liquid)
+ *
+ * Box geometry is measured from the Figma component set:
+ *   Small  40px tall, 16px inline padding, 14px label (ap-button-sm), 32px icon badge, 16px glyph
+ *   Medium 48px tall, 24px inline padding, 16px label (ap-button),    36px icon badge, 20px glyph
+ *   Large  56px tall, 24px inline padding, 16px label (ap-button),    44px icon badge, 24px glyph
+ *   With an icon the badge sits 4px (sm) / 6px (md, lg) from the trailing edge.
+ *
+ * Rules are wrapped in :where() so component-specific button styles elsewhere in
+ * the theme (drawers, quantity selectors, header actions…) keep winning.
+ */
+
+/* ---------- Size tokens ---------- */
+:root {
+  --ap-button-height-sm: 2.5rem;
+  --ap-button-height-md: 3rem;
+  --ap-button-height-lg: 3.5rem;
+  --ap-button-padding-sm: 1rem;
+  --ap-button-padding-md: 1.5rem;
+  --ap-button-padding-lg: 1.5rem;
+  --ap-button-icon-inset-sm: 0.25rem;
+  --ap-button-icon-inset-md: 0.375rem;
+  --ap-button-icon-inset-lg: 0.375rem;
+  --ap-button-icon-gap-sm: 0.5rem;
+  --ap-button-icon-gap-md: 0.75rem;
+  --ap-button-icon-gap-lg: 0.75rem;
+  --ap-button-badge-sm: 2rem;
+  --ap-button-badge-md: 2.25rem;
+  --ap-button-badge-lg: 2.75rem;
+  --ap-button-glyph-sm: 1rem;
+  --ap-button-glyph-md: 1.25rem;
+  --ap-button-glyph-lg: 1.5rem;
+  --ap-button-tertiary-gap: 0.5rem;
+}
+
+/* ---------- Shared tokens (all styles) ----------
+ * Variables only: base.css .button reads them (min-block-size, padding, label font),
+ * so section-level overrides of those properties keep working. */
+:where(.button, .button-secondary, .button-dark, .button-custom, .button-tertiary):where(:not(.button-unstyled)) {
+  --ap-button-height: var(--ap-button-height-md);
+  --ap-button-padding: var(--ap-button-padding-md);
+  --ap-button-padding-block: 0.5rem;
+  --ap-button-icon-inset: var(--ap-button-icon-inset-md);
+  --ap-button-icon-gap: var(--ap-button-icon-gap-md);
+  --ap-button-badge: var(--ap-button-badge-md);
+  --ap-button-glyph: var(--ap-button-glyph-md);
+  --ap-button-font-weight: var(--font-ap-button--weight);
+  --ap-button-font-size: var(--font-ap-button--size);
+  --ap-button-line-height: var(--font-ap-button--line-height);
+  --ap-button-letter-spacing: var(--font-ap-button--letter-spacing);
+}
+
+:where(.button, .button-secondary, .button-dark, .button-custom, .button-tertiary):where(.button--sm) {
+  --ap-button-height: var(--ap-button-height-sm);
+  --ap-button-padding: var(--ap-button-padding-sm);
+  --ap-button-icon-inset: var(--ap-button-icon-inset-sm);
+  --ap-button-icon-gap: var(--ap-button-icon-gap-sm);
+  --ap-button-badge: var(--ap-button-badge-sm);
+  --ap-button-glyph: var(--ap-button-glyph-sm);
+  --ap-button-font-weight: var(--font-ap-button-sm--weight);
+  --ap-button-font-size: var(--font-ap-button-sm--size);
+  --ap-button-line-height: var(--font-ap-button-sm--line-height);
+  --ap-button-letter-spacing: var(--font-ap-button-sm--letter-spacing);
+}
+
+:where(.button, .button-secondary, .button-dark, .button-custom, .button-tertiary):where(.button--lg) {
+  --ap-button-height: var(--ap-button-height-lg);
+  --ap-button-padding: var(--ap-button-padding-lg);
+  --ap-button-icon-inset: var(--ap-button-icon-inset-lg);
+  --ap-button-icon-gap: var(--ap-button-icon-gap-lg);
+  --ap-button-badge: var(--ap-button-badge-lg);
+  --ap-button-glyph: var(--ap-button-glyph-lg);
+}
+
+/* ---------- Dark ---------- */
+.button-dark {
+  display: grid;
+  align-content: center;
+  width: fit-content;
+  min-block-size: var(--ap-button-height);
+  margin-block: 0;
+  padding-block: var(--ap-button-padding-block);
+  padding-inline: var(--ap-button-padding);
+  appearance: none;
+  border: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  color: var(--button-color);
+  background-color: var(--button-background-color);
+  box-shadow: inset 0 0 0 var(--button-border-width) var(--button-border-color);
+  font-style: var(--font-ap-button--style);
+  font-weight: var(--ap-button-font-weight);
+  font-size: var(--ap-button-font-size);
+  line-height: var(--ap-button-line-height);
+  letter-spacing: var(--ap-button-letter-spacing);
+  transition: color var(--animation-speed) var(--animation-easing),
+    box-shadow var(--animation-speed) var(--animation-easing),
+    background-color var(--animation-speed) var(--animation-easing);
+
+  --button-color: var(--ap-text-inverse-primary);
+  --button-background-color: var(--ap-surface-inverse);
+  --button-border-color: var(--ap-surface-inverse);
+  --button-border-width: 0px;
+  --ap-button-badge-background: var(--ap-surface-accent);
+  --ap-button-badge-color: var(--ap-text-on-accent);
+
+  font-family: var(--button-font-family-primary);
+  text-transform: var(--button-text-case-primary);
+  border-radius: var(--style-border-radius-buttons-primary);
+}
+
+.button-dark:hover:not([aria-disabled='true'], :disabled) {
+  --button-background-color: var(--ap-primitive-neutral-800);
+  --button-border-color: var(--ap-primitive-neutral-800);
+}
+
+/* ---------- Tertiary (text button) ---------- */
+.button-tertiary {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ap-button-tertiary-gap);
+  width: fit-content;
+  padding: 0;
+  margin-block: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  appearance: none;
+  cursor: pointer;
+  color: var(--ap-text-primary);
+  text-decoration: none;
+  text-transform: var(--button-text-case-primary);
+  font-family: var(--button-font-family-primary, var(--font-ap-button--family));
+  font-style: var(--font-ap-button--style);
+  font-weight: var(--ap-button-font-weight, var(--font-ap-button--weight));
+  font-size: var(--ap-button-font-size, var(--font-ap-button--size));
+  line-height: var(--ap-button-line-height, var(--font-ap-button--line-height));
+  letter-spacing: var(--ap-button-letter-spacing, var(--font-ap-button--letter-spacing));
+  transition: color var(--animation-speed) var(--animation-easing);
+}
+
+.button-tertiary.button--lg {
+  min-block-size: var(--ap-button-glyph-lg);
+}
+
+.button-tertiary .button__label {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.25em;
+  transition: text-decoration-color var(--animation-speed) var(--animation-easing);
+}
+
+.button-tertiary:hover .button__label {
+  text-decoration-color: currentcolor;
+}
+
+/* ---------- Icon ---------- */
+.button--icon:where(.button, .button-secondary, .button-dark, .button-custom) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ap-button-icon-gap);
+  padding-inline-end: var(--ap-button-icon-inset);
+}
+
+.button__label {
+  display: block;
+}
+
+.button__icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  inline-size: var(--ap-button-badge);
+  block-size: var(--ap-button-badge);
+  border-radius: 50%;
+  color: var(--ap-button-badge-color, var(--button-background-color));
+  background-color: var(--ap-button-badge-background, var(--button-color));
+  transition: transform var(--animation-speed) var(--animation-easing);
+}
+
+.button__icon svg {
+  inline-size: var(--ap-button-glyph);
+  block-size: var(--ap-button-glyph);
+}
+
+.button-tertiary .button__icon {
+  inline-size: auto;
+  block-size: auto;
+  border-radius: 0;
+  background: none;
+  color: currentcolor;
+}
+
+/* Primary: charcoal badge with an accent arrow (yellow stays a fill). */
+.button:not(.button-secondary, .button-unstyled, .button-dark, .button-custom) .button__icon {
+  --ap-button-badge-background: var(--ap-surface-inverse);
+  --ap-button-badge-color: var(--ap-surface-accent);
+}
+
+/* Secondary: charcoal badge with an inverse arrow. */
+.button-secondary .button__icon {
+  --ap-button-badge-background: var(--ap-surface-inverse);
+  --ap-button-badge-color: var(--ap-text-inverse-primary);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.button, .button-secondary, .button-dark, .button-custom, .button-tertiary):hover:not([aria-disabled='true'], :disabled)
+    .button__icon {
+    transform: translateX(0.125rem);
+  }
+}
+
+/* ---------- Focus & disabled ----------
+ * Focus uses the Border & focus token (focus/ring-outer, charcoal), never the
+ * button fill: a yellow Primary must not draw a yellow ring on a light surface. */
+.button,
+.button-secondary,
+.button-custom,
+.button-dark,
+.button-tertiary {
+  --button-focus-outline-color: var(--ap-focus-ring, var(--ap-focus-ring-outer));
+}
+
+:is(.button, .button-secondary, .button-custom, .button-dark, .button-tertiary):not(.button-unstyled):focus-visible {
+  outline: var(--focus-outline-width) solid var(--button-focus-outline-color);
+  outline-offset: var(--focus-outline-offset);
+}
+
+/* Disabled: no design yet (open Figma comment) — theme treatment, as in base.css. */
+.button-dark[aria-disabled='true'],
+.button-dark:disabled,
+.button-tertiary[aria-disabled='true'],
+.button-tertiary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-tertiary[aria-disabled='true'] .button__label,
+.button-tertiary:disabled .button__label {
+  text-decoration-color: transparent;
+}

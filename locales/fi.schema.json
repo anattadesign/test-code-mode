@@ -171,6 +171,8 @@
     "disclosures": "Ilmoitukset"
   },
   "settings": {
+    "button_size": "Painikkeen koko",
+    "show_icon": "Näytä kuvake",
     "alignment": "Tasaus",
     "autoplay": "Automaattinen toisto",
     "background": "Tausta",
@@ -586,6 +588,7 @@
     "title_preset": "Otsikon esiasetus"
   },
   "options": {
+    "dark": "Tumma",
     "apple": "Omena",
     "arrow": "Nuoli",
     "auto": "Automaattinen",

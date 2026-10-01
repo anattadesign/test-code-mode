@@ -37,6 +37,14 @@
           "label": "t:options.secondary"
         },
         {
+          "value": "button-tertiary",
+          "label": "t:options.tertiary"
+        },
+        {
+          "value": "button-dark",
+          "label": "t:options.dark"
+        },
+        {
           "value": "button-unstyled",
           "label": "t:options.link"
         },
@@ -47,6 +55,34 @@
       ],
       "default": "button",
       "info": "t:info.edit_button_style_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "button_size",
+      "label": "t:settings.button_size",
+      "options": [
+        {
+          "value": "small",
+          "label": "t:options.small"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "large",
+          "label": "t:options.large"
+        }
+      ],
+      "default": "medium",
+      "visible_if": "{{ block.settings.style_class != 'button-unstyled' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "t:settings.show_icon",
+      "default": false,
+      "visible_if": "{{ block.settings.style_class != 'button-unstyled' }}"
     },
     {
       "type": "header",

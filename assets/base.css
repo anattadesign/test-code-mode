@@ -231,15 +231,17 @@ p:empty {
   }
 }
 
-/* Focus */
+/* Focus
+ * AP-50: rings use the Border & focus tokens. --ap-focus-ring is focus/ring-outer
+ * (charcoal) on light surfaces; dark components swap it to focus/ring-inner (yellow). */
 *:focus-visible {
-  outline: var(--focus-outline-width) solid currentcolor;
+  outline: var(--focus-outline-width) solid var(--ap-focus-ring, currentcolor);
   outline-offset: var(--focus-outline-offset);
 }
 
 @supports not selector(:focus-visible) {
   *:focus {
-    outline: var(--focus-outline-width) solid currentcolor;
+    outline: var(--focus-outline-width) solid var(--ap-focus-ring, currentcolor);
     outline-offset: var(--focus-outline-offset);
   }
 }
@@ -814,11 +816,14 @@ button.shopify-payment-button__button--unbranded {
   appearance: none;
   background-color: var(--button-background-color);
   border: none;
-  font-family: var(--font-paragraph--family);
-  font-style: var(--font-paragraph--style);
-  font-weight: var(--font-paragraph--weight);
-  font-size: var(--font-paragraph--size);
-  line-height: var(--font-paragraph--line-height);
+  /* AP-51: label + box size come from the Button tokens in assets/ap-buttons.css */
+  font-family: var(--font-ap-button--family, var(--font-paragraph--family));
+  font-style: var(--font-ap-button--style, var(--font-paragraph--style));
+  font-weight: var(--ap-button-font-weight, var(--font-paragraph--weight));
+  font-size: var(--ap-button-font-size, var(--font-paragraph--size));
+  line-height: var(--ap-button-line-height, var(--font-paragraph--line-height));
+  letter-spacing: var(--ap-button-letter-spacing, normal);
+  min-block-size: var(--ap-button-height, auto);
   margin-block: 0;
   transition: color var(--animation-speed) var(--animation-easing),
     box-shadow var(--animation-speed) var(--animation-easing),
@@ -826,8 +831,8 @@ button.shopify-payment-button__button--unbranded {
   cursor: pointer;
   width: fit-content;
   box-shadow: inset 0 0 0 var(--button-border-width) var(--button-border-color);
-  padding-block: var(--button-padding-block);
-  padding-inline: var(--button-padding-inline);
+  padding-block: var(--ap-button-padding-block, var(--button-padding-block));
+  padding-inline: var(--ap-button-padding, var(--button-padding-inline));
 }
 
 .button {
@@ -874,7 +879,10 @@ input:not(:placeholder-shown)::placeholder {
 
 .button[aria-disabled='true'],
 .button-secondary[aria-disabled='true'],
-.button:disabled {
+.button:disabled,
+.button-secondary:disabled,
+.button-custom[aria-disabled='true'],
+.button-custom:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }

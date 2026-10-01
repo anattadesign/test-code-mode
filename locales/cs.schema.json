@@ -171,6 +171,8 @@
     "disclosures": "Prohlášení"
   },
   "settings": {
+    "button_size": "Velikost tlačítka",
+    "show_icon": "Zobrazit ikonu",
     "alignment": "Zarovnání",
     "autoplay": "Automatické přehrávání",
     "background": "Pozadí",
@@ -586,6 +588,7 @@
     "title_preset": "Předvolba nadpisu"
   },
   "options": {
+    "dark": "Tmavé",
     "apple": "Apple",
     "arrow": "Šipka",
     "auto": "Automaticky",

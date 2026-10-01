@@ -171,6 +171,8 @@
     "disclosures": "Bildirimler"
   },
   "settings": {
+    "button_size": "Düğme boyutu",
+    "show_icon": "Simgeyi göster",
     "autoplay": "Otomatik oynatma",
     "background": "Arka plan",
     "border_radius": "Köşe yarıçapı",
@@ -586,6 +588,7 @@
     "title_preset": "Başlık ön ayarı"
   },
   "options": {
+    "dark": "Koyu",
     "apple": "Apple",
     "arrow": "Ok",
     "banana": "Muz",

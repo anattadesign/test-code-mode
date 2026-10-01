@@ -171,6 +171,8 @@
     "disclosures": "資訊揭露"
   },
   "settings": {
+    "button_size": "按鈕尺寸",
+    "show_icon": "顯示圖示",
     "alignment": "對齊",
     "autoplay": "自動播放",
     "background": "背景",
@@ -586,6 +588,7 @@
     "title_preset": "標題預設設定"
   },
   "options": {
+    "dark": "深色",
     "apple": "Apple",
     "arrow": "箭頭",
     "auto": "自動",

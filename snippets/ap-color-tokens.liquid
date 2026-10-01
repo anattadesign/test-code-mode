@@ -1,0 +1,134 @@
+{%- doc -%}
+  AP-50 · Ascent Design System — colour foundation.
+
+  Source: Figma "AP - Design System" › Colour — Ascent Core (2004:13044) and
+  Overlays & Scrims — Ascent Core (2004:13370).
+
+  Rendered once in layout/theme.liquid, directly after 'color-palette', so these
+  values sit on top of Horizon's palette variables.
+
+  Naming: every Figma token becomes a custom property with the same path, slash →
+  hyphen, prefixed --ap- so it can never collide with Horizon's own variables:
+    text/primary          → --ap-text-primary
+    brand/yellow-500      → --ap-brand-yellow-500
+    primitive/neutral-900 → --ap-primitive-neutral-900
+    overlay/text-safe     → --ap-overlay-text-safe
+
+  Two layers
+  1. Primitives (brand shades, ink & neutrals, flavor) are fixed hex values from the
+     brand book.
+  2. Semantic tokens (surface, text, border & focus) read the theme colour palette
+     (Theme settings › Colors), so a merchant edit there flows through every token.
+     The palette ships with the Ascent Core values; see config/settings_data.json.
+
+  Usage rules from the Brand frame
+  - Black and white stay dominant; accent used sparingly (70/20/10 on black, else 70/30).
+  - Yellow is fill only: never body copy, borders or focus rings on a light surface.
+  - brand/yellow-700 is large text, fills and borders only, never body copy.
+  - Any overlay carrying text must be overlay/text-safe (60%) or heavier.
+    overlay/subtle and overlay/medium are decorative only.
+{%- enddoc -%}
+
+{%- liquid
+  assign palette = settings.color_palette
+  assign c_page = palette.background | default: '#F8F8F8'
+  assign c_ink = palette.foreground | default: '#1A1A1A'
+  assign c_secondary = palette.color1 | default: '#696969'
+  assign c_decorative = palette.color2 | default: '#D0D0D0'
+  assign c_raised = palette.raised | default: '#FFFFFF'
+  assign c_accent = palette.accent | default: '#FBEC00'
+-%}
+
+{% style %}
+  :root {
+    /* ---------- Brand (Ascent's three core tones) ---------- */
+    --ap-brand-lemon-yellow: #fbec00;
+    --ap-brand-charcoal-black: #1a1a1a;
+    --ap-brand-cloud-gray: #f8f8f8;
+
+    /* ---------- Brand shades (fill only) ---------- */
+    --ap-brand-yellow-100: #fff78d;
+    --ap-brand-yellow-200: #fff45a;
+    --ap-brand-yellow-500: #fbec00;
+    --ap-brand-yellow-600: #b0a50c;
+    --ap-brand-yellow-700: #827b09;
+    --ap-brand-yellow-800: #5c5606;
+    --ap-brand-yellow-900: #292701;
+
+    /* ---------- Ink & neutrals ---------- */
+    --ap-primitive-neutral-900: #1a1a1a;
+    --ap-primitive-neutral-800: #414141;
+    --ap-primitive-neutral-700: #696969;
+    --ap-primitive-neutral-600: #919191;
+    --ap-primitive-neutral-500: #a9a9a9;
+    --ap-primitive-neutral-400: #d0d0d0;
+    --ap-primitive-neutral-100: #f8f8f8;
+    --ap-primitive-neutral-900-rgb: 26 26 26;
+
+    /* ---------- Surface ---------- */
+    --ap-surface-page: {{ c_page }};
+    --ap-surface-raised: {{ c_raised }};
+    --ap-surface-inverse: {{ c_ink }};
+    --ap-surface-accent: {{ c_accent }};
+
+    /* ---------- Text ---------- */
+    --ap-text-primary: {{ c_ink }};
+    --ap-text-secondary: {{ c_secondary }};
+    --ap-text-inverse-primary: {{ c_raised }};
+    --ap-text-inverse-secondary: var(--ap-primitive-neutral-400);
+    --ap-text-inverse-tertiary: var(--ap-primitive-neutral-600);
+    --ap-text-on-accent: {{ c_ink }};
+
+    /* ---------- Border & focus ---------- */
+    --ap-border-functional: {{ c_secondary }};
+    --ap-border-decorative: {{ c_decorative }};
+    --ap-focus-ring-inner: {{ c_accent }};
+    --ap-focus-ring-outer: {{ c_ink }};
+    --ap-focus-ring-width: 0.125rem;
+
+    /* ---------- Flavor (documented deviation; each pairs with one text colour) ---------- */
+    --ap-flavor-cocoa: #512c19;
+    --ap-flavor-cream: #f2e4c8;
+    --ap-flavor-caramel: #c98a5e;
+    --ap-flavor-oat: #d9c7a3;
+    --ap-flavor-berry: #b12b2e;
+    --ap-flavor-espresso: #1f1c14;
+    --ap-flavor-cocoa-text: var(--ap-text-inverse-primary);
+    --ap-flavor-cream-text: var(--ap-text-primary);
+    --ap-flavor-caramel-text: var(--ap-text-primary);
+    --ap-flavor-oat-text: var(--ap-text-primary);
+    --ap-flavor-berry-text: var(--ap-text-inverse-primary);
+    --ap-flavor-espresso-text: var(--ap-text-inverse-primary);
+
+    /* ---------- Dark overlays (charcoal) ---------- */
+    --ap-overlay-subtle-opacity: 0.2; /* decorative only */
+    --ap-overlay-medium-opacity: 0.4; /* decorative only */
+    --ap-overlay-text-safe-opacity: 0.6; /* enforced floor for text */
+    --ap-overlay-heavy-opacity: 0.8;
+    --ap-overlay-subtle: rgb(var(--ap-primitive-neutral-900-rgb) / var(--ap-overlay-subtle-opacity));
+    --ap-overlay-medium: rgb(var(--ap-primitive-neutral-900-rgb) / var(--ap-overlay-medium-opacity));
+    --ap-overlay-text-safe: rgb(var(--ap-primitive-neutral-900-rgb) / var(--ap-overlay-text-safe-opacity));
+    --ap-overlay-heavy: rgb(var(--ap-primitive-neutral-900-rgb) / var(--ap-overlay-heavy-opacity));
+
+    /* ---------- Scrims (text over imagery) ---------- */
+    /* Scrim/Image Bottom · 0% → 72% vertical, copy sits on the bottom edge */
+    --ap-scrim-image-bottom: linear-gradient(
+      180deg,
+      rgb(var(--ap-primitive-neutral-900-rgb) / 0) 0%,
+      rgb(var(--ap-primitive-neutral-900-rgb) / 0.72) 100%
+    );
+    /* Scrim/Card · 100% → 0% vertical, caption sits on the opaque edge */
+    --ap-scrim-card: linear-gradient(
+      180deg,
+      rgb(var(--ap-primitive-neutral-900-rgb) / 1) 0%,
+      rgb(var(--ap-primitive-neutral-900-rgb) / 0) 100%
+    );
+    /* Scrim/Text Safe Flat · 60% flat wash */
+    --ap-scrim-text-safe-flat: var(--ap-overlay-text-safe);
+
+    /* ---------- Horizon hooks ---------- */
+    /* Focus: 2px ring in focus/ring-outer on light surfaces (base.css *:focus-visible). */
+    --ap-focus-ring: var(--ap-focus-ring-outer);
+    --focus-outline-width: var(--ap-focus-ring-width);
+  }
+{% endstyle %}

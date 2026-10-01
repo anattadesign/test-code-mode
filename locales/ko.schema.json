@@ -171,6 +171,8 @@
     "disclosures": "고지 사항"
   },
   "settings": {
+    "button_size": "버튼 크기",
+    "show_icon": "아이콘 표시",
     "autoplay": "자동 재생",
     "background": "배경",
     "border_radius": "모서리 반경",
@@ -586,6 +588,7 @@
     "title_preset": "제목 사전 설정"
   },
   "options": {
+    "dark": "어두운",
     "apple": "Apple",
     "arrow": "화살표",
     "banana": "바나나",

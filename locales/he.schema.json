@@ -406,6 +406,7 @@
     "comparison_slider": "מחוון השוואה"
   },
   "options": {
+    "dark": "כהה",
     "above_carousel": "מעל הקרוסלה",
     "accent": "הדגשה",
     "all": "הכול",
@@ -688,6 +689,8 @@
     "direction_top_start": "למעלה, התחלה"
   },
   "settings": {
+    "button_size": "גודל לחצן",
+    "show_icon": "הצג סמל",
     "accordion": "אקורדיון",
     "account": "חשבון",
     "actions_display_style": "סגנון תפריט",

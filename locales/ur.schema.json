@@ -406,6 +406,7 @@
     "comparison_slider": "موازنہ کرنے والا سلائیڈر"
   },
   "options": {
+    "dark": "گہرا",
     "above_carousel": "کیرول کے اوپر",
     "accent": "ایکسنٹ",
     "all": "سبھی",
@@ -688,6 +689,8 @@
     "below_media": "میڈیا کے نیچے"
   },
   "settings": {
+    "button_size": "بٹن کا سائز",
+    "show_icon": "آئیکن دکھائیں",
     "accordion": "ایکارڈین",
     "account": "اکاؤنٹ",
     "actions_display_style": "مینو کا اسٹائل",

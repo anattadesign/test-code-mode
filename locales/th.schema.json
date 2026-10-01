@@ -171,6 +171,8 @@
     "disclosures": "การเปิดเผยข้อมูล"
   },
   "settings": {
+    "button_size": "ขนาดปุ่ม",
+    "show_icon": "แสดงไอคอน",
     "alignment": "การจัดตำแหน่ง",
     "autoplay": "เล่นอัตโนมัติ",
     "background": "พื้นหลัง",
@@ -586,6 +588,7 @@
     "title_preset": "พรีเซ็ตชื่อ"
   },
   "options": {
+    "dark": "มืด",
     "apple": "Apple",
     "arrow": "ลูกศร",
     "auto": "อัตโนมัติ",

@@ -171,6 +171,8 @@
     "disclosures": "Toelichtingen"
   },
   "settings": {
+    "button_size": "Knopgrootte",
+    "show_icon": "Pictogram weergeven",
     "autoplay": "Automatisch afspelen",
     "background": "Achtergrond",
     "border_radius": "Hoekradius",
@@ -586,6 +588,7 @@
     "title_preset": "Titelvoorinstelling"
   },
   "options": {
+    "dark": "Donker",
     "apple": "Apple",
     "arrow": "Pijl",
     "banana": "Banaan",

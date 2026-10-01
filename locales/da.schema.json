@@ -171,6 +171,8 @@
     "disclosures": "Oplysninger"
   },
   "settings": {
+    "button_size": "Knapstørrelse",
+    "show_icon": "Vis ikon",
     "alignment": "Justering",
     "autoplay": "Automatisk afspilning",
     "background": "Baggrund",
@@ -586,6 +588,7 @@
     "title_preset": "Forudindstilling for titel"
   },
   "options": {
+    "dark": "Mørk",
     "apple": "Apple",
     "arrow": "Pil",
     "auto": "Auto",

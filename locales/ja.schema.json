@@ -171,6 +171,8 @@
     "disclosures": "開示情報"
   },
   "settings": {
+    "button_size": "ボタンのサイズ",
+    "show_icon": "アイコンを表示",
     "alignment": "配置",
     "autoplay": "自動再生",
     "background": "背景",
@@ -586,6 +588,7 @@
     "title_preset": "タイトルプリセット"
   },
   "options": {
+    "dark": "ダーク",
     "apple": "Apple",
     "arrow": "矢印",
     "auto": "自動",

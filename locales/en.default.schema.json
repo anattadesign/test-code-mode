@@ -481,6 +481,7 @@
     "cover": "Cover",
     "crop_to_fit": "Crop to fit",
     "custom": "Custom",
+    "dark": "Dark",
     // Icon option representing dairy products
     "dairy": "Dairy",
     // Icon option for dietary restriction indication
@@ -1099,6 +1100,7 @@
     "show_swatch_label": "Text labels for swatches",
     "show_tax_info": "Tax information",
     // Font size or element dimensions setting
+    "show_icon": "Show icon",
     "size": "Size",
     "skus": "SKUs",
     "size_mobile": "Mobile size",
@@ -1114,6 +1116,7 @@
     "sticky_header": "Sticky header",
     // Icon line thickness setting label
     "stroke": "Stroke",
+    "button_size": "Button size",
     "button_style": "Button style",
     "selected_button_style": "Selected button style",
     "input_style": "Input style",

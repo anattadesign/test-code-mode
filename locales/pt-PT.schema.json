@@ -171,6 +171,8 @@
     "disclosures": "Divulgações"
   },
   "settings": {
+    "button_size": "Tamanho do botão",
+    "show_icon": "Mostrar ícone",
     "alignment": "Alinhamento",
     "autoplay": "Reprodução automática",
     "background": "Fundo",
@@ -586,6 +588,7 @@
     "title_preset": "Predefinição do título"
   },
   "options": {
+    "dark": "Escuro",
     "apple": "Maçã",
     "arrow": "Seta",
     "auto": "Automático",

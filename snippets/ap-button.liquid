@@ -1,0 +1,92 @@
+{%- doc -%}
+  AP-51 · Ascent Design System — Button component.
+  Renders one button from the Figma component set (Buttons › Button, 2077:130).
+  Styles live in assets/ap-buttons.css.
+
+  @param {string} label - Visible label
+  @param {string} [link] - URL. Without it the button renders as a disabled link,
+    unless `tag` is 'button'.
+  @param {string} [style] - 'primary' (default), 'secondary', 'tertiary', 'dark',
+    or any raw Horizon class such as 'button-unstyled' / 'button-custom'
+  @param {string} [size] - 'small', 'medium' (default) or 'large'
+  @param {boolean} [show_icon] - Show the trailing arrow icon (default false)
+  @param {string} [tag] - 'a' (default) or 'button'
+  @param {string} [type] - Button type attribute when tag is 'button' (default 'button')
+  @param {boolean} [disabled] - Render the disabled state
+  @param {boolean} [new_tab] - Open the link in a new tab
+  @param {string} [class] - Extra classes
+  @param {string} [attributes] - Extra raw attributes (e.g. block.shopify_attributes)
+  @param {string} [inline_style] - Value for the style attribute
+
+  @example
+  {% render 'ap-button', label: 'Shop protein', link: routes.all_products_collection_url, style: 'primary', size: 'large', show_icon: true %}
+  {% render 'ap-button', label: 'Add to cart', tag: 'button', type: 'submit', style: 'dark' %}
+{%- enddoc -%}
+
+{%- liquid
+  case style
+    when 'secondary', 'button-secondary'
+      assign style_class = 'button-secondary'
+    when 'tertiary', 'button-tertiary'
+      assign style_class = 'button-tertiary'
+    when 'dark', 'button-dark'
+      assign style_class = 'button-dark'
+    when blank, 'primary', 'button'
+      assign style_class = 'button'
+    else
+      assign style_class = style
+  endcase
+
+  case size
+    when 'small', 'sm'
+      assign size_class = 'button--sm'
+    when 'large', 'lg'
+      assign size_class = 'button--lg'
+    else
+      assign size_class = 'button--md'
+  endcase
+
+  assign element = tag | default: 'a'
+  if element != 'button'
+    assign element = 'a'
+  endif
+
+  assign has_icon = false
+  if show_icon and style_class != 'button-unstyled'
+    assign has_icon = true
+  endif
+-%}
+
+<{{ element }}
+  {% if element == 'button' %}
+    type="{{ type | default: 'button' }}"
+    {% if disabled %}
+      disabled
+    {% endif %}
+  {% elsif link == blank or disabled %}
+    role="link"
+    aria-disabled="true"
+  {% else %}
+    href="{{ link }}"
+    {% if new_tab %}
+      target="_blank"
+      rel="noopener noreferrer"
+    {% endif %}
+  {% endif %}
+  class="{{ style_class }} {{ size_class }}{% if has_icon %} button--icon{% endif %}{% if class != blank %} {{ class }}{% endif %}"
+  {% if inline_style != blank %}
+    style="{{ inline_style }}"
+  {% endif %}
+  {{ attributes }}
+>
+  {%- if has_icon -%}
+    <span class="button__label">{{ label }}</span>
+    <span class="button__icon" aria-hidden="true">
+      {%- render 'ap-button-icon' -%}
+    </span>
+  {%- elsif style_class == 'button-tertiary' -%}
+    <span class="button__label">{{ label }}</span>
+  {%- else -%}
+    {{ label }}
+  {%- endif -%}
+</{{ element }}>

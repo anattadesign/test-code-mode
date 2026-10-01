@@ -171,6 +171,8 @@
     "disclosures": "Informacje prawne"
   },
   "settings": {
+    "button_size": "Rozmiar przycisku",
+    "show_icon": "Pokaż ikonę",
     "autoplay": "Autoodtwarzanie",
     "background": "Tło",
     "border_radius": "Promień narożnika",
@@ -586,6 +588,7 @@
     "title_preset": "Gotowe ustawienie tytułu"
   },
   "options": {
+    "dark": "Ciemny",
     "apple": "Apple",
     "arrow": "Strzałka",
     "banana": "Banan",
