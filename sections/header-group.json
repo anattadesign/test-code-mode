@@ -72,7 +72,8 @@
             "navigation_bar": false,
             "drawer_accordion": false,
             "drawer_accordion_expand_first": false,
-            "drawer_dividers": false
+            "drawer_dividers": false,
+            "background_color": "#ffffff"
           },
           "blocks": {
             "shop_panel": {
@@ -469,7 +470,12 @@
         "search_display": "field",
         "actions_display_style": "icon",
         "home_inverse_logo": true,
-        "text_color_transparent_home": "#FFFFFF"
+        "text_color_transparent_home": "#FFFFFF",
+        "floating_header": true,
+        "floating_inset": 64,
+        "floating_inset_mobile": 12,
+        "floating_offset": 16,
+        "floating_background": "rgba(248, 248, 248, 0.92)"
       }
     }
   },
