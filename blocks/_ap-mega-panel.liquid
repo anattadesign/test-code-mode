@@ -1,0 +1,125 @@
+{%- doc -%}
+  AP-56 · Mega menu panel. Child of the header menu block (`_header-menu`).
+
+  Attaches to the top-level menu item whose title matches the `menu_item` setting and
+  replaces that item's dropdown on desktop and its screen in the mobile drawer. The
+  header menu block renders all panels once, then cuts each one out by the HTML
+  comment markers below, so the markers must stay around the panel markup.
+{%- enddoc -%}
+
+{%- liquid
+  assign handle = block.settings.menu_item | handleize
+  if handle == blank
+    assign handle = block.id
+  endif
+-%}
+{%- if block.settings.mobile_expanded -%}<!--ap-mega-expanded:{{ handle }}-->{%- endif -%}
+<!--ap-mega:{{ handle }}-->
+<div
+  class="ap-mega-panel"
+  style="--ap-mega-gap: {{ block.settings.gap }}px; --ap-mega-gap-mobile: {{ block.settings.gap_mobile }}px;"
+  data-ap-mega-panel="{{ handle }}"
+  {{ block.shopify_attributes }}
+>
+  {% content_for 'blocks' %}
+</div>
+<!--/ap-mega:{{ handle }}-->
+
+{% stylesheet %}
+  .ap-mega-panel {
+    display: flex;
+    align-items: stretch;
+    gap: var(--ap-mega-gap, 2rem);
+    width: 100%;
+    color: var(--ap-text-primary, var(--color-foreground));
+    text-align: start;
+    white-space: normal;
+  }
+
+  /* Promo cards sit at the far end of the panel (Figma: Membership panel). */
+  .ap-mega-panel > .ap-offer-card {
+    flex: 0 0 var(--ap-offer-card-width, 17.25rem);
+    margin-inline-start: auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ap-mega-panel {
+      flex-direction: column;
+      gap: var(--ap-mega-gap-mobile, 0.75rem);
+    }
+
+    .ap-mega-panel > .ap-offer-card {
+      flex: none;
+      margin-inline-start: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Mega menu panel",
+  "tag": null,
+  "blocks": [
+    { "type": "_ap-mega-column" },
+    { "type": "ap-offer-card" },
+    { "type": "ap-editorial-card" }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "menu_item",
+      "label": "Menu item",
+      "default": "Shop",
+      "info": "Title of the top-level menu item that opens this panel, e.g. Shop. It replaces that item's default dropdown."
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_expanded",
+      "label": "Show open in the mobile menu",
+      "default": false,
+      "info": "Shows this panel at the top of the mobile menu instead of behind a link. Use it on one panel only."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between columns",
+      "min": 0,
+      "max": 96,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap between columns (mobile)",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    }
+  ],
+  "presets": [
+    {
+      "name": "Mega menu panel",
+      "blocks": {
+        "links": {
+          "type": "_ap-mega-column",
+          "blocks": {
+            "link_1": { "type": "ap-media-link" },
+            "link_2": { "type": "ap-media-link" },
+            "link_3": { "type": "ap-media-link" }
+          },
+          "block_order": ["link_1", "link_2", "link_3"]
+        }
+      },
+      "block_order": ["links"]
+    }
+  ]
+}
+{% endschema %}
