@@ -18,6 +18,12 @@
     render 'slideshow-styles'
   endif
 
+  # AP-54: desktop search can render as a pill field (label + icon) instead of an icon.
+  assign search_field = false
+  if section.settings.search_display == 'field'
+    assign search_field = true
+  endif
+
   if section.settings.enable_transparent_header_home and template.name == 'index'
     assign transparent = 'always'
     assign transparent_text_color_setting = section.settings.text_color_transparent_home
@@ -134,7 +140,7 @@
     endif
   endif
   capture search
-    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
+    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style, field: search_field
   endcapture
 
   # Skip drawer search under specific conditions:
@@ -1369,6 +1375,24 @@
         }
       ],
       "default": "top",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "select",
+      "id": "search_display",
+      "label": "Search style (desktop)",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "field",
+          "label": "Search field"
+        }
+      ],
+      "default": "icon",
+      "info": "Search field shows a pill with a label and icon. Mobile always shows the icon.",
       "visible_if": "{{ section.settings.show_search }}"
     },
     {
