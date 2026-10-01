@@ -1,0 +1,642 @@
+{%- comment -%}
+  AP-15 · Ascent homepage hero (desktop + mobile).
+
+  Figma: Hero - 1440 (811:13102) · Hero - 390 (811:12815).
+
+  Full-bleed image with a scrim, content anchored to the bottom-left. Everything
+  inside the content area is a theme block, so merchants can add, remove and
+  reorder the headline, buttons and review badge in the theme editor:
+    - ap-headline      Headline (bold + regular mix)
+    - ap-button-group  Buttons (holds Button blocks)
+    - ap-review-badge  Stars + review count
+  Any other theme block (@theme) or app block (@app) can be added too.
+
+  Section-level settings only cover what belongs to the whole banner: media,
+  height, content position/spacing, text colour and the scrim.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  assign image = s.image
+  assign image_mobile = s.image_mobile | default: s.image
+
+  assign fetch_priority = 'auto'
+  assign loading = 'lazy'
+  if section.index <= 2
+    assign fetch_priority = 'high'
+    assign loading = 'eager'
+  endif
+
+  assign widths = '750, 1100, 1500, 1780, 2000, 2560, 3000, 3840'
+  assign mobile_widths = '390, 600, 780, 1000, 1200'
+
+  # Scrim: one colour, faded to fully transparent for the gradients.
+  assign scrim_alpha = s.scrim_opacity | divided_by: 100.0
+  assign scrim_solid = s.scrim_color | color_modify: 'alpha', scrim_alpha
+  assign scrim_clear = s.scrim_color | color_modify: 'alpha', 0
+
+  case s.scrim_desktop
+    when 'left'
+      capture scrim_desktop
+        echo 'linear-gradient(90deg, ' | append: scrim_solid | append: ' 0%, ' | append: scrim_clear | append: ' ' | append: s.scrim_width | append: '%)'
+      endcapture
+    when 'bottom'
+      capture scrim_desktop
+        echo 'linear-gradient(180deg, ' | append: scrim_clear | append: ' 0%, ' | append: scrim_solid | append: ' 100%)'
+      endcapture
+    when 'full'
+      assign scrim_desktop = scrim_solid
+    else
+      assign scrim_desktop = 'none'
+  endcase
+
+  case s.scrim_mobile
+    when 'bottom'
+      capture scrim_mobile
+        echo 'linear-gradient(180deg, ' | append: scrim_clear | append: ' 0%, ' | append: scrim_solid | append: ' 100%)'
+      endcapture
+    when 'full'
+      assign scrim_mobile = scrim_solid
+    else
+      assign scrim_mobile = 'none'
+  endcase
+
+  case s.content_position
+    when 'center'
+      assign justify = 'center'
+    when 'right'
+      assign justify = 'flex-end'
+    else
+      assign justify = 'flex-start'
+  endcase
+
+  case s.content_vertical
+    when 'top'
+      assign align = 'flex-start'
+    when 'center'
+      assign align = 'center'
+    else
+      assign align = 'flex-end'
+  endcase
+
+  if s.content_alignment == 'center'
+    assign content_align = 'center'
+    assign text_align = 'center'
+  else
+    assign content_align = 'flex-start'
+    assign text_align = 'left'
+  endif
+
+  # Focal points set in the image picker drive object-position on each breakpoint.
+  assign focal = 'center'
+  assign focal_mobile = 'center'
+  if image != blank and image.presentation.focal_point != blank
+    assign focal = image.presentation.focal_point
+  endif
+  if image_mobile != blank and image_mobile.presentation.focal_point != blank
+    assign focal_mobile = image_mobile.presentation.focal_point
+  endif
+  assign image_style = '--ap-hero-focal: ' | append: focal | append: '; --ap-hero-focal-mobile: ' | append: focal_mobile | append: ';'
+-%}
+
+<div
+  class="ap-hero{% if s.fit_screen %} ap-hero--fit-screen{% endif %}"
+  style="
+    --ap-hero-height: {{ s.height }}px;
+    --ap-hero-height-mobile: {{ s.height_mobile }}px;
+    --ap-hero-text: {{ s.text_color }};
+    --ap-hero-background: {{ s.background_color }};
+    --ap-hero-scrim: {{ scrim_mobile }};
+    --ap-hero-scrim-desktop: {{ scrim_desktop }};
+    --ap-hero-justify: {{ justify }};
+    --ap-hero-align: {{ align }};
+    --ap-content-align: {{ content_align }};
+    --ap-text-align: {{ text_align }};
+    --ap-hero-content-width: {{ s.content_width }}px;
+    --ap-hero-gap: {{ s.gap_mobile }}px;
+    --ap-hero-gap-desktop: {{ s.gap }}px;
+    --ap-hero-padding-top: {{ s.padding_top_mobile }}px;
+    --ap-hero-padding-bottom: {{ s.padding_bottom_mobile }}px;
+    --ap-hero-padding-inline: {{ s.padding_inline_mobile }}px;
+    --ap-hero-padding-top-desktop: {{ s.padding_top }}px;
+    --ap-hero-padding-bottom-desktop: {{ s.padding_bottom }}px;
+    --ap-hero-padding-inline-desktop: {{ s.padding_inline }}px;
+  "
+>
+  <div class="ap-hero__media">
+    {%- if image != blank -%}
+      <picture>
+        {%- if s.image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {%- assign mw = mobile_widths | split: ', ' -%}
+              {%- for w in mw -%}
+                {{ image_mobile | image_url: width: w }} {{ w }}w{% unless forloop.last %}, {% endunless %}
+              {%- endfor -%}
+            "
+            sizes="100vw"
+            width="{{ image_mobile.width }}"
+            height="{{ image_mobile.height }}"
+          >
+        {%- endif -%}
+        {{
+          image
+          | image_url: width: 3840
+          | image_tag:
+            widths: widths,
+            sizes: '100vw',
+            alt: image.alt,
+            loading: loading,
+            fetchpriority: fetch_priority,
+            class: 'ap-hero__image',
+            style: image_style
+        }}
+      </picture>
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'ap-hero__image ap-hero__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  {%- if s.scrim_desktop != 'none' or s.scrim_mobile != 'none' -%}
+    <div class="ap-hero__scrim" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="ap-hero__inner">
+    <div class="ap-hero__content">
+      {%- content_for 'blocks' -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-hero {
+    /* Inside the hero, Ascent tokens that read "text/primary" (e.g. the tertiary
+       button) follow the hero text colour, so they stay legible on the image. */
+    --ap-text-primary: var(--ap-hero-text);
+    --color: var(--ap-hero-text);
+
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-block-size: var(--ap-hero-height-mobile);
+    overflow: hidden;
+    color: var(--ap-hero-text);
+    background-color: var(--ap-hero-background);
+  }
+
+  .ap-hero--fit-screen {
+    min-block-size: 100svh;
+  }
+
+  .ap-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .ap-hero__media picture {
+    display: contents;
+  }
+
+  .ap-hero__image {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: var(--ap-hero-focal-mobile, var(--ap-hero-focal, center));
+  }
+
+  .ap-hero__placeholder {
+    fill: rgb(255 255 255 / 0.12);
+    background-color: var(--ap-primitive-neutral-800, #414141);
+  }
+
+  .ap-hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--ap-hero-scrim);
+  }
+
+  .ap-hero__inner {
+    display: flex;
+    flex: 1 1 auto;
+    justify-content: var(--ap-hero-justify);
+    align-items: var(--ap-hero-align);
+    padding-block: var(--ap-hero-padding-top) var(--ap-hero-padding-bottom);
+    padding-inline: max(var(--ap-hero-padding-inline), var(--safe-area-inset-left, 0px))
+      max(var(--ap-hero-padding-inline), var(--safe-area-inset-right, 0px));
+  }
+
+  .ap-hero__content {
+    display: flex;
+    flex-direction: column;
+    align-items: var(--ap-content-align);
+    gap: var(--ap-hero-gap);
+    inline-size: 100%;
+    max-inline-size: var(--ap-hero-content-width);
+    text-align: var(--ap-text-align);
+  }
+
+  /* Blocks are direct children; keep long words from overflowing on small screens. */
+  .ap-hero__content > * {
+    max-inline-size: 100%;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-hero {
+      min-block-size: var(--ap-hero-height);
+    }
+
+    .ap-hero--fit-screen {
+      min-block-size: 100svh;
+    }
+
+    .ap-hero__image {
+      object-position: var(--ap-hero-focal, center);
+    }
+
+    .ap-hero__scrim {
+      background: var(--ap-hero-scrim-desktop);
+    }
+
+    .ap-hero__inner {
+      padding-block: var(--ap-hero-padding-top-desktop) var(--ap-hero-padding-bottom-desktop);
+      padding-inline: var(--ap-hero-padding-inline-desktop);
+    }
+
+    .ap-hero__content {
+      gap: var(--ap-hero-gap-desktop);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Hero (Ascent)",
+  "tag": "section",
+  "class": "section-wrapper ap-hero-section",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Recommended 2880 × 1440 px. Set a focal point to control cropping."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image",
+      "info": "Optional. Recommended 780 × 1360 px. Falls back to the desktop image."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Shown while the image loads or when no image is set.",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "Size"
+    },
+    {
+      "type": "checkbox",
+      "id": "fit_screen",
+      "label": "Fill screen height",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Desktop height",
+      "min": 400,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 720,
+      "visible_if": "{{ section.settings.fit_screen == false }}"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Mobile height",
+      "min": 400,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 680,
+      "visible_if": "{{ section.settings.fit_screen == false }}"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Desktop position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_vertical",
+      "label": "Vertical position",
+      "options": [
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content max width",
+      "min": 320,
+      "max": 1000,
+      "step": 10,
+      "unit": "px",
+      "default": 590
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Default for every block. Headline and review badge can override it.",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Scrim"
+    },
+    {
+      "type": "paragraph",
+      "content": "Darkens the image behind the copy. Keep opacity at 60% or higher wherever text sits on the image (WCAG 2.2 AA)."
+    },
+    {
+      "type": "select",
+      "id": "scrim_desktop",
+      "label": "Desktop scrim",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left gradient"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom gradient"
+        },
+        {
+          "value": "full",
+          "label": "Full overlay"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "scrim_width",
+      "label": "Desktop gradient width",
+      "min": 20,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 51,
+      "visible_if": "{{ section.settings.scrim_desktop == 'left' }}"
+    },
+    {
+      "type": "select",
+      "id": "scrim_mobile",
+      "label": "Mobile scrim",
+      "options": [
+        {
+          "value": "bottom",
+          "label": "Bottom gradient"
+        },
+        {
+          "value": "full",
+          "label": "Full overlay"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "color",
+      "id": "scrim_color",
+      "label": "Scrim color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "Scrim opacity",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 72
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "label": "Side padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "info": "Leave room for a transparent header.",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Side padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero (Ascent)",
+      "category": "Banners",
+      "blocks": {
+        "headline": {
+          "type": "ap-headline",
+          "settings": {
+            "text": "<strong>Clean, honest fuel</strong> for whatever moves you.",
+            "tag": "h1",
+            "preset": "h1"
+          }
+        },
+        "buttons": {
+          "type": "ap-button-group",
+          "blocks": {
+            "primary": {
+              "type": "button",
+              "settings": {
+                "label": "Shop all",
+                "link": "shopify://collections/all",
+                "style_class": "button",
+                "button_size": "large",
+                "show_icon": true
+              }
+            },
+            "secondary": {
+              "type": "button",
+              "settings": {
+                "label": "See the science",
+                "link": "shopify://blogs/news",
+                "style_class": "button-tertiary",
+                "button_size": "small",
+                "show_icon": true
+              }
+            }
+          },
+          "block_order": ["primary", "secondary"]
+        },
+        "reviews": {
+          "type": "ap-review-badge",
+          "settings": {
+            "label": "12,000+ five star reviews"
+          }
+        }
+      },
+      "block_order": ["headline", "buttons", "reviews"]
+    }
+  ]
+}
+{% endschema %}

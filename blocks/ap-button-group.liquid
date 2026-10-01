@@ -1,0 +1,192 @@
+{%- doc -%}
+  AP-15 · Button group block (Ascent).
+
+  Lays out Button blocks side by side or stacked, with separate desktop and mobile
+  direction and spacing (Figma Hero CTAs 811:13107 desktop row / 811:12821 mobile
+  stack). Buttons keep the AP-51 Button block settings (style, size, icon).
+  Reusable in any section that accepts @theme blocks.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  if bs.vertical_alignment == 'start'
+    assign cross = 'flex-start'
+  else
+    assign cross = 'center'
+  endif
+-%}
+
+<div
+  class="ap-button-group ap-button-group--{{ bs.direction_mobile }} ap-button-group--desktop-{{ bs.direction }}"
+  style="
+    --ap-button-group-gap: {{ bs.gap_mobile }}px;
+    --ap-button-group-gap-desktop: {{ bs.gap }}px;
+    --ap-button-group-cross: {{ cross }};
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- content_for 'blocks' -%}
+</div>
+
+{% stylesheet %}
+  .ap-button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--ap-button-group-gap);
+    max-inline-size: 100%;
+  }
+
+  .ap-button-group--row {
+    flex-direction: row;
+    align-items: var(--ap-button-group-cross);
+    justify-content: var(--ap-content-align, flex-start);
+  }
+
+  .ap-button-group--column {
+    flex-direction: column;
+    align-items: var(--ap-content-align, flex-start);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-button-group {
+      gap: var(--ap-button-group-gap-desktop);
+    }
+
+    .ap-button-group--desktop-row {
+      flex-direction: row;
+      align-items: var(--ap-button-group-cross);
+      justify-content: var(--ap-content-align, flex-start);
+    }
+
+    .ap-button-group--desktop-column {
+      flex-direction: column;
+      align-items: var(--ap-content-align, flex-start);
+      justify-content: flex-start;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Buttons",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "button"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "row",
+          "label": "Horizontal"
+        },
+        {
+          "value": "column",
+          "label": "Vertical"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "select",
+      "id": "direction_mobile",
+      "label": "Direction",
+      "options": [
+        {
+          "value": "row",
+          "label": "Horizontal"
+        },
+        {
+          "value": "column",
+          "label": "Vertical"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Alignment"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Align buttons in a row",
+      "options": [
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "start",
+          "label": "Top"
+        }
+      ],
+      "default": "center"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Buttons",
+      "category": "Links",
+      "blocks": {
+        "primary": {
+          "type": "button",
+          "settings": {
+            "label": "Shop all",
+            "link": "shopify://collections/all",
+            "style_class": "button",
+            "button_size": "large",
+            "show_icon": true
+          }
+        },
+        "secondary": {
+          "type": "button",
+          "settings": {
+            "label": "Learn more",
+            "style_class": "button-tertiary",
+            "button_size": "small",
+            "show_icon": true
+          }
+        }
+      },
+      "block_order": ["primary", "secondary"]
+    }
+  ]
+}
+{% endschema %}

@@ -8,87 +8,109 @@
  * ------------------------------------------------------------
  */{
   "sections": {
-    "hero_jVaWmY": {
-      "type": "hero",
+    "ap_hero": {
+      "type": "ap-hero",
       "blocks": {
-        "text_YLPk4p": {
-          "type": "text",
-          "name": "t:names.heading",
+        "headline": {
+          "type": "ap-headline",
           "settings": {
-            "text": "<p>Browse our latest products</p>",
-            "text_color": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "font_size": "1rem",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "text": "<strong>Clean, honest fuel</strong> for whatever moves you.",
+            "tag": "h1",
+            "preset": "h1",
+            "regular_weight": "400",
+            "balance": false,
+            "max_width": 0
+          }
         },
-        "button_H9gpTf": {
-          "type": "button",
-          "name": "t:names.button",
+        "buttons": {
+          "type": "ap-button-group",
           "settings": {
-            "label": "Shop all",
-            "link": "shopify://collections/all",
-            "open_in_new_tab": false,
-            "style_class": "button-custom",
-            "custom_button_background": "rgba(0,0,0,0)",
-            "custom_button_text": "{{ settings.color_palette.background }}",
-            "custom_button_border": "{{ settings.color_palette.background }}",
-            "width": "fit-content",
-            "custom_width": 100,
-            "width_mobile": "fit-content",
-            "custom_width_mobile": 100
+            "direction": "row",
+            "gap": 24,
+            "direction_mobile": "column",
+            "gap_mobile": 16,
+            "vertical_alignment": "center"
           },
-          "blocks": {}
+          "blocks": {
+            "primary": {
+              "type": "button",
+              "settings": {
+                "label": "Shop all",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button",
+                "button_size": "large",
+                "show_icon": true,
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              }
+            },
+            "secondary": {
+              "type": "button",
+              "settings": {
+                "label": "See the science",
+                "link": "shopify://blogs/news",
+                "open_in_new_tab": false,
+                "style_class": "button-tertiary",
+                "button_size": "small",
+                "show_icon": true,
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100
+              }
+            }
+          },
+          "block_order": [
+            "primary",
+            "secondary"
+          ]
+        },
+        "reviews": {
+          "type": "ap-review-badge",
+          "settings": {
+            "rating": 5,
+            "label": "12,000+ five star reviews",
+            "uppercase": true,
+            "link": "",
+            "show_divider": true,
+            "star_color": "#FBEC00",
+            "space_above": 80,
+            "space_above_mobile": 24
+          }
         }
       },
       "block_order": [
-        "text_YLPk4p",
-        "button_H9gpTf"
+        "headline",
+        "buttons",
+        "reviews"
       ],
-      "name": "t:names.hero",
+      "name": "Hero (Ascent)",
       "settings": {
-        "media_type_1": "image",
-        "media_type_2": "image",
-        "stack_media_on_mobile": false,
-        "custom_mobile_media": false,
-        "media_type_1_mobile": "image",
-        "media_type_2_mobile": "image",
-        "open_in_new_tab": false,
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "space-between",
-        "vertical_alignment": "flex-end",
-        "align_baseline": true,
-        "horizontal_alignment_flex_direction_column": "center",
-        "vertical_alignment_flex_direction_column": "flex-end",
-        "gap": 24,
-        "section_width": "page-width",
-        "section_height": "medium",
-        "section_height_custom": 50,
-        "background_color": "rgba(0,0,0,0)",
-        "toggle_overlay": true,
-        "overlay_color": "#12121266",
-        "overlay_style": "solid",
-        "gradient_direction": "to bottom",
-        "blurred_reflection": false,
-        "reflection_opacity": 75,
-        "padding-block-start": 100,
-        "padding-block-end": 72
+        "background_color": "#1A1A1A",
+        "fit_screen": false,
+        "height": 720,
+        "height_mobile": 680,
+        "content_position": "left",
+        "content_vertical": "bottom",
+        "content_alignment": "left",
+        "content_width": 590,
+        "text_color": "#FFFFFF",
+        "scrim_desktop": "left",
+        "scrim_width": 51,
+        "scrim_mobile": "bottom",
+        "scrim_color": "#1A1A1A",
+        "scrim_opacity": 72,
+        "gap": 40,
+        "padding_inline": 64,
+        "padding_top": 120,
+        "padding_bottom": 80,
+        "gap_mobile": 20,
+        "padding_inline_mobile": 16,
+        "padding_top_mobile": 100,
+        "padding_bottom_mobile": 40
       }
     },
     "product_list_fa6P9H": {
@@ -279,7 +301,7 @@
     }
   },
   "order": [
-    "hero_jVaWmY",
+    "ap_hero",
     "product_list_fa6P9H"
   ]
 }

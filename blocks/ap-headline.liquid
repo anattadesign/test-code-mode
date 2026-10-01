@@ -1,0 +1,207 @@
+{%- doc -%}
+  AP-15 · Headline block (Ascent).
+
+  A heading whose bold words use the heading font's bold weight and the rest a
+  lighter weight — the "bold + regular" headline from the Ascent hero
+  (Figma 811:13106 / 811:12820). Merchants bold words with the editor's B button.
+
+  Size, line height and letter spacing come from the AP-49 type presets
+  (H1–H6, Display), so the block follows Theme settings › Typography.
+  Reusable in any section that accepts @theme blocks.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign preset = bs.preset | default: 'h1'
+  if preset == 'display'
+    assign preset = 'ap-display'
+  endif
+
+  assign tag = bs.tag | default: 'h2'
+
+  # Load the lighter weight of the heading font (only bold ships by default).
+  assign regular_font = null
+  if bs.regular_weight != 'inherit'
+    assign regular_font = settings.type_heading_font | font_modify: 'weight', bs.regular_weight
+  endif
+-%}
+
+{%- if regular_font != blank -%}
+  {% style %}
+    {{ regular_font | font_face: font_display: 'swap' }}
+  {% endstyle %}
+{%- endif -%}
+
+{%- if bs.text != blank -%}
+  <{{ tag }}
+    class="ap-headline{% if bs.balance %} ap-headline--balance{% endif %}"
+    style="
+      font-family: var(--font-{{ preset }}--family);
+      font-style: var(--font-{{ preset }}--style);
+      font-size: var(--font-{{ preset }}--size);
+      line-height: var(--font-{{ preset }}--line-height);
+      letter-spacing: var(--font-{{ preset }}--letter-spacing);
+      text-transform: var(--font-{{ preset }}--case);
+      {% if regular_font != blank %}--ap-headline-weight: {{ regular_font.weight }};{% endif %}
+      --ap-headline-bold: var(--font-{{ preset }}--weight, var(--font-heading--weight));
+      {% if bs.text_color != blank and bs.text_color.alpha != 0 %}--color: {{ bs.text_color }};{% endif %}
+      {% if bs.max_width > 0 %}max-inline-size: {{ bs.max_width }}ch;{% endif %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {{- bs.text -}}
+  </{{ tag }}>
+{%- endif -%}
+
+{% stylesheet %}
+  .ap-headline {
+    margin: 0;
+    color: var(--color, currentcolor);
+    font-weight: var(--ap-headline-weight, var(--ap-headline-bold));
+    text-align: var(--ap-text-align, inherit);
+    text-wrap: pretty;
+    overflow-wrap: break-word;
+  }
+
+  .ap-headline--balance {
+    text-wrap: balance;
+  }
+
+  .ap-headline :is(strong, b) {
+    font-weight: var(--ap-headline-bold);
+  }
+
+  .ap-headline a {
+    color: inherit;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Headline",
+  "tag": null,
+  "settings": [
+    {
+      "type": "inline_richtext",
+      "id": "text",
+      "label": "Text",
+      "info": "Bold words use the bold weight; everything else uses the regular weight below.",
+      "default": "<strong>Clean, honest fuel</strong> for whatever moves you."
+    },
+    {
+      "type": "select",
+      "id": "tag",
+      "label": "HTML tag",
+      "info": "Use H1 only once per page (e.g. the homepage hero).",
+      "options": [
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "p",
+          "label": "Paragraph"
+        }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "preset",
+      "label": "Size",
+      "options": [
+        {
+          "value": "display",
+          "label": "Display"
+        },
+        {
+          "value": "h1",
+          "label": "H1"
+        },
+        {
+          "value": "h2",
+          "label": "H2"
+        },
+        {
+          "value": "h3",
+          "label": "H3"
+        },
+        {
+          "value": "h4",
+          "label": "H4"
+        },
+        {
+          "value": "h5",
+          "label": "H5"
+        },
+        {
+          "value": "h6",
+          "label": "H6"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "select",
+      "id": "regular_weight",
+      "label": "Non-bold weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "inherit",
+          "label": "Same as bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "checkbox",
+      "id": "balance",
+      "label": "Balance line lengths",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "info": "In characters. 0 fills the available width.",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "ch",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Leave empty to use the section text color."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Headline",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}
