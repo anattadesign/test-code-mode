@@ -6,7 +6,8 @@
  * or related systems. Please exercise caution as any changes
  * made to this file may be overwritten.
  * ------------------------------------------------------------
- */{
+ */
+{
   "sections": {
     "ap_hero": {
       "type": "ap-hero",
@@ -19,8 +20,10 @@
             "preset": "h1",
             "regular_weight": "400",
             "balance": false,
-            "max_width": 0
-          }
+            "max_width": 0,
+            "text_color": ""
+          },
+          "blocks": {}
         },
         "buttons": {
           "type": "ap-button-group",
@@ -41,11 +44,16 @@
                 "style_class": "button",
                 "button_size": "large",
                 "show_icon": true,
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
                 "custom_width_mobile": 100
-              }
+              },
+              "blocks": {}
             },
             "secondary": {
               "type": "button",
@@ -56,11 +64,16 @@
                 "style_class": "button-tertiary",
                 "button_size": "small",
                 "show_icon": true,
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
                 "custom_width_mobile": 100
-              }
+              },
+              "blocks": {}
             }
           },
           "block_order": [
@@ -76,10 +89,12 @@
             "uppercase": true,
             "link": "",
             "show_divider": true,
-            "star_color": "#FBEC00",
+            "star_color": "#fbec00",
+            "text_color": "",
             "space_above": 80,
             "space_above_mobile": 24
-          }
+          },
+          "blocks": {}
         }
       },
       "block_order": [
@@ -89,7 +104,9 @@
       ],
       "name": "Hero (Ascent)",
       "settings": {
-        "background_color": "#1A1A1A",
+        "image": "shopify://shop_images/919c429518cad4938b9c8c999d5fada5bd9cca62.png",
+        "image_mobile": "shopify://shop_images/Hero_M_390.png",
+        "background_color": "#1a1a1a",
         "fit_screen": false,
         "height": 720,
         "height_mobile": 680,
@@ -97,11 +114,11 @@
         "content_vertical": "bottom",
         "content_alignment": "left",
         "content_width": 590,
-        "text_color": "#FFFFFF",
+        "text_color": "#ffffff",
         "scrim_desktop": "left",
         "scrim_width": 51,
         "scrim_mobile": "bottom",
-        "scrim_color": "#1A1A1A",
+        "scrim_color": "#1a1a1a",
         "scrim_opacity": 72,
         "gap": 40,
         "padding_inline": 64,
@@ -136,11 +153,13 @@
             "height": "fit",
             "custom_height": 100,
             "background_media": "none",
+            "background_color": "",
             "video_position": "cover",
             "background_image_position": "cover",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -158,10 +177,12 @@
                 "alignment": "left",
                 "type_preset": "h4",
                 "font": "var(--font-body--family)",
+                "font_size": "1rem",
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -179,6 +200,10 @@
                 "label": "View all",
                 "open_in_new_tab": false,
                 "style_class": "link",
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
                 "width": "fit-content",
                 "custom_width": 100,
                 "width_mobile": "fit-content",
@@ -198,9 +223,11 @@
           "static": true,
           "settings": {
             "product_card_gap": 4,
+            "background_color": "",
             "border": "none",
             "border_width": 1,
             "border_opacity": 100,
+            "border_color": "",
             "border_radius": 0,
             "padding-block-start": 0,
             "padding-block-end": 0,
@@ -216,6 +243,7 @@
                 "border": "none",
                 "border_width": 1,
                 "border_opacity": 100,
+                "border_color": "",
                 "border_radius": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -238,6 +266,7 @@
                 "letter_spacing": "normal",
                 "case": "none",
                 "wrap": "pretty",
+                "text_color": "",
                 "background": false,
                 "background_color": "#00000026",
                 "corner_radius": 0,
@@ -263,6 +292,7 @@
                 "line_height": "normal",
                 "letter_spacing": "normal",
                 "case": "none",
+                "text_color": "",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
