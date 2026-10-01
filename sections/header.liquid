@@ -18,6 +18,12 @@
     render 'slideshow-styles'
   endif
 
+  # AP-54: desktop search can render as a pill field (label + icon) instead of an icon.
+  assign search_field = false
+  if section.settings.search_display == 'field'
+    assign search_field = true
+  endif
+
   if section.settings.enable_transparent_header_home and template.name == 'index'
     assign transparent = 'always'
     assign transparent_text_color_setting = section.settings.text_color_transparent_home
@@ -37,6 +43,12 @@
 
   if transparent and sticky
     assign transparent = 'not-sticky'
+  endif
+
+  # AP-56: the floating bar has its own light background, so it keeps the regular
+  # (dark) text colour over the hero instead of the transparent-header text colour.
+  if section.settings.floating_header
+    assign transparent_text_color_setting = settings.page_text_color
   endif
 
   assign text_color_transparent = transparent_text_color_setting | default: settings.page_text_color
@@ -134,7 +146,7 @@
     endif
   endif
   capture search
-    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style
+    render 'search', style: search_style, class: search_class, display_style: section.settings.actions_display_style, field: search_field
   endcapture
 
   # Skip drawer search under specific conditions:
@@ -359,7 +371,16 @@
   {% if has_second_row == false %}
     data-header-rows="single"
   {% endif %}
+  {% if section.settings.floating_header %}
+    data-floating
+  {% endif %}
   style="
+    {% if section.settings.floating_header %}
+      --ap-float-inset: {{ section.settings.floating_inset }}px;
+      --ap-float-inset-mobile: {{ section.settings.floating_inset_mobile }}px;
+      --ap-float-offset: {{ section.settings.floating_offset }}px;
+      --ap-float-bg: {{ section.settings.floating_background }};
+    {% endif %}
     --color-background-top-row: rgba({{ section.settings.background_color_top.rgba | default: settings.page_background_color.rgba }});
     --color-background-bottom-row: rgba({{ section.settings.background_color_bottom.rgba | default: settings.page_background_color.rgba }});
     {% if transparent and text_color_transparent != blank %}
@@ -376,6 +397,9 @@
       --header-actions-font-family: var(--font-{{ section.settings.actions_font | default: 'heading' }}--family);
       --header-actions-font-weight: var(--font-{{ section.settings.actions_font | default: 'heading' }}--weight);
       --header-actions-text-case: {{ section.settings.actions_text_case | default: 'none' }};
+    {% endif %}
+    {% if section.settings.floating_header %}
+      --color-background-top-row: {{ section.settings.floating_background }};
     {% endif %}
   "
 >
@@ -1232,6 +1256,84 @@
     font-family: var(--menu-localization-font);
     font-size: var(--menu-localization-font-size);
   }
+
+  /* =========================================================================
+     AP-56 · Floating header (Figma: Header 1280:18159 desktop, 1270:8936 mobile)
+     Desktop: 64px pill, 64px from each edge, 16px under the announcement bar.
+     Mobile: 44px pill, 12px from each edge, 16px under the announcement bar.
+     The header element is the pill; its underlays carry the radius, so an open
+     dropdown grows out of the bar as one rounded card.
+     ========================================================================= */
+  #header-component[data-floating] {
+    --ap-float-radius: 2rem;
+    --ap-float-inset-current: var(--ap-float-inset-mobile, 12px);
+    --page-margin: 1rem;
+    --header-padding: 0.375rem;
+
+    /* Light bar over any background: regular logo, opaque-ish underlay at rest */
+    --header-logo-display: block;
+    --header-logo-inverse-display: none;
+    --closed-underlay-height: 100%;
+
+    margin: var(--ap-float-offset, 16px) var(--ap-float-inset-current) 0;
+    border-radius: var(--ap-float-radius);
+
+    @media screen and (min-width: 750px) {
+      --ap-float-inset-current: var(--ap-float-inset, 64px);
+      --page-margin: 1.75rem;
+      --header-padding: 0.75rem;
+    }
+  }
+
+  /* Transparent (overlay) variant is absolutely positioned: inset it the same way. */
+  #header-component[data-floating][transparent] {
+    margin: 0;
+    top: var(--ap-float-offset, 16px);
+    inset-inline: var(--ap-float-inset-current);
+  }
+
+  #header-component[data-floating] .header__row,
+  #header-component[data-floating] .header__columns {
+    border-radius: inherit;
+  }
+
+  #header-component[data-floating] .header__row--top .header__columns {
+    min-height: 2.75rem;
+    align-items: center;
+
+    @media screen and (min-width: 750px) {
+      min-height: 4rem;
+    }
+  }
+
+  #header-component[data-floating] :is(.header__underlay-closed, .header__underlay-open) {
+    border-radius: var(--ap-float-radius);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+  }
+
+  #header-component[data-floating] .header__underlay-open::after {
+    border-radius: inherit;
+  }
+
+  /* The open card is one shape: no seam between the bar and the dropdown. */
+  #header-component[data-floating] .header__underlay-open {
+    background: linear-gradient(
+      var(--color-background-top-row) 0 var(--header-height),
+      var(--color-submenu) var(--header-height) 100%
+    );
+  }
+
+  /* Dropdown content sits inside the card's rounded bottom edge. */
+  #header-component[data-floating] .menu-list__submenu {
+    --submenu-padding-block-start: 1.5rem;
+    --submenu-padding-block-end: 2rem;
+  }
+
+  /* Sticky, non-overlay pages: the wrapper holds the space; the page shows around the pill. */
+  #header-group:has(#header-component[data-floating]) .header-section {
+    background: transparent;
+  }
 {% endstylesheet %}
 
 {% unless request.design_mode %}
@@ -1369,6 +1471,24 @@
         }
       ],
       "default": "top",
+      "visible_if": "{{ section.settings.show_search }}"
+    },
+    {
+      "type": "select",
+      "id": "search_display",
+      "label": "Search style (desktop)",
+      "options": [
+        {
+          "value": "icon",
+          "label": "Icon"
+        },
+        {
+          "value": "field",
+          "label": "Search field"
+        }
+      ],
+      "default": "icon",
+      "info": "Search field shows a pill with a label and icon. Mobile always shows the icon.",
       "visible_if": "{{ section.settings.show_search }}"
     },
     {
@@ -1537,6 +1657,59 @@
         }
       ],
       "default": "always"
+    },
+    {
+      "type": "header",
+      "content": "Floating header"
+    },
+    {
+      "type": "checkbox",
+      "id": "floating_header",
+      "label": "Floating header",
+      "default": false,
+      "info": "Shows the header as a rounded bar inset from the page edges. Open menus join it as one rounded card."
+    },
+    {
+      "type": "range",
+      "id": "floating_inset",
+      "label": "Side spacing",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64,
+      "visible_if": "{{ section.settings.floating_header }}"
+    },
+    {
+      "type": "range",
+      "id": "floating_inset_mobile",
+      "label": "Side spacing (mobile)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ section.settings.floating_header }}"
+    },
+    {
+      "type": "range",
+      "id": "floating_offset",
+      "label": "Top spacing",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.floating_header }}"
+    },
+    {
+      "type": "color",
+      "id": "floating_background",
+      "label": "Bar background",
+      "alpha": true,
+      "default": "rgba(248, 248, 248, 0.92)",
+      "info": "Use some transparency to let the page blur through.",
+      "visible_if": "{{ section.settings.floating_header }}"
     },
     {
       "type": "range",

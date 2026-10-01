@@ -1,0 +1,248 @@
+{%- doc -%}
+  AP-56 · Media link: square thumbnail, title with an optional badge, and a short
+  description. Built for the mega menu but works in any list of links.
+  Title, image and link fall back to the selected product.
+{%- enddoc -%}
+
+{%- liquid
+  assign s = block.settings
+  assign product = s.product
+  assign title = s.title | default: product.title
+  assign link = s.link | default: product.url
+  assign image = s.image | default: product.featured_image
+  assign tag = 'a'
+  if link == blank
+    assign tag = 'div'
+  endif
+-%}
+<{{ tag }}
+  class="ap-media-link ap-media-link--{{ s.image_fit }} ap-media-link--mobile-{{ s.thumb_size_mobile }}"
+  {% if link != blank %}
+    href="{{ link }}"
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  <span class="ap-media-link__media">
+    {%- if image != blank -%}
+      {{
+        image
+        | image_url: width: 192
+        | image_tag:
+          loading: 'lazy',
+          widths: '96, 144, 192',
+          sizes: '(min-width: 750px) 64px, 48px',
+          alt: '',
+          class: 'ap-media-link__image'
+      }}
+    {%- else -%}
+      {{ 'product-1' | placeholder_svg_tag: 'ap-media-link__image ap-media-link__image--placeholder' }}
+    {%- endif -%}
+  </span>
+  <span class="ap-media-link__body">
+    <span class="ap-media-link__title-row">
+      <span class="ap-media-link__title">{{ title | escape }}</span>
+      {%- if s.badge != blank -%}
+        <span class="ap-media-link__badge ap-media-link__badge--{{ s.badge_style }}">{{ s.badge | escape }}</span>
+      {%- endif -%}
+    </span>
+    {%- if s.description != blank -%}
+      <span class="ap-media-link__description">{{ s.description | escape }}</span>
+    {%- endif -%}
+  </span>
+</{{ tag }}>
+
+{% stylesheet %}
+  .ap-media-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--ap-text-primary, var(--color-foreground));
+    text-decoration: none;
+  }
+
+  .ap-media-link:focus-visible {
+    outline: var(--ap-focus-ring-width, 2px) solid var(--ap-focus-ring-outer, currentColor);
+    outline-offset: 4px;
+    border-radius: 0.25rem;
+  }
+
+  .ap-media-link__media {
+    flex: 0 0 auto;
+    width: 4rem;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    background-color: var(--ap-brand-cloud-gray, #f8f8f8);
+  }
+
+  .ap-media-link__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ap-media-link--contain .ap-media-link__image {
+    object-fit: contain;
+    padding: 0.375rem;
+  }
+
+  .ap-media-link__image--placeholder {
+    opacity: 0.4;
+  }
+
+  .ap-media-link__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .ap-media-link__title-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.5rem;
+  }
+
+  .ap-media-link__title {
+    font-family: var(--font-ap-nav-link--family, var(--font-heading--family));
+    font-weight: var(--font-ap-nav-link--weight, 700);
+    font-size: 1.125rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  .ap-media-link__description {
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    line-height: 1.45;
+    color: var(--ap-text-secondary, rgb(var(--color-foreground-rgb) / 0.7));
+  }
+
+  .ap-media-link__badge {
+    padding: 0.3125rem 0.75rem;
+    border-radius: 999px;
+    font-family: var(--font-ap-label-sm--family, var(--font-accent--family));
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ap-media-link__badge--accent {
+    background-color: var(--ap-surface-accent, #fbec00);
+    color: var(--ap-text-on-accent, #1a1a1a);
+  }
+
+  .ap-media-link__badge--dark {
+    background-color: var(--ap-surface-inverse, #1a1a1a);
+    color: var(--ap-text-inverse-primary, #fff);
+  }
+
+  @media screen and (max-width: 749px) {
+    .ap-media-link__media {
+      width: 3rem;
+    }
+
+    .ap-media-link--mobile-large .ap-media-link__media {
+      width: 4rem;
+    }
+
+    .ap-media-link__title {
+      font-size: 1rem;
+    }
+
+    .ap-media-link__description {
+      font-size: 0.75rem;
+    }
+
+    .ap-media-link__badge {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.625rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Media link",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product",
+      "info": "Optional. Fills in the title, image and link when those are left empty."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Fill" },
+        { "value": "contain", "label": "Fit (packshots)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "select",
+      "id": "thumb_size_mobile",
+      "label": "Image size (mobile)",
+      "options": [
+        { "value": "small", "label": "Small (48px)" },
+        { "value": "large", "label": "Large (64px)" }
+      ],
+      "default": "small"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Menu link"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "text",
+      "id": "badge",
+      "label": "Badge text",
+      "info": "e.g. #1 Bestseller or New. Leave empty to hide."
+    },
+    {
+      "type": "select",
+      "id": "badge_style",
+      "label": "Badge style",
+      "options": [
+        { "value": "accent", "label": "Yellow" },
+        { "value": "dark", "label": "Dark" }
+      ],
+      "default": "accent"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Media link"
+    }
+  ]
+}
+{% endschema %}

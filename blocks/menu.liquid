@@ -48,7 +48,12 @@
       {% endif %}
       {{ block.shopify_attributes }}
     >
-      <summary class="menu__heading{% if heading == blank and menu.title == blank %} menu__heading--empty{% endif %} {{ block_settings.heading_preset }}">
+      <summary
+        class="menu__heading{% if heading == blank and menu.title == blank %} menu__heading--empty{% endif %} {{ block_settings.heading_preset }}"
+        {% if block_settings.heading_color != blank %}
+          style="--color: {{ block_settings.heading_color }}; color: {{ block_settings.heading_color }};"
+        {% endif %}
+      >
         <span class="menu__heading__default">{{ heading | default: menu.title }}</span>
         <span class="menu__heading__accordion">
           {{ heading | default: menu.title }}
@@ -113,6 +118,12 @@
 
   .menu__heading__default {
     display: contents;
+  }
+
+  /* AP-49 presets set their own weight; don't let footer/heading defaults override it. */
+  .menu__heading[class*='ap-'] .menu__heading__default,
+  .menu__heading[class*='ap-'] .menu__heading__accordion {
+    font-weight: inherit;
   }
 
   .menu__heading__accordion {
@@ -224,6 +235,12 @@
       "placeholder": "t:settings.default"
     },
     {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "info": "Leave empty to use the text color."
+    },
+    {
       "type": "header",
       "content": "t:content.typography"
     },
@@ -263,6 +280,34 @@
         {
           "value": "h6",
           "label": "t:options.h6"
+        },
+        {
+          "value": "ap-subheading",
+          "label": "Subheading"
+        },
+        {
+          "value": "ap-title-card",
+          "label": "Title card"
+        },
+        {
+          "value": "ap-body-lg",
+          "label": "Body large"
+        },
+        {
+          "value": "ap-body-sm",
+          "label": "Body small"
+        },
+        {
+          "value": "ap-label-lg",
+          "label": "Label large"
+        },
+        {
+          "value": "ap-label-sm",
+          "label": "Label small"
+        },
+        {
+          "value": "ap-nav-link",
+          "label": "Nav / link"
         }
       ],
       "default": "h3"
@@ -303,6 +348,34 @@
         {
           "value": "h6",
           "label": "t:options.h6"
+        },
+        {
+          "value": "ap-subheading",
+          "label": "Subheading"
+        },
+        {
+          "value": "ap-title-card",
+          "label": "Title card"
+        },
+        {
+          "value": "ap-body-lg",
+          "label": "Body large"
+        },
+        {
+          "value": "ap-body-sm",
+          "label": "Body small"
+        },
+        {
+          "value": "ap-label-lg",
+          "label": "Label large"
+        },
+        {
+          "value": "ap-label-sm",
+          "label": "Label small"
+        },
+        {
+          "value": "ap-nav-link",
+          "label": "Nav / link"
         }
       ],
       "default": "paragraph"

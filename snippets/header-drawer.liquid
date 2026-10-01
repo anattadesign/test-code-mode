@@ -6,6 +6,7 @@
   @param {string} [data_header_drawer_type] - The type of header drawer to render
   @param {object} [block] - The block that can be used to provide settings
   @param {object} [section] - The section that can be used to provide settings
+  @param {string} [ap_mega_panels] - AP-56: rendered mega menu panel blocks, wrapped in <!--ap-mega:handle--> markers
 
   @example
   {% render 'header-drawer', linklist: section.settings.menu, class: 'header-drawer--mobile' %}
@@ -40,6 +41,25 @@
 
   if block_settings.background_color != blank or block_settings.text_color != blank
     render 'contrast-override', background_color: block_settings.background_color, text_color: block_settings.text_color, section_id: block.id
+  endif
+
+  # AP-56: a mega menu panel marked "Show open in the mobile menu" is shown at the top of
+  # the drawer, titled with its menu item; its link is left out of the list below.
+  assign ap_expanded_handle = ''
+  assign ap_expanded_panel = ''
+  assign ap_expanded_title = ''
+  if ap_mega_panels contains '<!--ap-mega-expanded:'
+    assign ap_candidate = ap_mega_panels | split: '<!--ap-mega-expanded:' | last | split: '-->' | first
+    for link in linklist.links
+      if link.handle == ap_candidate
+        assign ap_expanded_handle = ap_candidate
+        assign ap_expanded_title = link.title
+        assign ap_open = '<!--ap-mega:' | append: ap_candidate | append: '-->'
+        assign ap_close = '<!--/ap-mega:' | append: ap_candidate | append: '-->'
+        assign ap_expanded_panel = ap_mega_panels | split: ap_open | last | split: ap_close | first
+        break
+      endif
+    endfor
   endif
 %}
 
@@ -79,18 +99,38 @@
         {% if block_settings.background_color != blank or block_settings.text_color != blank %}
           color-custom-{{ block.id }}
         {% endif %}
+        {% if ap_mega_panels contains '<!--ap-mega:' %}menu-drawer--ap{% endif %}
+        {% if ap_expanded_panel != '' %}menu-drawer--ap-expanded{% endif %}
       "
     >
-      <button
-        class="button close-button menu-drawer__close-button focus-inset"
-        type="button"
-        aria-label="{{ 'actions.close' | t }}"
-        on:click="/close"
-      >
-        <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
-          {{- 'icon-close-menu.svg' | inline_asset_content -}}
-        </span>
-      </button>
+      {%- if ap_expanded_panel != '' -%}
+        {%- comment -%} AP-56: titled drawer header (title + close), like the submenu screens. {%- endcomment -%}
+        <div class="menu-drawer__nav-buttons menu-drawer__nav-buttons--with-title ap-drawer-header">
+          <span></span>
+          <p class="menu-drawer__title ap-drawer-header__title">{{ ap_expanded_title | escape }}</p>
+          <button
+            class="button button-unstyled close-button menu-drawer__close-button focus-inset"
+            type="button"
+            aria-label="{{ 'actions.close' | t }}"
+            on:click="/close"
+          >
+            <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+              {{- 'icon-close-menu.svg' | inline_asset_content -}}
+            </span>
+          </button>
+        </div>
+      {%- else -%}
+        <button
+          class="button close-button menu-drawer__close-button focus-inset"
+          type="button"
+          aria-label="{{ 'actions.close' | t }}"
+          on:click="/close"
+        >
+          <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+            {{- 'icon-close-menu.svg' | inline_asset_content -}}
+          </span>
+        </button>
+      {%- endif -%}
       <nav
         class="menu-drawer__navigation"
         style="
@@ -99,6 +139,9 @@
         "
         aria-label="{{ 'accessibility.header_navigation_label' | t }}"
       >
+        {%- if ap_expanded_panel != '' -%}
+          <div class="ap-drawer-panel ap-drawer-panel--expanded">{{ ap_expanded_panel }}</div>
+        {%- endif -%}
         <ul
           class="menu-drawer__menu has-submenu"
           role="list"
@@ -110,12 +153,83 @@
             {% assign first_accordion_open = false %}
             {% assign animation_index = 0 %}
             {%- for link in linklist.links -%}
+              {%- liquid
+                # AP-56: the expanded panel's link is already shown at the top of the drawer.
+                if link.handle == ap_expanded_handle
+                  continue
+                endif
+
+                assign ap_panel = ''
+                assign ap_open = '<!--ap-mega:' | append: link.handle | append: '-->'
+                if ap_mega_panels contains ap_open
+                  assign ap_close = '<!--/ap-mega:' | append: link.handle | append: '-->'
+                  assign ap_panel = ap_mega_panels | split: ap_open | last | split: ap_close | first
+                endif
+              -%}
               {% assign animation_index = animation_index | plus: 1 %}
               <li
                 style="--menu-drawer-animation-index: {{ animation_index }};"
                 class="{%- if block_settings.drawer_accordion -%}menu-drawer__list-item--deep{%- else -%}menu-drawer__list-item--flat{%- endif -%}{% if block_settings.drawer_dividers %} menu-drawer__list-item--divider{% endif %}"
               >
-                {% if block_settings.drawer_accordion and link.links != blank %}
+                {% if ap_panel != '' %}
+                  {%- comment -%}
+                    AP-56: mega menu panel opens as a sliding screen with back, title and close.
+                  {%- endcomment -%}
+                  <details
+                    id="Details-menu-drawer-ap-{{ link.handle | escape }}"
+                    class="menu-drawer__menu-container ap-drawer-details"
+                  >
+                    <summary
+                      id="HeaderDrawer-{{ link.handle }}"
+                      class="menu-drawer__menu-item menu-drawer__menu-item--mainlist menu-drawer__animated-element{% if link.child_active %} menu-drawer__menu-item--active{% endif %}"
+                      on:click="header-drawer/open/submenu"
+                    >
+                      <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                      <span class="svg-wrapper icon-caret icon-caret--forward">
+                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                      </span>
+                    </summary>
+                    <div
+                      id="link-{{ link.handle | escape }}"
+                      class="menu-drawer__submenu has-submenu"
+                      tabindex="-1"
+                    >
+                      <div class="menu-drawer__inner-submenu">
+                        <div class="menu-drawer__nav-buttons menu-drawer__nav-buttons--with-title ap-drawer-header">
+                          <button
+                            class="button menu-drawer__back-button focus-inset"
+                            on:click="header-drawer/back"
+                            aria-label="{{ 'actions.back_to_main_menu' | t }}"
+                          >
+                            <span class="svg-wrapper icon-caret icon-caret--backward">
+                              {{- 'icon-caret.svg' | inline_asset_content -}}
+                            </span>
+                          </button>
+                          <a
+                            href="{{ link.url }}"
+                            class="menu-drawer__title ap-drawer-header__title focus-inset"
+                            {% if link.current %}
+                              aria-current="page"
+                            {% endif %}
+                          >
+                            <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                          </a>
+                          <button
+                            class="button button-unstyled close-button menu-drawer__close-button focus-inset"
+                            type="button"
+                            aria-label="{{ 'actions.close' | t }}"
+                            on:click="header-drawer/close"
+                          >
+                            <span class="svg-wrapper header-drawer-icon header-drawer-icon--close">
+                              {{- 'icon-close-menu.svg' | inline_asset_content -}}
+                            </span>
+                          </button>
+                        </div>
+                        <div class="ap-drawer-panel">{{ ap_panel }}</div>
+                      </div>
+                    </div>
+                  </details>
+                {% elsif block_settings.drawer_accordion and link.links != blank %}
                   {%- comment -%}
                     Accordion for links with children, in menus with fewer than 3 levels of links
                   {%- endcomment -%}
@@ -253,6 +367,11 @@
                     {% endif %}
                   >
                     <span class="menu-drawer__menu-item-text wrap-text">{{ link.title | escape }}</span>
+                    {%- if ap_mega_panels contains '<!--ap-mega:' -%}
+                      <span class="svg-wrapper icon-caret icon-caret--forward" aria-hidden="true">
+                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                      </span>
+                    {%- endif -%}
                   </a>
                 {% endif %}
               </li>
@@ -1538,5 +1657,83 @@
 
   .drawer-localization .language-selector .svg-wrapper.icon-caret svg {
     transform: none;
+  }
+
+  /* ---------------------------------------------------------------------------
+     AP-56 · Mega menu panels in the drawer (Figma: Mobile - Menu - Shop / Learn)
+     --------------------------------------------------------------------------- */
+  .ap-drawer-header {
+    min-height: 3.25rem;
+    border-block-end: 1px solid var(--ap-border-decorative, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  .ap-drawer-header .menu-drawer__close-button {
+    justify-self: end;
+  }
+
+  .ap-drawer-header__title,
+  .ap-drawer-header__title .menu-drawer__menu-item-text {
+    margin: 0;
+    font-family: var(--font-ap-label-lg--family, var(--font-accent--family));
+    font-weight: 700;
+    font-size: var(--font-ap-label-lg--size, 0.875rem);
+    letter-spacing: var(--font-ap-label-lg--letter-spacing, 0.1em);
+    text-transform: uppercase;
+    color: var(--ap-text-secondary, rgb(var(--color-foreground-rgb) / 0.6));
+  }
+
+  .ap-drawer-panel {
+    --ap-mega-scroll-inset: var(--drawer-padding);
+
+    padding: 1.25rem var(--drawer-padding) 2rem;
+  }
+
+  /* Rows under the panel: full-width, divided, with a forward chevron. */
+  .menu-drawer--ap .menu-drawer__menu > li > .menu-drawer__menu-item--mainlist,
+  .menu-drawer--ap .menu-drawer__menu > li > details > .menu-drawer__menu-item--mainlist {
+    align-items: center;
+    min-height: 3.5rem;
+    border-block-start: 1px solid var(--ap-border-decorative, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  .menu-drawer--ap .menu-drawer__menu > li:last-child > .menu-drawer__menu-item--mainlist,
+  .menu-drawer--ap .menu-drawer__menu > li:last-child > details > .menu-drawer__menu-item--mainlist {
+    border-block-end: 1px solid var(--ap-border-decorative, rgb(var(--color-foreground-rgb) / 0.12));
+  }
+
+  /* Expanded panel at the top of the drawer. Its wrappers step aside (display: contents)
+     so the offer card can drop below the rows, as in the design. */
+  .menu-drawer--ap-expanded .menu-drawer__navigation {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .ap-drawer-panel--expanded,
+  .ap-drawer-panel--expanded > .ap-mega-panel {
+    display: contents;
+  }
+
+  .ap-drawer-panel--expanded > .ap-mega-panel > * {
+    order: 1;
+    margin-inline: var(--drawer-padding);
+  }
+
+  .ap-drawer-panel--expanded > .ap-mega-panel > :first-child {
+    margin-block-start: 1.25rem;
+  }
+
+  .ap-drawer-panel--expanded > .ap-mega-panel > * + * {
+    margin-block-start: var(--ap-mega-gap-mobile, 0.75rem);
+  }
+
+  .menu-drawer--ap-expanded .menu-drawer__navigation > .menu-drawer__menu {
+    order: 2;
+    margin-block-start: 1.5rem;
+  }
+
+  .ap-drawer-panel--expanded > .ap-mega-panel > .ap-offer-card {
+    order: 3;
+    margin-inline: 0;
+    margin-block-start: 2.25rem;
   }
 {% endstylesheet %}

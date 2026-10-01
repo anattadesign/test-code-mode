@@ -1,0 +1,232 @@
+{%- doc -%}
+  AP-56 · Offer card: coloured promo card with an image, heading, a checklist and
+  button blocks (Figma: Membership panel). Stacks on desktop; on mobile the image
+  sits beside the text and the buttons span the full width.
+{%- enddoc -%}
+
+{%- assign s = block.settings -%}
+<div
+  class="ap-offer-card"
+  style="--ap-offer-bg: {{ s.background_color }}; --ap-offer-fg: {{ s.text_color }};"
+  {{ block.shopify_attributes }}
+>
+  {%- if s.image != blank -%}
+    <div class="ap-offer-card__media">
+      {{
+        s.image
+        | image_url: width: 480
+        | image_tag:
+          loading: 'lazy',
+          widths: '240, 360, 480',
+          sizes: '(min-width: 750px) 240px, 40vw',
+          alt: s.image.alt,
+          class: 'ap-offer-card__image'
+      }}
+    </div>
+  {%- endif -%}
+  <div class="ap-offer-card__body">
+    {%- if s.heading != blank -%}
+      <p class="ap-offer-card__heading">{{ s.heading | escape }}</p>
+    {%- endif -%}
+    {%- if s.checklist != blank -%}
+      <div class="ap-offer-card__checklist">{{ s.checklist }}</div>
+    {%- endif -%}
+  </div>
+  <div class="ap-offer-card__actions">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-offer-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    padding: 1.5rem;
+    border-radius: 1rem;
+    background-color: var(--ap-offer-bg, var(--ap-surface-accent, #fbec00));
+    color: var(--ap-offer-fg, var(--ap-text-on-accent, #1a1a1a));
+  }
+
+  .ap-offer-card__media {
+    display: flex;
+    justify-content: center;
+  }
+
+  .ap-offer-card__image {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 9.5rem;
+    object-fit: contain;
+  }
+
+  .ap-offer-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ap-offer-card__heading {
+    margin: 0;
+    font-family: var(--font-ap-title-card--family, var(--font-heading--family));
+    font-weight: var(--font-ap-title-card--weight, 700);
+    font-size: 1.5rem;
+    line-height: 1.15;
+    letter-spacing: var(--font-ap-title-card--letter-spacing, -0.015em);
+  }
+
+  .ap-offer-card__checklist {
+    font-family: var(--font-body--family);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .ap-offer-card__checklist :is(p, ul) {
+    margin: 0;
+  }
+
+  .ap-offer-card__checklist ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .ap-offer-card__checklist li {
+    position: relative;
+    padding-inline-start: 1.625rem;
+  }
+
+  /* Filled check circle, drawn in the text colour with the card colour as the tick. */
+  .ap-offer-card__checklist li::before,
+  .ap-offer-card__checklist li::after {
+    content: '';
+    position: absolute;
+  }
+
+  .ap-offer-card__checklist li::before {
+    inset-block-start: 0.0625rem;
+    inset-inline-start: 0;
+    width: 1.125rem;
+    height: 1.125rem;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+
+  .ap-offer-card__checklist li::after {
+    inset-block-start: 0.28rem;
+    inset-inline-start: 0.42rem;
+    width: 0.3rem;
+    height: 0.55rem;
+    border: solid var(--ap-offer-bg, #fbec00);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .ap-offer-card__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-block-start: auto;
+  }
+
+  .ap-offer-card__actions:empty {
+    display: none;
+  }
+
+  .ap-offer-card__actions > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ap-offer-card {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      align-items: center;
+      gap: 1.25rem 1rem;
+      padding: 1.5rem 1rem;
+      border-radius: 0;
+    }
+
+    .ap-offer-card__heading {
+      font-size: 1.125rem;
+    }
+
+    .ap-offer-card__body {
+      gap: 0.75rem;
+      grid-column: 2;
+    }
+
+    .ap-offer-card__media {
+      grid-column: 1;
+    }
+
+    .ap-offer-card__actions {
+      grid-column: 1 / -1;
+    }
+
+    .ap-offer-card__checklist {
+      font-size: 0.8125rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Offer card",
+  "tag": null,
+  "blocks": [{ "type": "button" }],
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Save 20% when you bundle"
+    },
+    {
+      "type": "richtext",
+      "id": "checklist",
+      "label": "Checklist",
+      "info": "Use a bulleted list; each item gets a check mark.",
+      "default": "<ul><li>Benefit one</li><li>Benefit two</li><li>Benefit three</li></ul>"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Offer card",
+      "blocks": {
+        "button": {
+          "type": "button",
+          "settings": {
+            "label": "Join membership",
+            "style_class": "button-dark",
+            "button_size": "small"
+          }
+        }
+      },
+      "block_order": ["button"]
+    }
+  ]
+}
+{% endschema %}
