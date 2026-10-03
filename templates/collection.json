@@ -473,7 +473,7 @@
   "order": [
     "collection_header",
     "main",
-    "reviews_rail",
-    "collection_copy"
+    "collection_copy",
+    "reviews_rail"
   ]
 }
