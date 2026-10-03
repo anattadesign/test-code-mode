@@ -1,0 +1,274 @@
+{%- doc -%}
+  AP-62 · Promo card block (Ascent).
+
+  Editorial tile that sits in a product grid between product cards (Figma PLP
+  "Promo" 1906:24387 desktop 338 × 589 / 1906:22931 mobile 350 × 203, full row).
+  Image or colour background, optional scrim, eyebrow, heading, copy and a link.
+  The whole card is clickable when a link is set. Reusable in any section that
+  accepts @theme blocks; main-collection places it at a chosen grid position.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign scrim_alpha = bs.scrim_opacity | divided_by: 100.0
+  assign scrim = bs.scrim_color | color_modify: 'alpha', scrim_alpha
+  assign has_link = false
+  if bs.link != blank
+    assign has_link = true
+  endif
+-%}
+
+<div
+  class="ap-promo-card ap-promo-card--{{ bs.content_position }}{% if bs.image != blank %} ap-promo-card--has-image{% endif %}"
+  style="
+    --ap-promo-bg: {{ bs.background_color }};
+    --ap-promo-text: {{ bs.text_color }};
+    --ap-promo-scrim: {{ scrim }};
+    --ap-promo-radius: {{ bs.border_radius }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  {%- if bs.image != blank -%}
+    {{
+      bs.image
+      | image_url: width: 1200
+      | image_tag:
+        widths: '350, 500, 700, 1000, 1200',
+        sizes: '(min-width: 750px) 340px, 100vw',
+        alt: bs.image.alt,
+        loading: 'lazy',
+        class: 'ap-promo-card__image'
+    }}
+    {%- if bs.scrim_opacity > 0 -%}
+      <span class="ap-promo-card__scrim" aria-hidden="true"></span>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="ap-promo-card__content">
+    {%- if bs.eyebrow != blank -%}
+      <p class="ap-promo-card__eyebrow">{{ bs.eyebrow | escape }}</p>
+    {%- endif -%}
+    {%- if bs.heading != blank -%}
+      <h3 class="ap-promo-card__heading">{{ bs.heading | escape }}</h3>
+    {%- endif -%}
+    {%- if bs.text != blank -%}
+      <div class="ap-promo-card__text">{{ bs.text }}</div>
+    {%- endif -%}
+    {%- if bs.link_label != blank -%}
+      {%- if has_link -%}
+        <a class="ap-promo-card__link {{ bs.button_style }}" href="{{ bs.link }}">{{ bs.link_label | escape }}</a>
+      {%- else -%}
+        <span class="ap-promo-card__link {{ bs.button_style }}">{{ bs.link_label | escape }}</span>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-promo-card {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    block-size: 100%;
+    min-block-size: 12.6875rem;
+    overflow: hidden;
+    border-radius: var(--ap-promo-radius);
+    background-color: var(--ap-promo-bg);
+    color: var(--ap-promo-text);
+  }
+
+  .ap-promo-card__image {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+  }
+
+  .ap-promo-card__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--ap-promo-scrim);
+  }
+
+  .ap-promo-card__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    inline-size: 100%;
+    padding: 1.25rem;
+  }
+
+  .ap-promo-card--top .ap-promo-card__content {
+    justify-content: flex-start;
+  }
+
+  .ap-promo-card--center .ap-promo-card__content {
+    justify-content: center;
+  }
+
+  .ap-promo-card--bottom .ap-promo-card__content {
+    justify-content: flex-end;
+  }
+
+  .ap-promo-card__eyebrow {
+    margin: 0;
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0.04em);
+    text-transform: uppercase;
+  }
+
+  .ap-promo-card__heading {
+    margin: 0;
+    color: inherit;
+    font-family: var(--font-h3--family);
+    font-weight: var(--font-h3--weight);
+    font-size: var(--font-h3--size);
+    line-height: var(--font-h3--line-height);
+    letter-spacing: var(--font-h3--letter-spacing);
+  }
+
+  .ap-promo-card__text {
+    font-size: var(--font-paragraph--size);
+    line-height: var(--font-paragraph--line-height);
+  }
+
+  .ap-promo-card__text > * {
+    margin: 0;
+  }
+
+  .ap-promo-card__link {
+    margin-block-start: 0.25rem;
+  }
+
+  /* The link covers the whole card so the tile is one target. */
+  .ap-promo-card a.ap-promo-card__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-promo-card__content {
+      padding: 1.5rem;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Promo card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Limited time"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Subscribe & save 25%"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "Text",
+      "default": "<p>Become a member and get perks on every order.</p>"
+    },
+    {
+      "type": "text",
+      "id": "link_label",
+      "label": "Link label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Link style",
+      "options": [
+        { "value": "button", "label": "Primary button" },
+        { "value": "button-secondary", "label": "Secondary button" },
+        { "value": "button-tertiary", "label": "Text link" }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "scrim_color",
+      "label": "Scrim color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "Scrim opacity",
+      "info": "Use 60% or more when text sits on the image.",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "Promo card",
+      "category": "Banners"
+    }
+  ]
+}
+{% endschema %}
