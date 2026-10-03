@@ -1,8 +1,35 @@
 
 
-{% assign product = closest.product %}
+{% liquid
+  assign product = closest.product
+
+  # AP-60 · Merchandising badge (e.g. "Bestseller") driven by a product tag, so
+  # merchants can flag any product. Figma Product Card › Badge row (top-right).
+  assign show_tag_badge = false
+  assign badge_tag = block.settings.badge_tag | strip | downcase
+  if block.settings.show_tag_badge and badge_tag != blank and product != blank
+    for tag in product.tags
+      assign tag_handle = tag | strip | downcase
+      if tag_handle == badge_tag
+        assign show_tag_badge = true
+        break
+      endif
+    endfor
+  endif
+
+  # Keep clear of the sale / sold-out badge when it is also set to top-right.
+  assign tag_badge_position = 'top-right'
+  if settings.badge_position == 'top-right'
+    assign tag_badge_position = 'top-left'
+  endif
+%}
 
 {% capture children %}
+  {% if show_tag_badge %}
+    <div class="product-badges product-badges--{{ tag_badge_position }}">
+      <span class="ap-tag-badge">{{ block.settings.badge_label | escape }}</span>
+    </div>
+  {% endif %}
   {% unless product == blank %}
     {%- if product.available == false or product.compare_at_price > product.price -%}
       <div
@@ -46,6 +73,26 @@
 {% render 'product-card-gallery-zoom-details-styles' %}
 {% render 'product-badges-styles' %}
 
+{% stylesheet %}
+  /* AP-60 · Product Card badge: lemon fill, ink mono label (AP-49 Label Small). */
+  .ap-tag-badge {
+    display: inline-flex;
+    align-items: center;
+    padding-block: 0.375rem;
+    padding-inline: 0.625rem;
+    border-radius: 6.25rem;
+    background-color: var(--ap-surface-accent, #fbec00);
+    color: var(--ap-text-on-accent, #1a1a1a);
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-weight: var(--font-ap-label-sm--weight, 500);
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    line-height: var(--font-ap-label-sm--line-height, 1);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0.04em);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_image",
@@ -54,6 +101,31 @@
     {
       "type": "paragraph",
       "content": "t:content.resource_reference_product_media"
+    },
+    {
+      "type": "header",
+      "content": "Tag badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tag_badge",
+      "label": "Show tag badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_tag",
+      "label": "Product tag",
+      "info": "Products with this tag show the badge.",
+      "default": "bestseller",
+      "visible_if": "{{ block.settings.show_tag_badge }}"
+    },
+    {
+      "type": "text",
+      "id": "badge_label",
+      "label": "Badge label",
+      "default": "Bestseller",
+      "visible_if": "{{ block.settings.show_tag_badge }}"
     },
     {
       "type": "select",

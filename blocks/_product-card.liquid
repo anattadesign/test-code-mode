@@ -22,6 +22,26 @@
 {% render 'variant-picker-styles' %}
 {% render 'product-badges-styles' %}
 
+{% stylesheet %}
+  /* AP-60 · Cards carry a single full-width Add to cart (Figma Product Card ›
+     Button). No quantity stepper or dynamic checkout inside a card. */
+  .product-card .buy-buttons-block .quantity-selector-wrapper,
+  .product-card .buy-buttons-block .accelerated-checkout-block {
+    display: none;
+  }
+
+  .product-card .buy-buttons-block .product-form-buttons > * {
+    flex: 1 1 100%;
+  }
+
+  /* Figma: 12px card inset on mobile, 20px from 750px (set in block settings). */
+  @media screen and (max-width: 749px) {
+    .product-card__content.spacing-style {
+      padding-inline: min(var(--padding-inline-start, 0px), 0.75rem) min(var(--padding-inline-end, 0px), 0.75rem);
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.product_card",
@@ -49,6 +69,9 @@
     },
     {
       "type": "swatches"
+    },
+    {
+      "type": "ap-variant-count"
     },
     {
       "type": "_product-card-gallery"

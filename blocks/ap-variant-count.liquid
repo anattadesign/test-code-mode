@@ -1,0 +1,105 @@
+{%- doc -%}
+  AP-60 · Variant count block (Ascent).
+
+  Shows how many values a product option has, e.g. "3 flavors available", in place
+  of a variant dropdown on cards (Figma Product Card 1906:24383 desktop /
+  1906:22929 mobile; design note: "no flavour dropdown, only say x flavours
+  available"). Reads the closest product, so it works in any product card or
+  product section. Hidden when the option has fewer values than the minimum.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign product = closest.product
+  assign option_name = bs.option_name | strip | downcase
+  assign value_count = 0
+
+  for option in product.options_with_values
+    assign this_name = option.name | strip | downcase
+    if option_name == blank or this_name == option_name
+      assign value_count = option.values.size
+      break
+    endif
+  endfor
+
+  if value_count == 1
+    assign label = bs.label_singular
+  else
+    assign label = bs.label_plural
+  endif
+-%}
+
+{%- if value_count >= bs.min_count -%}
+  <p
+    class="ap-variant-count"
+    {% if bs.text_color != blank and bs.text_color.alpha != 0 %}
+      style="color: {{ bs.text_color }};"
+    {% endif %}
+    {{ block.shopify_attributes }}
+  >
+    {{ label | replace: '[count]', value_count | escape }}
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .ap-variant-count {
+    margin: 0;
+    color: var(--ap-text-secondary, currentcolor);
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-weight: var(--font-ap-label-sm--weight, 400);
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    line-height: var(--font-ap-label-sm--line-height, 1.3);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0);
+    text-transform: uppercase;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Variant count",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "option_name",
+      "label": "Option name",
+      "info": "e.g. Flavor. Leave empty to use the product's first option.",
+      "default": "Flavor"
+    },
+    {
+      "type": "text",
+      "id": "label_plural",
+      "label": "Label",
+      "info": "[count] is replaced with the number of values.",
+      "default": "[count] flavors available"
+    },
+    {
+      "type": "text",
+      "id": "label_singular",
+      "label": "Label (one value)",
+      "default": "[count] flavor available"
+    },
+    {
+      "type": "range",
+      "id": "min_count",
+      "label": "Show from",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Leave empty to use the secondary text color."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Variant count",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
