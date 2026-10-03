@@ -349,11 +349,131 @@
         "padding-block-start": 16,
         "padding-block-end": 48
       }
+    },
+    "reviews_rail": {
+      "type": "ap-reviews-rail",
+      "blocks": {
+        "ugc_1": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@marcus.trains"
+          },
+          "blocks": {}
+        },
+        "review_1": {
+          "type": "ap-review-card",
+          "settings": {
+            "rating": 5,
+            "heading": "Mixes clean, no chalk",
+            "author": "Marcus D.",
+            "verified": true,
+            "verified_label": "Verified buyer",
+            "caption": "Native Whey · Chocolate",
+            "background_color": "#1A1A1A",
+            "text_color": "#FFFFFF"
+          },
+          "blocks": {}
+        },
+        "ugc_2": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@jess.lifts"
+          },
+          "blocks": {}
+        },
+        "review_2": {
+          "type": "ap-review-card",
+          "settings": {
+            "rating": 5,
+            "heading": "Finally a protein I can read the label on",
+            "author": "Jess R.",
+            "verified": true,
+            "verified_label": "Verified buyer",
+            "caption": "Native Whey · Vanilla",
+            "background_color": "#1A1A1A",
+            "text_color": "#FFFFFF"
+          },
+          "blocks": {}
+        },
+        "ugc_3": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@runwithdan"
+          },
+          "blocks": {}
+        },
+        "review_3": {
+          "type": "ap-review-card",
+          "settings": {
+            "rating": 5,
+            "heading": "Tastes like a milkshake, sits light",
+            "author": "Dan K.",
+            "verified": true,
+            "verified_label": "Verified buyer",
+            "caption": "Micellar Casein · Chocolate",
+            "background_color": "#1A1A1A",
+            "text_color": "#FFFFFF"
+          },
+          "blocks": {}
+        },
+        "ugc_4": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@coach.ana"
+          },
+          "blocks": {}
+        },
+        "review_4": {
+          "type": "ap-review-card",
+          "settings": {
+            "rating": 5,
+            "heading": "Recovery is noticeably better",
+            "author": "Ana P.",
+            "verified": true,
+            "verified_label": "Verified buyer",
+            "caption": "Clean Creatine",
+            "background_color": "#1A1A1A",
+            "text_color": "#FFFFFF"
+          },
+          "blocks": {}
+        },
+        "ugc_5": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@liftwithlee"
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ugc_1",
+        "review_1",
+        "ugc_2",
+        "review_2",
+        "ugc_3",
+        "review_3",
+        "ugc_4",
+        "review_4",
+        "ugc_5"
+      ],
+      "settings": {
+        "eyebrow": "Reviews",
+        "heading": "What Our Customers Are Saying",
+        "show_arrows": true,
+        "card_width": 300,
+        "card_width_mobile": 260,
+        "gap": 24,
+        "card_radius": 16,
+        "color_scheme": "scheme-1",
+        "padding_top": 80,
+        "padding_bottom": 80
+      }
     }
   },
   "order": [
     "collection_header",
     "main",
+    "reviews_rail",
     "collection_copy"
   ]
 }
