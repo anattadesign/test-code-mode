@@ -34,7 +34,37 @@
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
-<collection-component view-event-payload="{{ collection | standard_event_data: 'view' | escape }}">
+{%- if section.settings.feature_first_mobile -%}
+  {% style %}
+    @media screen and (max-width: 749px) {
+      .product-grid--{{ section.id }}[product-grid-view='default'] .product-grid__item--0 {
+        grid-column: 1 / -1;
+      }
+    }
+  {% endstyle %}
+{%- endif -%}
+{% style %}
+  /* AP-62 · Figma: 3 columns of 338px beside the 240px filter rail. */
+  @media screen and (min-width: 990px) {
+    .product-grid--{{ section.id }}.product-grid--grid[product-grid-view='default'] {
+      --product-grid-columns-desktop: repeat({{ section.settings.desktop_columns }}, minmax(0, 1fr));
+    }
+  }
+  /* AP-62 · Promo spans the full row on mobile (Figma 350 × 203), one cell on desktop. */
+  .product-grid--{{ section.id }} .product-grid__item--promo {
+    grid-column: 1 / -1;
+  }
+  @media screen and (min-width: 750px) {
+    .product-grid--{{ section.id }} .product-grid__item--promo {
+      grid-column: auto;
+    }
+  }
+  .product-grid--{{ section.id }}[product-grid-view='zoom-out'] .product-grid__item--promo {
+    display: none;
+  }
+{% endstyle %}
+
+<collection-component class="ap-plp" view-event-payload="{{ collection | standard_event_data: 'view' | escape }}">
   <results-list
     class="section product-grid-container{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
     style="--padding-block-start: {{ section.settings.padding-block-start }}px; --padding-block-end: {{ section.settings.padding-block-end }}px;"
@@ -60,8 +90,27 @@
       {% endif %}
 
       {% paginate collection.products by products_per_page %}
+        {% liquid
+          # AP-62 · Promo tile slot (Figma PLP "Promo"): first page only, after N products.
+          assign promo_position = section.settings.promo_position | minus: 1
+          assign show_promo = false
+          if section.settings.show_promo and paginate.current_page == 1 and collection.products.size > 0
+            assign show_promo = true
+            if promo_position > collection.products.size
+              assign promo_position = collection.products.size
+            endif
+          endif
+        %}
+        {% capture promo_markup %}
+          {% if show_promo %}
+            {% content_for 'block', type: 'ap-promo-card', id: 'promo-card' %}
+          {% endif %}
+        {% endcapture %}
         {% capture children %}
           {% for product in collection.products %}
+            {% if show_promo and forloop.index0 == promo_position %}
+              <li class="product-grid__item product-grid__item--promo">{{ promo_markup }}</li>
+            {% endif %}
             <li
               id="{{ section.id }}-{{ product.id }}"
               class="product-grid__item product-grid__item--{{ forloop.index0 }}"
@@ -76,6 +125,9 @@
                 product_view_context: 'collection'
               %}
             </li>
+            {% if show_promo and forloop.last and promo_position >= collection.products.size %}
+              <li class="product-grid__item product-grid__item--promo">{{ promo_markup }}</li>
+            {% endif %}
           {% endfor %}
         {% endcapture %}
 
@@ -91,11 +143,54 @@
   </results-list>
 </collection-component>
 
+{% stylesheet %}
+  /* AP-62 · Collection Browser (Figma Bestsellers 1906:24323 / 1906:22828).
+     Mono uppercase labels for the filter rail, results bar and sort; hairline
+     dividers between filter groups. Colours come from the AP-50 tokens. */
+  .ap-plp :is(.facets--filters-title, .facets__label, .products-count-wrapper, .facets__summary) {
+    font-family: var(--font-ap-label-lg--family, var(--font-body--family));
+    letter-spacing: var(--font-ap-label-lg--letter-spacing, 0.04em);
+  }
+
+  .ap-plp .facets--filters-title {
+    font-size: var(--font-ap-label-lg--size, 0.875rem);
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .ap-plp .products-count-wrapper {
+    color: var(--ap-text-secondary, currentcolor);
+    font-size: var(--font-ap-label-sm--size, 0.8125rem);
+  }
+
+  /* Group headings (CATEGORY / GOAL): mono label size, not the Horizon h5. */
+  .ap-plp .facets__summary {
+    font-size: var(--font-ap-label-lg--size, 0.875rem);
+    font-weight: 600;
+  }
+
+  .ap-plp .facets__inputs-list {
+    font-size: var(--font-ap-body-sm--size, 0.875rem);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-plp .facets--vertical .facets__item {
+      border-block-end: 1px solid var(--ap-border-decorative, rgb(0 0 0 / 0.12));
+    }
+
+    .ap-plp .facets--vertical .facets__item::before {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
 {% schema %}
 {
   "name": "t:names.collection_container",
   "enabled_on": {
-    "templates": ["collection"]
+    "templates": [
+      "collection"
+    ]
   },
   "settings": [
     {
@@ -140,6 +235,17 @@
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
     },
     {
+      "type": "range",
+      "id": "desktop_columns",
+      "label": "Columns on desktop",
+      "info": "Applies from 990px wide, grid layout.",
+      "min": 2,
+      "max": 5,
+      "step": 1,
+      "default": 3,
+      "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
       "type": "select",
       "id": "mobile_product_card_size",
       "label": "t:settings.mobile_card_size",
@@ -157,6 +263,12 @@
     },
     {
       "type": "checkbox",
+      "id": "feature_first_mobile",
+      "label": "Show first product full width on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
       "id": "enable_infinite_scroll",
       "label": "t:settings.auto_load_products",
       "default": true
@@ -170,6 +282,27 @@
       "step": 4,
       "default": 24,
       "visible_if": "{{ section.settings.enable_infinite_scroll == false }}"
+    },
+    {
+      "type": "header",
+      "content": "Promo card"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo",
+      "label": "Show promo card",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "promo_position",
+      "label": "Promo card position",
+      "info": "The card appears in this slot of the first page.",
+      "min": 1,
+      "max": 24,
+      "step": 1,
+      "default": 6,
+      "visible_if": "{{ section.settings.show_promo }}"
     },
     {
       "type": "header",
