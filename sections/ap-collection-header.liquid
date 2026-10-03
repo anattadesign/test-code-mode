@@ -1,0 +1,376 @@
+{%- comment -%}
+  AP-61 · Ascent collection header (PLP page head).
+
+  Figma: 02 / Page head — Desktop 1906:24317 (1440 × 240) · Mobile 1906:22824 (390 × 195).
+
+  Full-bleed banner image with a scrim; breadcrumbs and title sit bottom-left on
+  the 64px (desktop) / 20px (mobile) page gutter. Content is theme blocks so the
+  merchant can rename the collection (e.g. "Labor Day Sale"), add promo copy or a
+  disclaimer line, or drop in any other block:
+    - ap-breadcrumbs  HOME / COLLECTIONS / TITLE
+    - text            Title (defaults to the collection title)
+    - text            Optional description / promo terms
+
+  Image order: section image → collection image → plain background colour.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  assign image = s.image
+  if image == blank and s.use_collection_image and collection.image != blank
+    assign image = collection.image
+  endif
+
+  assign loading = 'lazy'
+  assign fetch_priority = 'auto'
+  if section.index <= 2
+    assign loading = 'eager'
+    assign fetch_priority = 'high'
+  endif
+
+  assign scrim_alpha = s.scrim_opacity | divided_by: 100.0
+  assign scrim_solid = s.scrim_color | color_modify: 'alpha', scrim_alpha
+  assign scrim_clear = s.scrim_color | color_modify: 'alpha', 0
+  if s.scrim_style == 'bottom'
+    capture scrim
+      echo 'linear-gradient(180deg, ' | append: scrim_clear | append: ' 0%, ' | append: scrim_solid | append: ' 100%)'
+    endcapture
+  else
+    assign scrim = scrim_solid
+  endif
+
+  assign focal = 'center'
+  if image != blank and image.presentation.focal_point != blank
+    assign focal = image.presentation.focal_point
+  endif
+  assign focal_mobile = focal
+  if s.image_mobile != blank and s.image_mobile.presentation.focal_point != blank
+    assign focal_mobile = s.image_mobile.presentation.focal_point
+  endif
+
+  case s.content_vertical
+    when 'top'
+      assign align = 'flex-start'
+    when 'center'
+      assign align = 'center'
+    else
+      assign align = 'flex-end'
+  endcase
+-%}
+
+<div
+  class="ap-collection-header{% if image != blank %} ap-collection-header--has-image{% endif %}"
+  style="
+    --ap-ch-height: {{ s.height }}px;
+    --ap-ch-height-mobile: {{ s.height_mobile }}px;
+    --ap-ch-text: {{ s.text_color }};
+    --ap-ch-background: {{ s.background_color }};
+    --ap-ch-scrim: {{ scrim }};
+    --ap-ch-align: {{ align }};
+    --ap-ch-gap: {{ s.gap }}px;
+    --ap-ch-padding-block: {{ s.padding_block_mobile }}px;
+    --ap-ch-padding-block-desktop: {{ s.padding_block }}px;
+    --ap-ch-padding-inline: {{ s.padding_inline_mobile }}px;
+    --ap-ch-padding-inline-desktop: {{ s.padding_inline }}px;
+    --ap-ch-focal: {{ focal }};
+    --ap-ch-focal-mobile: {{ focal_mobile }};
+  "
+>
+  {%- if image != blank -%}
+    <div class="ap-collection-header__media">
+      <picture>
+        {%- if s.image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="{{ s.image_mobile | image_url: width: 780 }} 780w, {{ s.image_mobile | image_url: width: 1200 }} 1200w"
+            sizes="100vw"
+          >
+        {%- endif -%}
+        {{
+          image
+          | image_url: width: 3000
+          | image_tag:
+            widths: '750, 1100, 1500, 2000, 2880',
+            sizes: '100vw',
+            alt: '',
+            loading: loading,
+            fetchpriority: fetch_priority,
+            class: 'ap-collection-header__image'
+        }}
+      </picture>
+    </div>
+    {%- if s.scrim_opacity > 0 -%}
+      <div class="ap-collection-header__scrim" aria-hidden="true"></div>
+    {%- endif -%}
+  {%- endif -%}
+
+  <div class="ap-collection-header__inner">
+    <div class="ap-collection-header__content">
+      {%- content_for 'blocks' -%}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-collection-header {
+    --ap-text-primary: var(--ap-ch-text);
+    --color: var(--ap-ch-text);
+
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    min-block-size: var(--ap-ch-height-mobile);
+    overflow: hidden;
+    color: var(--ap-ch-text);
+    background-color: var(--ap-ch-background);
+  }
+
+  .ap-collection-header__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .ap-collection-header__media picture {
+    display: contents;
+  }
+
+  .ap-collection-header__image {
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: var(--ap-ch-focal-mobile);
+  }
+
+  .ap-collection-header__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--ap-ch-scrim);
+    pointer-events: none;
+  }
+
+  .ap-collection-header__inner {
+    display: flex;
+    align-items: var(--ap-ch-align);
+    inline-size: 100%;
+    padding-block: var(--ap-ch-padding-block);
+    padding-inline: var(--ap-ch-padding-inline);
+  }
+
+  .ap-collection-header__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ap-ch-gap);
+    max-inline-size: 48rem;
+    color: inherit;
+  }
+
+  .ap-collection-header__content :is(h1, h2, h3, p) {
+    color: inherit;
+    margin: 0;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-collection-header {
+      min-block-size: var(--ap-ch-height);
+    }
+
+    .ap-collection-header__image {
+      object-position: var(--ap-ch-focal);
+    }
+
+    .ap-collection-header__inner {
+      padding-block: var(--ap-ch-padding-block-desktop);
+      padding-inline: var(--ap-ch-padding-inline-desktop);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection header",
+  "class": "ap-collection-header-section",
+  "blocks": [
+    { "type": "@theme" },
+    { "type": "@app" }
+  ],
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image",
+      "info": "Recommended 2880 × 480 px. Leave empty to use the collection image."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile image",
+      "info": "Optional. Recommended 780 × 390 px."
+    },
+    {
+      "type": "checkbox",
+      "id": "use_collection_image",
+      "label": "Use collection image when no image is set",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height (desktop)",
+      "min": 120,
+      "max": 600,
+      "step": 8,
+      "unit": "px",
+      "default": 240
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height (mobile)",
+      "min": 120,
+      "max": 480,
+      "step": 5,
+      "unit": "px",
+      "default": 195
+    },
+    {
+      "type": "select",
+      "id": "content_vertical",
+      "label": "Content position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "label": "Side padding (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_inline_mobile",
+      "label": "Side padding (mobile)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "Top / bottom padding (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "Top / bottom padding (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "info": "Shown when there is no image.",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "select",
+      "id": "scrim_style",
+      "label": "Scrim",
+      "options": [
+        { "value": "full", "label": "Flat" },
+        { "value": "bottom", "label": "Gradient to bottom" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "color",
+      "id": "scrim_color",
+      "label": "Scrim color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "range",
+      "id": "scrim_opacity",
+      "label": "Scrim opacity",
+      "info": "Keep at 60% or more when text sits on the image (Ascent overlay/text-safe).",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection header",
+      "category": "Banners",
+      "blocks": {
+        "breadcrumbs": {
+          "type": "ap-breadcrumbs"
+        },
+        "title": {
+          "type": "text",
+          "settings": {
+            "text": "<h1>{{ closest.collection.title }}</h1>",
+            "type_preset": "h2"
+          }
+        }
+      },
+      "block_order": ["breadcrumbs", "title"]
+    }
+  ]
+}
+{% endschema %}
