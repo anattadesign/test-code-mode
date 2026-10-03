@@ -1,0 +1,175 @@
+{%- doc -%}
+  AP-61 · Breadcrumbs block (Ascent).
+
+  "HOME / COLLECTIONS / ALL PRODUCTS" trail in the mono label style (Figma
+  02 / Page head 1906:24317 desktop / 1906:22824 mobile). Works on collection,
+  product, page, blog and article templates, so it can sit in any section.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign separator = bs.separator | default: '/'
+-%}
+
+<nav
+  class="ap-breadcrumbs{% if bs.uppercase %} ap-breadcrumbs--upper{% endif %}"
+  aria-label="Breadcrumb"
+  {{ block.shopify_attributes }}
+>
+  <ol class="ap-breadcrumbs__list">
+    <li class="ap-breadcrumbs__item">
+      <a class="ap-breadcrumbs__link" href="{{ routes.root_url }}">{{ bs.home_label | escape }}</a>
+    </li>
+
+    {%- case request.page_type -%}
+      {%- when 'collection' -%}
+        {%- if bs.show_collections_link -%}
+          <li class="ap-breadcrumbs__item">
+            <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+            <a class="ap-breadcrumbs__link" href="{{ routes.collections_url }}">{{ bs.collections_label | escape }}</a>
+          </li>
+        {%- endif -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ collection.title | default: bs.collections_label | escape }}</span>
+        </li>
+      {%- when 'product' -%}
+        {%- assign crumb_collection = product.collections.first -%}
+        {%- if collection != blank -%}
+          {%- assign crumb_collection = collection -%}
+        {%- endif -%}
+        {%- if crumb_collection != blank -%}
+          <li class="ap-breadcrumbs__item">
+            <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+            <a class="ap-breadcrumbs__link" href="{{ crumb_collection.url }}">{{ crumb_collection.title | escape }}</a>
+          </li>
+        {%- endif -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ product.title | escape }}</span>
+        </li>
+      {%- when 'article' -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <a class="ap-breadcrumbs__link" href="{{ blog.url }}">{{ blog.title | escape }}</a>
+        </li>
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ article.title | escape }}</span>
+        </li>
+      {%- when 'blog' -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ blog.title | escape }}</span>
+        </li>
+      {%- when 'page' -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ page.title | escape }}</span>
+        </li>
+      {%- when 'list-collections' -%}
+        <li class="ap-breadcrumbs__item">
+          <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+          <span aria-current="page">{{ bs.collections_label | escape }}</span>
+        </li>
+      {%- else -%}
+        {%- if page_title != blank -%}
+          <li class="ap-breadcrumbs__item">
+            <span class="ap-breadcrumbs__sep" aria-hidden="true">{{ separator }}</span>
+            <span aria-current="page">{{ page_title | escape }}</span>
+          </li>
+        {%- endif -%}
+    {%- endcase -%}
+  </ol>
+</nav>
+
+{% stylesheet %}
+  .ap-breadcrumbs__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.375em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-weight: var(--font-ap-label-sm--weight, 400);
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    line-height: var(--font-ap-label-sm--line-height, 1.4);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0.04em);
+  }
+
+  .ap-breadcrumbs--upper .ap-breadcrumbs__list {
+    text-transform: uppercase;
+  }
+
+  .ap-breadcrumbs__item {
+    display: inline-flex;
+    gap: 0.375em;
+  }
+
+  .ap-breadcrumbs__link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .ap-breadcrumbs__link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-breadcrumbs__list {
+      font-family: var(--font-ap-label-lg--family, var(--font-body--family));
+      font-weight: var(--font-ap-label-lg--weight, 400);
+      font-size: var(--font-ap-label-lg--size, 0.875rem);
+      line-height: var(--font-ap-label-lg--line-height, 1.4);
+      letter-spacing: var(--font-ap-label-lg--letter-spacing, 0.04em);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Breadcrumbs",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "home_label",
+      "label": "Home label",
+      "default": "Home"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collections_link",
+      "label": "Show Collections step on collection pages",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "collections_label",
+      "label": "Collections label",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator",
+      "default": "/"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
+    }
+  ],
+  "presets": [
+    {
+      "name": "Breadcrumbs",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}
