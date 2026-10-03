@@ -7,7 +7,7 @@
 
   assign product_id = closest.product.id
   assign element_id = 'CustomProperty-product_id-block_id' | replace: 'product_id', product_id | replace: 'block_id', block.id
-  assign product_form_id = 'BuyButtons-ProductForm-section.id' | replace: 'section.id', section.id
+  assign product_form_id = 'BuyButtons-ProductForm-section.id' | replace: 'section.id', section.id | append: '-' | append: product_id
 
   # Determine input type based on max_length for text inputs
   if block_settings.input_type == 'text'
