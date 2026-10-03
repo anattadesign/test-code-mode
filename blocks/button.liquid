@@ -1,5 +1,7 @@
 
-{% render 'button', link: block.settings.link %}
+{%- # AP-62: in a product card with no link set, the button opens the product page (Figma card CTA). -%}
+{%- assign button_link = block.settings.link | default: closest.product.url -%}
+{% render 'button', link: button_link %}
 
 {% schema %}
 {

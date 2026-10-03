@@ -17,42 +17,50 @@
     endfor
   endif
 
-  # Keep clear of the sale / sold-out badge when it is also set to top-right.
-  assign tag_badge_position = 'top-right'
-  if settings.badge_position == 'top-right'
-    assign tag_badge_position = 'top-left'
+  assign has_status_badge = false
+  if product != blank
+    if product.available == false or product.compare_at_price > product.price
+      assign has_status_badge = true
+    endif
+  endif
+
+  # AP-62 · Figma Badge row: one badge, centred, straddling the image's top edge.
+  # 'theme' keeps Horizon's global badge position for the sale / sold-out badge.
+  assign badge_alignment = block.settings.badge_alignment | default: 'top-center'
+  if badge_alignment == 'theme'
+    assign badge_alignment = settings.badge_position
   endif
 %}
 
 {% capture children %}
-  {% if show_tag_badge %}
-    <div class="product-badges product-badges--{{ tag_badge_position }}">
-      <span class="ap-tag-badge">{{ block.settings.badge_label | escape }}</span>
-    </div>
-  {% endif %}
-  {% unless product == blank %}
-    {%- if product.available == false or product.compare_at_price > product.price -%}
-      <div
-        class="product-badges product-badges--{{ settings.badge_position }}"
-        style="
-            --badge-border-radius: {{ settings.badge_corner_radius }}px;
-            --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
-        "
-      >
+  {%- if show_tag_badge or has_status_badge -%}
+    <div
+      class="product-badges product-badges--{{ badge_alignment }} ap-badge-row"
+      style="
+        --badge-border-radius: {{ settings.badge_corner_radius }}px;
+        --badge-font-family: var(--font-{{ settings.badge_font_family }}--family); --badge-font-weight: var(--font-{{ settings.badge_font_family }}--weight); --badge-text-transform: {{ settings.badge_text_transform }};
+      "
+    >
+      {%- if show_tag_badge -%}
+        <span class="ap-tag-badge">{{ block.settings.badge_label | escape }}</span>
+      {%- endif -%}
+      {%- if has_status_badge -%}
         <div
           class="
             product-badges__badge product-badges__badge--rectangle
-            {% if product.available == false %} color-custom-badge-sold-out{% elsif product.compare_at_price > product.price %} color-custom-badge-sale{% endif %}
+            {% if product.available == false %} color-custom-badge-sold-out{% else %} color-custom-badge-sale{% endif %}
           "
         >
           {%- if product.available == false -%}
             {{ 'content.product_badge_sold_out' | t }}
-          {%- elsif product.compare_at_price > product.price -%}
+          {%- else -%}
             {{ 'content.product_badge_sale' | t }}
           {%- endif -%}
         </div>
-      </div>
-    {%- endif -%}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+  {% unless product == blank %}
     {% if product.available and settings.quick_add or settings.mobile_quick_add %}
       {% render 'quick-add', product: product, section_id: section.id %}
     {% endif %}
@@ -74,6 +82,36 @@
 {% render 'product-badges-styles' %}
 
 {% stylesheet %}
+  /* AP-62 · Badge row: centred over the top edge of the image (Figma 1906:24383 › Badge row). */
+  .product-badges.ap-badge-row {
+    display: flex;
+    gap: 0.375rem;
+  }
+
+  .product-badges--top-center {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .product-badges--top-center .product-badges__badge,
+  .product-badges--top-center .ap-tag-badge {
+    padding-block: 0.375rem;
+    padding-inline: 0.75rem;
+    border-radius: 6.25rem;
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0.04em);
+    line-height: 1.4;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .product-badges--top-center .product-badges__badge {
+    background-color: var(--ap-brand-charcoal-black, #1a1a1a);
+    color: var(--ap-brand-cloud-gray, #f5f5f5);
+  }
+
   /* AP-60 · Product Card badge: lemon fill, ink mono label (AP-49 Label Small). */
   .ap-tag-badge {
     display: inline-flex;
@@ -104,7 +142,19 @@
     },
     {
       "type": "header",
-      "content": "Tag badge"
+      "content": "Badges"
+    },
+    {
+      "type": "select",
+      "id": "badge_alignment",
+      "label": "Badge position",
+      "options": [
+        { "value": "top-center", "label": "Top centre, over the image edge" },
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "theme", "label": "Theme setting" }
+      ],
+      "default": "top-center"
     },
     {
       "type": "checkbox",

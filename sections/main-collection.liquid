@@ -158,6 +158,22 @@
     text-transform: uppercase;
   }
 
+  /* The results bar keeps only the count + sort on desktop (Figma Results bar
+     1906:24376 has no "Filters" word); the sidebar grows its own heading
+     instead (Figma Filters head 1906:24326). Both stay on mobile, where there
+     is no sidebar and the horizontal bar is the only "Filters" entry point. */
+  @media screen and (min-width: 750px) {
+    .ap-plp .facets-controls-wrapper > .facets--filters-title {
+      display: none;
+    }
+  }
+
+  .ap-plp .facets--filters-title--vertical {
+    margin: 0 0 1rem;
+    padding-block-end: 1rem;
+    border-block-end: 1px solid var(--ap-border-decorative, rgb(0 0 0 / 0.12));
+  }
+
   .ap-plp .products-count-wrapper {
     color: var(--ap-text-secondary, currentcolor);
     font-size: var(--font-ap-label-sm--size, 0.8125rem);
@@ -171,6 +187,12 @@
 
   .ap-plp .facets__inputs-list {
     font-size: var(--font-ap-body-sm--size, 0.875rem);
+  }
+
+  /* Result count after each option label (Figma "Protein powder ... 3"). */
+  .ap-plp .checkbox__count {
+    margin-inline-start: 0.375rem;
+    color: var(--ap-text-secondary, rgb(0 0 0 / 0.5));
   }
 
   @media screen and (min-width: 750px) {

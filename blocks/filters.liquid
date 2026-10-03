@@ -175,6 +175,11 @@
       style="{% render 'spacing-style', settings: block_settings %}{% if block_settings.text_label_case == 'uppercase' %} --facet-label-transform: uppercase;{% endif %}"
       aria-label="{{ 'accessibility.filters' | t }}"
     >
+      {%- if block_settings.filter_style == 'vertical' and block_settings.enable_filtering -%}
+        {%- # AP-62 · Figma "Filters head": heading sits at the top of the sidebar column itself,
+            not in the shared results bar (Figma Filters 1906:24324 › Filters head + Divider). -%}
+        <h4 class="facets--filters-title facets--filters-title--vertical">{{ 'content.filters' | t }}</h4>
+      {%- endif -%}
       <facets-form-component
         class="facets__form-wrapper"
         section-id="{{ section.id }}"
