@@ -8,11 +8,22 @@
   assign product = closest.product
 -%}
 
-{% capture children %}
-  {% content_for 'blocks', closest.product: product %}
-{% endcapture %}
+{%- # AP-60: the Ascent card replaces the block-built card everywhere when enabled (Theme settings › Product cards). -%}
+{%- if settings.ap_card_enabled -%}
+  {% render 'ap-product-card',
+    product: product,
+    section_id: section.id,
+    id_suffix: block.id,
+    product_view_context: product_view_context,
+    attributes: block.shopify_attributes
+  %}
+{%- else -%}
+  {% capture children %}
+    {% content_for 'blocks', closest.product: product %}
+  {% endcapture %}
 
-{% render 'product-card', children: children, product: product, product_view_context: product_view_context %}
+  {% render 'product-card', children: children, product: product, product_view_context: product_view_context %}
+{%- endif -%}
 {% render 'quantity-selector-styles' %}
 {% render 'buy-buttons-styles' %}
 {% render 'gift-card-recipient-form-styles' %}

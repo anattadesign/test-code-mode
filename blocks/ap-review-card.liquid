@@ -1,0 +1,224 @@
+{%- doc -%}
+  AP-63 · Review card block (Ascent).
+
+  Quote card for rails and grids (Figma Reviews Rail › Review Card / MARCUS D.,
+  300 × 565: stars, pull quote, name + "Verified buyer", caption under the card).
+  Reusable in any section that accepts @theme blocks.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign rating = bs.rating | at_most: 5 | at_least: 0
+  assign empty_stars = 5 | minus: rating
+-%}
+
+<figure
+  class="ap-review-card"
+  style="--ap-rc-bg: {{ bs.background_color }}; --ap-rc-text: {{ bs.text_color }};"
+  {{ block.shopify_attributes }}
+>
+  <blockquote class="ap-review-card__quote">
+    <p class="ap-review-card__stars" role="img" aria-label="{{ rating }} out of 5 stars">
+      {%- for i in (1..rating) -%}<span aria-hidden="true">★</span>{%- endfor -%}
+      {%- if empty_stars > 0 -%}
+        {%- for i in (1..empty_stars) -%}<span class="ap-review-card__star--empty" aria-hidden="true">★</span>{%- endfor -%}
+      {%- endif -%}
+    </p>
+    {%- if bs.heading != blank -%}
+      <p class="ap-review-card__heading">“{{ bs.heading | escape }}”</p>
+    {%- endif -%}
+    {%- if bs.body != blank -%}
+      <div class="ap-review-card__body">{{ bs.body }}</div>
+    {%- endif -%}
+    <footer class="ap-review-card__attribution">
+      <cite class="ap-review-card__name">{{ bs.author | escape }}</cite>
+      {%- if bs.verified -%}
+        <span class="ap-review-card__verified">
+          <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true" focusable="false">
+            <circle cx="6" cy="6" r="6" fill="currentColor"/>
+            <path d="M3.5 6.2 5.2 7.8 8.6 4.4" fill="none" stroke="var(--ap-rc-bg)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          {{ bs.verified_label | escape }}
+        </span>
+      {%- endif -%}
+    </footer>
+  </blockquote>
+  {%- if bs.caption != blank -%}
+    <figcaption class="ap-review-card__caption">
+      {%- if bs.caption_link != blank -%}
+        <a href="{{ bs.caption_link }}">{{ bs.caption | escape }}</a>
+      {%- else -%}
+        {{ bs.caption | escape }}
+      {%- endif -%}
+    </figcaption>
+  {%- endif -%}
+</figure>
+
+{% stylesheet %}
+  .ap-review-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    block-size: 100%;
+    margin: 0;
+  }
+
+  .ap-review-card__quote {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.25rem;
+    margin: 0;
+    padding: 1.75rem;
+    border-radius: var(--ap-rail-radius, 16px);
+    background-color: var(--ap-rc-bg);
+    color: var(--ap-rc-text);
+    text-align: center;
+  }
+
+  .ap-review-card__stars {
+    margin: 0;
+    color: var(--ap-brand-yellow-500, #fbec00);
+    font-size: 1.25rem;
+    letter-spacing: 0.15em;
+    line-height: 1;
+  }
+
+  .ap-review-card__star--empty {
+    opacity: 0.25;
+  }
+
+  .ap-review-card__heading {
+    margin: 0;
+    font-family: var(--font-h4--family);
+    font-weight: var(--font-h4--weight);
+    /* Figma quote box 244 × 68 ≈ two lines at 24px. */
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: var(--font-h4--letter-spacing);
+    text-transform: var(--font-h4--case, none);
+  }
+
+  .ap-review-card__body {
+    font-size: var(--font-ap-body-sm--size, 0.875rem);
+    line-height: var(--font-ap-body-sm--line-height, 1.5);
+  }
+
+  .ap-review-card__body > * {
+    margin: 0;
+  }
+
+  .ap-review-card__attribution {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.375rem;
+  }
+
+  .ap-review-card__name,
+  .ap-review-card__verified,
+  .ap-review-card__caption {
+    font-family: var(--font-ap-label-sm--family, var(--font-body--family));
+    font-size: var(--font-ap-label-sm--size, 0.75rem);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing, 0.04em);
+    text-transform: uppercase;
+  }
+
+  .ap-review-card__name {
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  .ap-review-card__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    opacity: 0.75;
+  }
+
+  .ap-review-card__caption {
+    text-align: center;
+  }
+
+  .ap-review-card__caption a {
+    color: inherit;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Review card",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Quote",
+      "default": "Mixes clean, no chalk"
+    },
+    {
+      "type": "richtext",
+      "id": "body",
+      "label": "Review text"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Name",
+      "default": "Marcus D."
+    },
+    {
+      "type": "checkbox",
+      "id": "verified",
+      "label": "Show verified label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "verified_label",
+      "label": "Verified label",
+      "default": "Verified buyer",
+      "visible_if": "{{ block.settings.verified }}"
+    },
+    {
+      "type": "text",
+      "id": "caption",
+      "label": "Caption",
+      "info": "Shown under the card, e.g. the product reviewed."
+    },
+    {
+      "type": "url",
+      "id": "caption_link",
+      "label": "Caption link"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#FFFFFF"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Review card",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

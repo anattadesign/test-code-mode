@@ -1,0 +1,447 @@
+{%- comment -%}
+  AP-63 · Ascent reviews rail.
+
+  Figma: Reviews Rail 1906:24391 (desktop 1440 × 854) · Reviews Rail · M 390 1906:22941.
+
+  Centred head (eyebrow "REVIEWS" + "What Our Customers Are Saying") over a
+  full-bleed, horizontally scrolling rail of 300px cards with 24px gaps that runs
+  off both edges. Cards are theme blocks, so the merchant mixes UGC photo/video
+  cards (ap-ugc-card) and quote cards (ap-review-card) in any order. Native
+  scroll with snap points; prev/next buttons scroll one card.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign rail_id = 'ApReviewsRail-' | append: section.id
+-%}
+
+<div
+  class="ap-reviews-rail"
+  style="
+    --ap-rail-card: {{ s.card_width }}px;
+    --ap-rail-card-mobile: {{ s.card_width_mobile }}px;
+    --ap-rail-gap: {{ s.gap }}px;
+    --ap-rail-radius: {{ s.card_radius }}px;
+    --ap-rail-pad-top: {{ s.padding_top }}px;
+    --ap-rail-pad-bottom: {{ s.padding_bottom }}px;
+    --ap-rail-pad-top-mobile: {{ s.padding_top_mobile }}px;
+    --ap-rail-pad-bottom-mobile: {{ s.padding_bottom_mobile }}px;
+    --ap-rail-gap-mobile: {{ s.gap_mobile }}px;
+    --ap-rail-bg: {{ s.background_color }};
+    --ap-rail-text: {{ s.text_color }};
+  "
+>
+  {%- if s.eyebrow != blank or s.heading != blank -%}
+    <div class="ap-reviews-rail__head">
+      {%- if s.eyebrow != blank -%}
+        <p class="ap-reviews-rail__eyebrow ap-label-lg">{{ s.eyebrow | escape }}</p>
+      {%- endif -%}
+      {%- if s.heading != blank -%}
+        <h2 class="ap-reviews-rail__heading h3">{{ s.heading | escape }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <ap-reviews-rail class="ap-reviews-rail__viewport">
+    <div
+      id="{{ rail_id }}"
+      class="ap-reviews-rail__track"
+      role="region"
+      tabindex="0"
+      aria-label="{{ s.heading | default: 'Reviews' | escape }}"
+    >
+      {%- content_for 'blocks' -%}
+    </div>
+
+    {%- if s.show_arrows -%}
+      <div class="ap-reviews-rail__controls">
+        <button type="button" class="ap-reviews-rail__arrow" data-dir="-1" aria-controls="{{ rail_id }}" aria-label="Previous reviews">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M12.5 4.5 7 10l5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button type="button" class="ap-reviews-rail__arrow" data-dir="1" aria-controls="{{ rail_id }}" aria-label="Next reviews">
+          <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M7.5 4.5 13 10l-5.5 5.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    {%- endif -%}
+  </ap-reviews-rail>
+</div>
+
+{% javascript %}
+  if (!customElements.get('ap-reviews-rail')) {
+    customElements.define(
+      'ap-reviews-rail',
+      class extends HTMLElement {
+        connectedCallback() {
+          this.track = this.querySelector('.ap-reviews-rail__track');
+          this.arrows = this.querySelectorAll('.ap-reviews-rail__arrow');
+          if (!this.track) return;
+          this.onClick = (event) => {
+            const button = event.target.closest('.ap-reviews-rail__arrow');
+            if (!button) return;
+            const item = this.track.firstElementChild;
+            const gap = parseFloat(getComputedStyle(this.track).columnGap) || 0;
+            const step = item ? item.getBoundingClientRect().width + gap : this.track.clientWidth;
+            this.track.scrollBy({ left: step * Number(button.dataset.dir), behavior: 'smooth' });
+          };
+          this.update = () => {
+            const max = this.track.scrollWidth - this.track.clientWidth - 1;
+            this.arrows.forEach((arrow) => {
+              arrow.disabled = arrow.dataset.dir === '-1' ? this.track.scrollLeft <= 0 : this.track.scrollLeft >= max;
+            });
+          };
+          this.addEventListener('click', this.onClick);
+          this.track.addEventListener('scroll', this.update, { passive: true });
+          window.addEventListener('resize', this.update);
+          this.update();
+        }
+
+        disconnectedCallback() {
+          this.removeEventListener('click', this.onClick);
+          this.track?.removeEventListener('scroll', this.update);
+          window.removeEventListener('resize', this.update);
+        }
+      }
+    );
+  }
+{% endjavascript %}
+
+{% stylesheet %}
+  .ap-reviews-rail {
+    padding-block: var(--ap-rail-pad-top-mobile) var(--ap-rail-pad-bottom-mobile);
+    overflow: hidden;
+    background: var(--ap-rail-bg);
+    color: var(--ap-rail-text);
+    --color: var(--ap-rail-text);
+  }
+
+  .ap-reviews-rail__head {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.25rem;
+    margin-block-end: 1.25rem;
+    padding-inline: 1.25rem;
+    text-align: center;
+  }
+
+  .ap-reviews-rail__eyebrow {
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .ap-reviews-rail__heading {
+    margin: 0;
+    color: inherit;
+  }
+
+  .ap-reviews-rail__viewport {
+    display: block;
+  }
+
+  .ap-reviews-rail__track {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: var(--ap-rail-card-mobile);
+    gap: var(--ap-rail-gap-mobile);
+    margin: 0;
+    padding: 0 max(1.25rem, calc((100vw - var(--page-width, 1440px)) / 2));
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    scrollbar-width: none;
+  }
+
+  .ap-reviews-rail__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ap-reviews-rail__track:focus-visible {
+    outline: 2px solid currentcolor;
+    outline-offset: 4px;
+  }
+
+  .ap-reviews-rail__track > * {
+    min-inline-size: 0;
+    scroll-snap-align: start;
+  }
+
+  .ap-reviews-rail__controls {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-block-start: 2rem;
+  }
+
+  .ap-reviews-rail__arrow {
+    display: inline-grid;
+    place-items: center;
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    padding: 0;
+    border: 1px solid currentcolor;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .ap-reviews-rail__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-reviews-rail {
+      padding-block: var(--ap-rail-pad-top) var(--ap-rail-pad-bottom);
+    }
+
+    .ap-reviews-rail__head {
+      gap: 1rem;
+      margin-block-end: 3rem;
+    }
+
+    .ap-reviews-rail__track {
+      grid-auto-columns: var(--ap-rail-card);
+      gap: var(--ap-rail-gap);
+      padding-inline: 4rem;
+      scroll-padding-inline: 4rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ap-reviews-rail__track {
+      scroll-behavior: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Reviews rail (Ascent)",
+  "tag": "section",
+  "class": "ap-reviews-rail-section",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Reviews"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Are Saying"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 220,
+      "max": 420,
+      "step": 10,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width (mobile)",
+      "min": 200,
+      "max": 340,
+      "step": 10,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap (desktop)",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap (mobile)",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#F8F8F8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding (desktop)",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding (mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding (mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Reviews rail (Ascent)",
+      "category": "Reviews",
+      "blocks": {
+        "ugc_1": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@marcus.trains"
+          }
+        },
+        "review_2": {
+          "type": "ap-review-card",
+          "settings": {
+            "heading": "Mixes clean, no chalk",
+            "author": "Marcus D."
+          }
+        },
+        "ugc_3": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@alenapaints"
+          }
+        },
+        "review_4": {
+          "type": "ap-review-card",
+          "settings": {
+            "heading": "Finally a protein I can read the label on",
+            "author": "Alena R."
+          }
+        },
+        "ugc_5": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@devon.kitchen"
+          }
+        },
+        "review_6": {
+          "type": "ap-review-card",
+          "settings": {
+            "heading": "Tastes like a milkshake, sits light",
+            "author": "Priya S."
+          }
+        },
+        "ugc_7": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@coach.charles"
+          }
+        },
+        "review_8": {
+          "type": "ap-review-card",
+          "settings": {
+            "heading": "My whole team switched to Ascent",
+            "author": "Charles J."
+          }
+        },
+        "ugc_9": {
+          "type": "ap-ugc-card",
+          "settings": {
+            "handle": "@priya.trails"
+          }
+        }
+      },
+      "block_order": [
+        "ugc_1",
+        "review_2",
+        "ugc_3",
+        "review_4",
+        "ugc_5",
+        "review_6",
+        "ugc_7",
+        "review_8",
+        "ugc_9"
+      ]
+    }
+  ]
+}
+{% endschema %}

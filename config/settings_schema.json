@@ -1972,6 +1972,167 @@
     "name": "t:names.product_cards",
     "settings": [
       {
+        "type": "header",
+        "content": "Ascent product card"
+      },
+      {
+        "type": "paragraph",
+        "content": "One card for every product grid: collections, search, product lists, featured collections and recommendations. Turn off to fall back to the block-built Horizon card."
+      },
+      {
+        "type": "checkbox",
+        "id": "ap_card_enabled",
+        "label": "Use Ascent product card",
+        "default": true
+      },
+      {
+        "type": "color",
+        "id": "ap_card_background",
+        "label": "Card background",
+        "default": "#FFFFFF",
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "range",
+        "id": "ap_card_radius",
+        "label": "Card corner radius",
+        "min": 0,
+        "max": 32,
+        "step": 2,
+        "unit": "px",
+        "default": 16,
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_badge_prefix",
+        "label": "Badge tag prefix",
+        "info": "Tag a product badge:New to show a NEW badge.",
+        "default": "badge:",
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "ap_card_sale_badge",
+        "label": "Show sale badge when no badge tag is set",
+        "default": true,
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_sale_badge_label",
+        "label": "Sale badge label",
+        "default": "Sale",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_sale_badge }}"
+      },
+      {
+        "type": "select",
+        "id": "ap_card_tag_source",
+        "label": "Category tag",
+        "options": [
+          {
+            "value": "product_type",
+            "label": "Product type"
+          },
+          {
+            "value": "metafield",
+            "label": "Metafield"
+          },
+          {
+            "value": "none",
+            "label": "Hidden"
+          }
+        ],
+        "default": "product_type",
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_tag_metafield",
+        "label": "Category tag metafield",
+        "info": "namespace.key of a single line text product metafield",
+        "default": "custom.card_tag",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_tag_source == \"metafield\" }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "ap_card_show_rating",
+        "label": "Show rating",
+        "info": "Uses the reviews.rating and reviews.rating_count product metafields.",
+        "default": true,
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_spec_metafield",
+        "label": "Spec line metafield",
+        "info": "namespace.key, e.g. 25g protein · 30 servings. Leave empty to hide.",
+        "default": "custom.card_spec",
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "ap_card_show_swatches",
+        "label": "Show flavor swatches and count",
+        "default": true,
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_swatch_option",
+        "label": "Swatch option name",
+        "default": "Flavor",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_show_swatches }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "ap_card_show_button",
+        "label": "Show button",
+        "default": true,
+        "visible_if": "{{ settings.ap_card_enabled }}"
+      },
+      {
+        "type": "select",
+        "id": "ap_card_button_style",
+        "label": "Button style",
+        "options": [
+          {
+            "value": "primary",
+            "label": "Primary"
+          },
+          {
+            "value": "secondary",
+            "label": "Secondary"
+          },
+          {
+            "value": "dark",
+            "label": "Dark"
+          }
+        ],
+        "default": "primary",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_show_button }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_add_label",
+        "label": "Add to cart label",
+        "info": "Single-variant products add to cart from the card.",
+        "default": "Add to cart",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_show_button }}"
+      },
+      {
+        "type": "text",
+        "id": "ap_card_choose_label",
+        "label": "Choose options label",
+        "info": "Products with options link to the product page.",
+        "default": "Shop now",
+        "visible_if": "{{ settings.ap_card_enabled and settings.ap_card_show_button }}"
+      },
+      {
+        "type": "header",
+        "content": "Horizon product card"
+      },
+      {
         "type": "checkbox",
         "id": "quick_add",
         "label": "t:settings.quick_add",

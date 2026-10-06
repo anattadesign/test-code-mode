@@ -1,0 +1,1077 @@
+{%- comment -%}
+  AP-62 · Collection browser (Ascent PLP: filters, sort, product grid, promo tiles).
+
+  Figma: Bestsellers — desktop 1906:24323 · mobile 1906:22828
+
+  Desktop (≥ 750px)
+    240px filter sidebar · 40px gap · results column
+    Sidebar: FILTERS head, 1px dividers 24px apart, groups = label + options 12px apart
+             option = 16px checkbox · 10px · label (Body Large) · count (Body Small) right
+    Results bar: "6 products" left · Sort dropdown (186 × 41) right · 20px to grid
+    Grid: 3 columns, 16px gaps, Ascent product cards (AP-60)
+  Mobile
+    Filters button (114 × 41) + Sort (188 × 41) · count 20px below · grid 20px below
+    2 columns, 12px column gap / 20px row gap; first product spans the row (featured)
+    Filters open in a drawer.
+
+  Filtering, sorting and paging update in place (Section Rendering API, see
+  assets/ap-collection-browser.js) and fall back to plain links / form submit without JS.
+
+  Promo tiles are section blocks placed after the Nth product (client brief: "shift
+  custom card content throughout the order"). Same cell size as a card on desktop,
+  full row on mobile.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+  assign products_per_page = s.products_per_page
+
+  assign active_filter_count = 0
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_filter_count = active_filter_count | plus: 1
+      endif
+    else
+      assign active_filter_count = active_filter_count | plus: filter.active_values.size
+    endif
+  endfor
+
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+  assign sort_label = ''
+  for option in collection.sort_options
+    if option.value == sort_by
+      assign sort_label = option.name
+    endif
+  endfor
+
+  assign form_id = 'ApFilterForm-' | append: section.id
+-%}
+
+{{ 'ap-product-card.css' | asset_url | stylesheet_tag }}
+<script src="{{ 'ap-collection-browser.js' | asset_url }}" defer="defer"></script>
+
+<ap-collection-browser
+  class="apcb"
+  data-section-id="{{ section.id }}"
+  style="
+    --apcb-cols: {{ s.columns_desktop }};
+    --apcb-cols-mobile: {{ s.columns_mobile }};
+    --apcb-pad-top: {{ s.padding_top }}px;
+    --apcb-pad-bottom: {{ s.padding_bottom }}px;
+    --apcb-pad-top-mobile: {{ s.padding_top_mobile }}px;
+    --apcb-pad-bottom-mobile: {{ s.padding_bottom_mobile }}px;
+  "
+>
+  <div class="apcb__layout{% unless s.enable_filtering %} apcb__layout--no-filters{% endunless %}">
+    {%- if s.enable_filtering -%}
+      <div class="apcb__backdrop" data-apcb-close hidden></div>
+      <aside
+        class="apcb__filters"
+        id="ApFilters-{{ section.id }}"
+        aria-label="{{ 'content.filters' | t }}"
+        data-apcb-drawer
+      >
+        <form
+          id="{{ form_id }}"
+          class="apcb__form"
+          action="{{ collection.url }}"
+          method="get"
+          data-apcb-form
+        >
+          <input type="hidden" name="sort_by" value="{{ sort_by }}" data-apcb-sort-input>
+
+          <div class="apcb__filters-head">
+            <h2 class="apcb__filters-title ap-label-lg">{{ s.filters_heading }}</h2>
+            <button type="button" class="apcb__drawer-close" data-apcb-close aria-label="{{ 'actions.close' | t }}">
+              {{- 'icon-close.svg' | inline_asset_content -}}
+            </button>
+          </div>
+
+          <div class="apcb__filters-body" data-apcb-filters>
+            {%- if active_filter_count > 0 -%}
+              <a class="apcb__clear ap-label-sm" href="{{ collection.url }}?sort_by={{ sort_by }}" data-apcb-link>
+                {{- s.clear_label }} ({{ active_filter_count }})
+              </a>
+            {%- endif -%}
+
+            {%- for filter in collection.filters -%}
+              <fieldset class="apcb__group">
+                <legend class="apcb__group-label ap-label-lg">{{ filter.label | escape }}</legend>
+
+                {%- case filter.type -%}
+                  {%- when 'price_range' -%}
+                    {%- liquid
+                      assign min_value = filter.min_value.value | money_without_currency | remove: ','
+                      assign max_value = filter.max_value.value | money_without_currency | remove: ','
+                      assign range_max = filter.range_max | money_without_currency | remove: ','
+                      if filter.min_value.value == blank
+                        assign min_value = ''
+                      endif
+                      if filter.max_value.value == blank
+                        assign max_value = ''
+                      endif
+                    -%}
+                    <div class="apcb__price">
+                      <label class="apcb__price-field">
+                        <span class="visually-hidden">Minimum price</span>
+                        <span aria-hidden="true">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          inputmode="decimal"
+                          name="{{ filter.min_value.param_name }}"
+                          value="{{ min_value }}"
+                          placeholder="0"
+                          min="0"
+                          max="{{ range_max }}"
+                          data-apcb-debounce
+                        >
+                      </label>
+                      <span class="apcb__price-sep" aria-hidden="true">–</span>
+                      <label class="apcb__price-field">
+                        <span class="visually-hidden">Maximum price</span>
+                        <span aria-hidden="true">{{ cart.currency.symbol }}</span>
+                        <input
+                          type="number"
+                          inputmode="decimal"
+                          name="{{ filter.max_value.param_name }}"
+                          value="{{ max_value }}"
+                          placeholder="{{ range_max }}"
+                          min="0"
+                          max="{{ range_max }}"
+                          data-apcb-debounce
+                        >
+                      </label>
+                    </div>
+                  {%- else -%}
+                    <ul class="apcb__options" role="list">
+                      {%- for value in filter.values -%}
+                        {%- assign option_id = 'Filter-' | append: section.id | append: '-' | append: filter.param_name | append: '-' | append: forloop.index | handle -%}
+                        {%- assign disabled = false -%}
+                        {%- if value.count == 0 and value.active == false -%}
+                          {%- assign disabled = true -%}
+                        {%- endif -%}
+                        <li class="apcb__option{% if disabled %} apcb__option--disabled{% endif %}">
+                          <input
+                            class="apcb__checkbox"
+                            type="checkbox"
+                            id="{{ option_id }}"
+                            name="{{ value.param_name }}"
+                            value="{{ value.value | escape }}"
+                            {% if value.active %}
+                              checked
+                            {% endif %}
+                            {% if disabled %}
+                              disabled
+                            {% endif %}
+                          >
+                          <label class="apcb__option-label" for="{{ option_id }}">
+                            <span class="apcb__option-text">{{ value.label | escape }}</span>
+                            <span class="apcb__option-count">
+                              <span class="visually-hidden">(</span>{{ value.count }}<span class="visually-hidden">)</span>
+                            </span>
+                          </label>
+                        </li>
+                      {%- endfor -%}
+                    </ul>
+                {%- endcase -%}
+              </fieldset>
+            {%- else -%}
+              <p class="apcb__no-filters">{{ s.no_filters_text }}</p>
+            {%- endfor -%}
+          </div>
+
+          <div class="apcb__drawer-foot">
+            <button type="button" class="button apcb__drawer-apply" data-apcb-close>
+              {{ s.view_results_label }}
+              (<span data-apcb-count-number>{{ collection.products_count }}</span>)
+            </button>
+          </div>
+
+          <noscript>
+            <button type="submit" class="button">{{ 'actions.apply' | t }}</button>
+          </noscript>
+        </form>
+      </aside>
+    {%- endif -%}
+
+    <div class="apcb__results">
+      <div class="apcb__bar">
+        {%- if s.enable_filtering -%}
+          <button
+            type="button"
+            class="apcb__filters-toggle ap-label-sm"
+            aria-controls="ApFilters-{{ section.id }}"
+            aria-expanded="false"
+            data-apcb-open
+          >
+            <span class="apcb__filters-toggle-icon" aria-hidden="true">{{- 'icon-filter.svg' | inline_asset_content -}}</span>
+            {{ s.filters_button_label }}
+            <span class="apcb__filters-toggle-count" data-apcb-active-count>
+              {%- if active_filter_count > 0 %}({{ active_filter_count }}){% endif -%}
+            </span>
+          </button>
+        {%- endif -%}
+
+        <p class="apcb__count" role="status" data-apcb-count>
+          {%- if collection.products_count == 1 -%}
+            {{ s.count_label_one | replace: '[count]', collection.products_count }}
+          {%- else -%}
+            {{ s.count_label_other | replace: '[count]', collection.products_count }}
+          {%- endif -%}
+        </p>
+
+        {%- if s.enable_sorting -%}
+          <div class="apcb__sort ap-label-sm">
+            <span class="apcb__sort-label" aria-hidden="true" data-apcb-sort-label>
+              {{- s.sort_prefix }} {{ sort_label -}}
+            </span>
+            <span class="apcb__sort-chevron" aria-hidden="true">{{- 'icon-caret.svg' | inline_asset_content -}}</span>
+            <label class="visually-hidden" for="ApSort-{{ section.id }}">Sort by</label>
+            <select id="ApSort-{{ section.id }}" class="apcb__sort-select" name="sort_by" data-apcb-sort>
+              {%- for option in collection.sort_options -%}
+                <option
+                  value="{{ option.value }}"
+                  {% if option.value == sort_by %}
+                    selected
+                  {% endif %}
+                >
+                  {{- option.name | escape -}}
+                </option>
+              {%- endfor -%}
+            </select>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="apcb__results-body" data-apcb-results>
+        {%- paginate collection.products by products_per_page -%}
+          {%- if collection.products.size == 0 -%}
+            <div class="apcb__empty">
+              <p class="h5">{{ s.empty_heading }}</p>
+              {%- if active_filter_count > 0 -%}
+                <a class="button-secondary apcb__empty-clear" href="{{ collection.url }}" data-apcb-link>{{ s.clear_label }}</a>
+              {%- endif -%}
+            </div>
+          {%- else -%}
+            <ul class="apcb__grid" role="list">
+              {%- for product in collection.products -%}
+                {%- liquid
+                  assign position = paginate.current_offset | plus: forloop.index
+                  assign featured = false
+                  if s.feature_first_mobile and position == 1
+                    assign featured = true
+                  endif
+                  assign image_loading = 'lazy'
+                  if forloop.index <= 3 and paginate.current_page == 1
+                    assign image_loading = 'eager'
+                  endif
+                -%}
+                <li class="apcb__item{% if featured %} apcb__item--featured{% endif %}">
+                  {% render 'ap-product-card',
+                    product: product,
+                    section_id: section.id,
+                    id_suffix: position,
+                    featured: featured,
+                    image_loading: image_loading,
+                    product_view_context: 'collection'
+                  %}
+                </li>
+
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'promo' and block.settings.position == position -%}
+                    <li class="apcb__item apcb__item--promo" {{ block.shopify_attributes }}>
+                      {% render 'ap-promo-card', settings: block.settings, id: block.id %}
+                    </li>
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endfor -%}
+            </ul>
+
+            {%- if paginate.pages > 1 -%}
+              <nav class="apcb__pagination" aria-label="Pagination">
+                <ul class="apcb__pages" role="list">
+                  {%- if paginate.previous -%}
+                    <li>
+                      <a class="apcb__page apcb__page--prev" href="{{ paginate.previous.url }}" data-apcb-link aria-label="Previous page">
+                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                  {%- for part in paginate.parts -%}
+                    <li>
+                      {%- if part.is_link -%}
+                        <a class="apcb__page ap-label-sm" href="{{ part.url }}" data-apcb-link>{{ part.title }}</a>
+                      {%- elsif part.title == paginate.current_page -%}
+                        <span class="apcb__page apcb__page--current ap-label-sm" aria-current="page">{{ part.title }}</span>
+                      {%- else -%}
+                        <span class="apcb__page ap-label-sm">{{ part.title }}</span>
+                      {%- endif -%}
+                    </li>
+                  {%- endfor -%}
+                  {%- if paginate.next -%}
+                    <li>
+                      <a class="apcb__page apcb__page--next" href="{{ paginate.next.url }}" data-apcb-link aria-label="Next page">
+                        {{- 'icon-caret.svg' | inline_asset_content -}}
+                      </a>
+                    </li>
+                  {%- endif -%}
+                </ul>
+              </nav>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endpaginate -%}
+      </div>
+    </div>
+  </div>
+</ap-collection-browser>
+
+{% stylesheet %}
+  .apcb {
+    display: block;
+    padding-block: var(--apcb-pad-top-mobile) var(--apcb-pad-bottom-mobile);
+    padding-inline: 1.25rem;
+    background: var(--ap-surface-page, #f8f8f8);
+    color: var(--ap-text-primary);
+  }
+
+  .apcb[aria-busy='true'] .apcb__results-body {
+    opacity: 0.5;
+    pointer-events: none;
+    transition: opacity 150ms ease;
+  }
+
+  .apcb__layout {
+    max-inline-size: var(--page-width, 90rem);
+    margin-inline: auto;
+  }
+
+  /* ---------- Results bar ---------- */
+  .apcb__bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'filters sort'
+      'count count';
+    align-items: center;
+    gap: 1.25rem 0.75rem;
+    margin-block-end: 1.25rem;
+  }
+
+  .apcb__layout--no-filters .apcb__bar {
+    grid-template-areas:
+      'count sort';
+  }
+
+  .apcb__count {
+    grid-area: count;
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-size: var(--font-paragraph--size, 0.875rem);
+    line-height: 1.5;
+    color: var(--ap-text-secondary);
+  }
+
+  .apcb__filters-toggle,
+  .apcb__sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-block-size: 2.5625rem;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--ap-border-decorative, #d0d0d0);
+    border-radius: 999px;
+    background: var(--ap-surface-raised, #fff);
+    color: var(--ap-text-primary);
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .apcb__filters-toggle {
+    grid-area: filters;
+    font: inherit;
+    font-family: var(--font-ap-label-sm--family);
+    font-size: var(--font-ap-label-sm--size);
+    letter-spacing: var(--font-ap-label-sm--letter-spacing);
+    line-height: var(--font-ap-label-sm--line-height);
+  }
+
+  .apcb__filters-toggle-icon,
+  .apcb__filters-toggle-icon svg {
+    display: block;
+    inline-size: 1rem;
+    block-size: 1rem;
+  }
+
+  .apcb__sort {
+    position: relative;
+    grid-area: sort;
+    justify-self: end;
+    padding-inline: 0.875rem;
+    gap: 0.5rem;
+  }
+
+  .apcb__sort:focus-within {
+    outline: var(--focus-outline-width, 2px) solid var(--ap-focus-ring-outer, currentColor);
+    outline-offset: 2px;
+  }
+
+  .apcb__sort {
+    max-inline-size: 100%;
+  }
+
+  .apcb__sort-label {
+    min-inline-size: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .apcb__sort-chevron,
+  .apcb__sort-chevron svg {
+    display: block;
+    inline-size: 0.75rem;
+    block-size: 0.75rem;
+    --icon-stroke-width: 1.5px;
+  }
+
+  .apcb__sort-select {
+    position: absolute;
+    inset: 0;
+    inline-size: 100%;
+    opacity: 0;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+
+  /* ---------- Grid ---------- */
+  .apcb__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--apcb-cols-mobile, 2), minmax(0, 1fr));
+    gap: 1.25rem 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .apcb__item {
+    display: flex;
+    min-inline-size: 0;
+  }
+
+  .apcb__item--featured,
+  .apcb__item--promo {
+    grid-column: 1 / -1;
+  }
+
+  .apcb__empty {
+    display: grid;
+    justify-items: center;
+    gap: 1rem;
+    padding-block: 4rem;
+    text-align: center;
+  }
+
+  /* ---------- Pagination ---------- */
+  .apcb__pagination {
+    margin-block-start: 2.5rem;
+  }
+
+  .apcb__pages {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .apcb__page {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: 2.5rem;
+    block-size: 2.5rem;
+    padding-inline: 0.5rem;
+    border-radius: 999px;
+    color: var(--ap-text-primary);
+    text-decoration: none;
+  }
+
+  a.apcb__page:hover {
+    background: var(--ap-surface-raised, #fff);
+  }
+
+  .apcb__page--current {
+    background: var(--ap-surface-inverse, #1a1a1a);
+    color: var(--ap-text-inverse-primary, #fff);
+  }
+
+  .apcb__page svg {
+    inline-size: 0.875rem;
+    block-size: 0.875rem;
+    --icon-stroke-width: 1.5px;
+  }
+
+  .apcb__page--prev svg {
+    transform: rotate(90deg);
+  }
+
+  .apcb__page--next svg {
+    transform: rotate(-90deg);
+  }
+
+  /* ---------- Filters (shared) ---------- */
+  .apcb__form {
+    margin: 0;
+  }
+
+  .apcb__filters-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-block-end: 1.5rem;
+    border-block-end: 1px solid var(--ap-border-decorative, #d0d0d0);
+  }
+
+  .apcb__filters-title {
+    margin: 0;
+    text-transform: uppercase;
+  }
+
+  .apcb__clear {
+    display: inline-block;
+    margin-block-start: 1.5rem;
+    color: var(--ap-text-primary);
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 0.25em;
+  }
+
+  .apcb__group {
+    margin: 0;
+    padding: 1.5rem 0;
+    border: 0;
+    border-block-end: 1px solid var(--ap-border-decorative, #d0d0d0);
+    min-inline-size: 0;
+  }
+
+  .apcb__group-label {
+    float: left;
+    inline-size: 100%;
+    margin: 0 0 0.75rem;
+    padding: 0;
+    text-transform: uppercase;
+  }
+
+  .apcb__options {
+    clear: both;
+    display: grid;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .apcb__option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+  }
+
+  .apcb__checkbox {
+    flex: none;
+    appearance: none;
+    inline-size: 1rem;
+    block-size: 1rem;
+    margin: 0;
+    border: 1px solid var(--ap-border-functional, #696969);
+    border-radius: 2px;
+    background: var(--ap-surface-raised, #fff) center / 0.75rem no-repeat;
+    cursor: pointer;
+  }
+
+  .apcb__checkbox:checked {
+    border-color: var(--ap-surface-inverse, #1a1a1a);
+    background-color: var(--ap-surface-inverse, #1a1a1a);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M2.5 6.2l2.3 2.3 4.7-5' fill='none' stroke='%23fff' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  }
+
+  .apcb__checkbox:focus-visible {
+    outline: var(--focus-outline-width, 2px) solid var(--ap-focus-ring-outer, currentColor);
+    outline-offset: 2px;
+  }
+
+  .apcb__option-label {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.625rem;
+    cursor: pointer;
+  }
+
+  .apcb__option-text {
+    font-family: var(--font-body--family);
+    font-size: var(--font-ap-body-lg--size, 1rem);
+    line-height: var(--font-ap-body-lg--line-height, 1.4);
+  }
+
+  .apcb__option-count {
+    font-family: var(--font-body--family);
+    font-size: var(--font-ap-body-sm--size, 0.75rem);
+    line-height: 1.5;
+    color: var(--ap-text-secondary);
+  }
+
+  .apcb__option--disabled {
+    opacity: 0.45;
+  }
+
+  .apcb__option--disabled .apcb__option-label,
+  .apcb__option--disabled .apcb__checkbox {
+    cursor: not-allowed;
+  }
+
+  .apcb__price {
+    clear: both;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .apcb__price-field {
+    display: flex;
+    flex: 1 1 0;
+    align-items: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid var(--ap-border-decorative, #d0d0d0);
+    border-radius: 8px;
+    background: var(--ap-surface-raised, #fff);
+  }
+
+  .apcb__price-field input {
+    inline-size: 100%;
+    min-inline-size: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+  }
+
+  .apcb__price-field input:focus {
+    outline: none;
+  }
+
+  .apcb__price-field:focus-within {
+    outline: var(--focus-outline-width, 2px) solid var(--ap-focus-ring-outer, currentColor);
+    outline-offset: 1px;
+  }
+
+  .apcb__no-filters {
+    margin: 1.5rem 0 0;
+    color: var(--ap-text-secondary);
+  }
+
+  /* ---------- Mobile drawer ---------- */
+  .apcb__drawer-close,
+  .apcb__drawer-foot {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .apcb__filters {
+      position: fixed;
+      inset: 0 auto 0 0;
+      z-index: 1001;
+      display: flex;
+      flex-direction: column;
+      inline-size: min(22rem, 88vw);
+      background: var(--ap-surface-page, #f8f8f8);
+      transform: translateX(-100%);
+      visibility: hidden;
+      transition: transform 250ms ease, visibility 0s linear 250ms;
+    }
+
+    .apcb__filters[data-open] {
+      transform: none;
+      visibility: visible;
+      transition: transform 250ms ease;
+    }
+
+    .apcb__form {
+      display: flex;
+      flex: 1 1 auto;
+      flex-direction: column;
+      min-block-size: 0;
+    }
+
+    .apcb__filters-head {
+      padding: 1.25rem;
+    }
+
+    .apcb__filters-body {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding-inline: 1.25rem;
+    }
+
+    .apcb__drawer-close {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      inline-size: 2.5rem;
+      block-size: 2.5rem;
+      margin: -0.5rem -0.5rem -0.5rem 0;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .apcb__drawer-foot {
+      display: block;
+      padding: 1rem 1.25rem 1.25rem;
+      border-block-start: 1px solid var(--ap-border-decorative, #d0d0d0);
+    }
+
+    .apcb__drawer-apply {
+      inline-size: 100%;
+    }
+
+    .apcb__backdrop:not([hidden]) {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: var(--ap-overlay-medium, rgb(26 26 26 / 0.4));
+    }
+
+    .apcb__sort {
+      min-inline-size: 11.75rem;
+      justify-content: space-between;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .apcb__filters,
+      .apcb__filters[data-open] {
+        transition: none;
+      }
+    }
+  }
+
+  /* ---------- Desktop ---------- */
+  @media screen and (min-width: 750px) {
+    .apcb {
+      padding-block: var(--apcb-pad-top) var(--apcb-pad-bottom);
+      padding-inline: 3.5rem;
+    }
+
+    .apcb__layout {
+      display: grid;
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .apcb__layout--no-filters {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .apcb__filters {
+      position: sticky;
+      inset-block-start: calc(var(--header-height, 0px) + 1.5rem);
+    }
+
+    .apcb__backdrop,
+    .apcb__filters-toggle {
+      display: none;
+    }
+
+    .apcb__bar {
+      grid-template-columns: 1fr auto;
+      grid-template-areas: 'count sort';
+    }
+
+    .apcb__count {
+      font-size: var(--font-paragraph--size, 0.875rem);
+    }
+
+    .apcb__sort {
+      padding-inline: 1.125rem;
+      gap: 1.5rem;
+    }
+
+    .apcb__grid {
+      grid-template-columns: repeat(var(--apcb-cols, 3), minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .apcb__item--featured,
+    .apcb__item--promo {
+      grid-column: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Collection browser",
+  "tag": "section",
+  "class": "section-ap-collection-browser",
+  "enabled_on": {
+    "templates": ["collection"]
+  },
+  "settings": [
+    { "type": "header", "content": "Grid" },
+    {
+      "type": "range",
+      "id": "products_per_page",
+      "label": "Products per page",
+      "min": 6,
+      "max": 48,
+      "step": 3,
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on mobile",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "checkbox",
+      "id": "feature_first_mobile",
+      "label": "Show the first product full width on mobile",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "count_label_one",
+      "label": "Product count (one)",
+      "info": "[count] is replaced by the number.",
+      "default": "[count] product"
+    },
+    {
+      "type": "text",
+      "id": "count_label_other",
+      "label": "Product count (many)",
+      "default": "[count] products"
+    },
+    {
+      "type": "text",
+      "id": "empty_heading",
+      "label": "No results message",
+      "default": "No products match these filters."
+    },
+    { "type": "header", "content": "Filters and sorting" },
+    {
+      "type": "paragraph",
+      "content": "Filter groups (e.g. Category, Goal) come from Shopify Search & Discovery › Filters."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_filtering",
+      "label": "Enable filtering",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "filters_heading",
+      "label": "Filters heading",
+      "default": "Filters"
+    },
+    {
+      "type": "text",
+      "id": "filters_button_label",
+      "label": "Mobile filters button",
+      "default": "Filters"
+    },
+    {
+      "type": "text",
+      "id": "view_results_label",
+      "label": "Mobile view results button",
+      "default": "View results"
+    },
+    {
+      "type": "text",
+      "id": "clear_label",
+      "label": "Clear filters label",
+      "default": "Clear all"
+    },
+    {
+      "type": "text",
+      "id": "no_filters_text",
+      "label": "No filters message",
+      "default": "No filters available."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sorting",
+      "label": "Enable sorting",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "sort_prefix",
+      "label": "Sort label prefix",
+      "default": "Sort:"
+    },
+    { "type": "header", "content": "Spacing" },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "promo",
+      "name": "Promo tile",
+      "settings": [
+        {
+          "type": "range",
+          "id": "position",
+          "label": "Show after product",
+          "min": 1,
+          "max": 48,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile image",
+          "info": "Mobile tiles span the full row (about 350 × 203)."
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Bundle & save"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Build your stack"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "Pair Native Whey with Creatine and save on both."
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Shop bundles"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "options": [
+            { "value": "button", "label": "Primary" },
+            { "value": "button-secondary", "label": "Secondary" },
+            { "value": "button-dark", "label": "Dark" }
+          ],
+          "default": "button-dark"
+        },
+        {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background",
+          "default": "#FBEC00"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text",
+          "default": "#1A1A1A"
+        },
+        {
+          "type": "range",
+          "id": "scrim_opacity",
+          "label": "Image scrim",
+          "info": "Use 60% or more when text sits on a photo.",
+          "min": 0,
+          "max": 90,
+          "step": 5,
+          "unit": "%",
+          "default": 0
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection browser",
+      "category": "Collection"
+    }
+  ]
+}
+{% endschema %}

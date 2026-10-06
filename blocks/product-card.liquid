@@ -4,13 +4,18 @@
   assign product = block.settings.product
 -%}
 
-{% capture children %}
-  {% content_for 'blocks', closest.product: product %}
-{% endcapture %}
+{%- # AP-60: the Ascent card replaces the block-built card everywhere when enabled (Theme settings › Product cards). -%}
+{%- if settings.ap_card_enabled -%}
+  {% render 'ap-product-card', product: product, section_id: section.id, id_suffix: block.id, attributes: block.shopify_attributes %}
+{%- else -%}
+  {% capture children %}
+    {% content_for 'blocks', closest.product: product %}
+  {% endcapture %}
 
-{% render 'swatch-styles' %}
-{% render 'quantity-selector-styles' %}
-{% render 'product-card', children: children, product: product, block: block %}
+  {% render 'swatch-styles' %}
+  {% render 'quantity-selector-styles' %}
+  {% render 'product-card', children: children, product: product, block: block %}
+{%- endif -%}
 {% render 'buy-buttons-styles' %}
 
 {% schema %}

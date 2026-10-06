@@ -1,0 +1,329 @@
+{%- doc -%}
+  AP-60 · Ascent product card — the one card markup used across the store.
+
+  Figma: Ascent Design File › Product Card
+    Desktop 1906:24383 (338 × 573, 24/20 inset, 298 square image)
+    Mobile  1906:22929 (169 × 460, 24/12 inset, 145 square image)
+    Mobile featured 1906:22922 (full-width, 224 image)
+
+  Anatomy (top → bottom, all centred, 8px rhythm, 12px before the button):
+    badge (overlaps the image top) · image · tag · rating · title · spec ·
+    flavour swatches + count · price · button
+
+  Rendered by:
+    - blocks/_product-card.liquid and blocks/product-card.liquid (every Horizon grid:
+      collection, search, product list / featured collection, recommendations) when
+      Theme settings › Product cards › "Use Ascent product card" is on
+    - blocks/ap-product-card.liquid (standalone theme block, any section)
+    - sections/ap-collection-browser.liquid (PLP grid)
+
+  Global behaviour lives in Theme settings › Product cards (settings.ap_card_*), so
+  every template renders the same card from one place.
+
+  Data
+    badge   product tag "<prefix><label>" (default prefix "badge:", e.g. "badge:New"),
+            otherwise "Sale" when the product is on sale (optional)
+    tag     product type, or a single-line-text metafield (namespace.key)
+    rating  reviews.rating + reviews.rating_count (Shopify standard review metafields)
+    spec    single-line-text metafield (namespace.key), e.g. "25g protein · 30 servings"
+    swatches the option named in settings (default "Flavor"), else the first option
+            with swatches; shows up to 3 swatches + "<n> flavors"
+    button  1 variant → adds to cart in place (Horizon product-form-component);
+            more variants → links to the product page
+
+  @param {object} product - The product (blank renders an onboarding placeholder)
+  @param {string} [section_id] - Section id, used by the add-to-cart form
+  @param {string} [id_suffix] - Extra id suffix so forms stay unique when a card repeats
+  @param {boolean} [featured] - Featured layout (spans two columns on mobile in the PLP grid)
+  @param {string} [image_loading] - 'eager' or 'lazy' (default lazy)
+  @param {string} [product_view_context] - Context for standard view events
+  @param {string} [attributes] - Extra raw attributes for the root (e.g. block.shopify_attributes)
+{%- enddoc -%}
+
+{%- liquid
+  assign onboarding = false
+  if product == blank or product.id == blank
+    assign onboarding = true
+  endif
+
+  assign card_id = 'ApCard-' | append: product.id | append: '-' | append: section_id | append: '-' | append: id_suffix
+
+  # ---------- Badge ----------
+  assign badge_label = ''
+  assign badge_prefix = settings.ap_card_badge_prefix | default: 'badge:' | downcase
+  assign badge_prefix_size = badge_prefix | size
+  for tag in product.tags
+    assign tag_down = tag | downcase
+    if badge_prefix_size > 0 and tag_down contains badge_prefix
+      assign tag_start = tag_down | slice: 0, badge_prefix_size
+      if tag_start == badge_prefix
+        assign badge_label = tag | slice: badge_prefix_size, 100 | strip
+        break
+      endif
+    endif
+  endfor
+  if badge_label == blank and settings.ap_card_sale_badge and product.compare_at_price > product.price
+    assign badge_label = settings.ap_card_sale_badge_label | default: 'Sale'
+  endif
+
+  # ---------- Tag (category pill) ----------
+  assign tag_label = ''
+  case settings.ap_card_tag_source
+    when 'product_type'
+      assign tag_label = product.type
+    when 'metafield'
+      assign tag_parts = settings.ap_card_tag_metafield | split: '.'
+      if tag_parts.size == 2
+        assign tag_label = product.metafields[tag_parts[0]][tag_parts[1]].value
+      endif
+  endcase
+
+  # ---------- Rating ----------
+  assign rating_value = blank
+  assign rating_count = 0
+  if settings.ap_card_show_rating and product.metafields.reviews.rating.value != blank
+    assign rating_value = product.metafields.reviews.rating.value.rating | round: 1
+    assign rating_count = product.metafields.reviews.rating_count.value | default: 0
+  endif
+
+  # ---------- Spec line ----------
+  assign spec = ''
+  assign spec_parts = settings.ap_card_spec_metafield | split: '.'
+  if spec_parts.size == 2
+    assign spec = product.metafields[spec_parts[0]][spec_parts[1]].value
+  endif
+
+  # ---------- Flavour swatches ----------
+  assign swatch_option = blank
+  if settings.ap_card_show_swatches
+    assign swatch_option_name = settings.ap_card_swatch_option | default: 'Flavor' | downcase
+    for option in product.options_with_values
+      assign option_down = option.name | downcase
+      if option_down == swatch_option_name
+        assign swatch_option = option
+        break
+      endif
+    endfor
+    if swatch_option == blank
+      for option in product.options_with_values
+        assign option_swatches = option.values | map: 'swatch' | compact
+        if option_swatches.size > 0
+          assign swatch_option = option
+          break
+        endif
+      endfor
+    endif
+  endif
+
+  # ---------- Price ----------
+  assign price_variant = product.selected_or_first_available_variant
+  assign price_now = price_variant.price
+  assign price_was = price_variant.compare_at_price
+
+  # ---------- Button ----------
+  assign button_class = 'button'
+  case settings.ap_card_button_style
+    when 'secondary'
+      assign button_class = 'button-secondary'
+    when 'dark'
+      assign button_class = 'button-dark'
+  endcase
+
+  assign can_add_in_place = false
+  if product.variants_count == 1 and product.requires_selling_plan == false
+    assign can_add_in_place = true
+  endif
+
+  assign image = price_variant.featured_media.preview_image | default: product.featured_media.preview_image
+
+  if featured
+    assign image_sizes = '(min-width: 750px) 300px, 224px'
+  else
+    assign image_sizes = '(min-width: 750px) 300px, 45vw'
+  endif
+-%}
+
+{{ 'ap-product-card.css' | asset_url | stylesheet_tag }}
+
+<article
+  class="ap-card{% if featured %} ap-card--featured{% endif %}{% if onboarding %} ap-card--placeholder{% endif %}"
+  id="{{ card_id }}"
+  data-product-id="{{ product.id }}"
+  style="{% if settings.ap_card_background != blank %}--ap-card-background: {{ settings.ap_card_background }};{% endif %} --ap-card-corner-radius: {{ settings.ap_card_radius | default: 0 }}px;"
+  {% unless onboarding %}
+    view-event-payload="{{ product | standard_event_data: 'view', context: product_view_context | escape }}"
+  {% endunless %}
+  {{ attributes }}
+>
+  {%- if badge_label != blank -%}
+    <span class="ap-card__badge ap-label-sm">{{ badge_label | escape }}</span>
+  {%- endif -%}
+
+  <a
+    class="ap-card__media"
+    {% unless onboarding %}
+      href="{{ product.url }}"
+    {% endunless %}
+    tabindex="-1"
+    aria-hidden="true"
+  >
+    {%- if image != blank -%}
+      {{
+        image
+        | image_url: width: 900
+        | image_tag:
+          widths: '180, 240, 300, 360, 450, 600, 900',
+          sizes: image_sizes,
+          loading: image_loading | default: 'lazy',
+          alt: image.alt | default: product.title,
+          class: 'ap-card__image'
+      }}
+    {%- else -%}
+      {{ 'product-apparel-1' | placeholder_svg_tag: 'ap-card__image ap-card__image--placeholder' }}
+    {%- endif -%}
+  </a>
+
+  <div class="ap-card__content">
+    <div class="ap-card__info">
+      {%- if tag_label != blank -%}
+        <span class="ap-card__tag ap-label-sm">{{ tag_label | escape }}</span>
+      {%- endif -%}
+
+      {%- if rating_value != blank -%}
+        <p class="ap-card__rating">
+          <svg class="ap-card__star" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path fill="currentColor" d="M12 2.5l2.94 6.17 6.76.8-5 4.63 1.33 6.69L12 17.43 5.97 20.8l1.33-6.69-5-4.63 6.76-.8L12 2.5z"/>
+          </svg>
+          <span class="ap-card__rating-value ap-label-sm">
+            <span class="visually-hidden">{{ 'accessibility.rating' | t: rating: rating_value | default: rating_value }}</span>
+            <span aria-hidden="true">{{ rating_value }}</span>
+            {%- if rating_count > 0 %}
+              <span class="ap-card__rating-count">({{ rating_count | json }})</span>
+            {%- endif -%}
+          </span>
+        </p>
+      {%- endif -%}
+
+      <h3 class="ap-card__title ap-title-card">
+        <a
+          class="ap-card__link"
+          {% unless onboarding %}
+            href="{{ product.url }}"
+          {% endunless %}
+        >
+          {%- if onboarding -%}
+            {{ 'content.product_card_placeholder' | t }}
+          {%- else -%}
+            {{ product.title | escape }}
+          {%- endif -%}
+        </a>
+      </h3>
+
+      {%- if spec != blank -%}
+        <p class="ap-card__spec">{{ spec | escape }}</p>
+      {%- endif -%}
+
+      {%- if swatch_option != blank and swatch_option.values.size > 1 -%}
+        {%- liquid
+          assign option_count = swatch_option.values.size
+          assign option_label = swatch_option.name | downcase
+          assign option_last_char = option_label | slice: -1
+          if option_last_char != 's'
+            assign option_label = option_label | append: 's'
+          endif
+        -%}
+        <div class="ap-card__flavors">
+          {%- assign shown = 0 -%}
+          {%- assign has_visual = false -%}
+          {%- capture swatch_markup -%}
+            {%- for value in swatch_option.values -%}
+              {%- if value.swatch != blank and shown < 3 -%}
+                {%- assign shown = shown | plus: 1 -%}
+                {%- assign has_visual = true -%}
+                {%- if value.swatch.image -%}
+                  <span class="ap-card__swatch" style="background-image: url({{ value.swatch.image | image_url: width: 48 }});"></span>
+                {%- else -%}
+                  <span class="ap-card__swatch" style="background-color: {{ value.swatch.color }};"></span>
+                {%- endif -%}
+              {%- endif -%}
+            {%- endfor -%}
+          {%- endcapture -%}
+          {%- if has_visual -%}
+            <span class="ap-card__swatches" aria-hidden="true">{{ swatch_markup }}</span>
+          {%- endif -%}
+          <span class="ap-card__flavor-count ap-label-sm">{{ option_count }} {{ option_label | escape }}</span>
+        </div>
+      {%- endif -%}
+
+      <p class="ap-card__price">
+        {%- if onboarding -%}
+          <span class="ap-card__price-now">{{ 4999 | money }}</span>
+        {%- else -%}
+          <span class="ap-card__price-now">
+            {%- if price_was > price_now -%}<span class="visually-hidden">{{ 'content.price_sale' | t }}</span>{%- endif -%}
+            {%- assign show_from = false -%}
+            {%- unless price_was > price_now -%}{%- assign show_from = product.price_varies -%}{%- endunless -%}
+            {%- if show_from -%}
+              {%- assign from_price = product.price_min | money -%}
+              {{- 'content.price_from' | t: price: from_price -}}
+            {%- else -%}
+              {{- price_now | money -}}
+            {%- endif -%}
+          </span>
+          {%- if price_was > price_now -%}
+            <s class="ap-card__price-was">
+              <span class="visually-hidden">{{ 'content.price_regular' | t }}</span>
+              {{- price_was | money -}}
+            </s>
+          {%- endif -%}
+        {%- endif -%}
+      </p>
+    </div>
+
+    {%- if settings.ap_card_show_button -%}
+      <div class="ap-card__actions">
+        {%- if onboarding -%}
+          <span class="{{ button_class }} ap-card__button" aria-disabled="true">
+            {{- settings.ap_card_add_label | default: 'Add to cart' -}}
+          </span>
+        {%- elsif product.available == false -%}
+          <button type="button" class="{{ button_class }} ap-card__button" disabled>
+            {{- 'content.product_badge_sold_out' | t -}}
+          </button>
+        {%- elsif can_add_in_place -%}
+          {%- assign form_id = 'ApCardForm-' | append: product.id | append: '-' | append: section_id | append: '-' | append: id_suffix -%}
+          <product-form-component
+            data-section-id="{{ section_id }}"
+            data-product-id="{{ product.id }}"
+            on:submit="/handleSubmit"
+            class="ap-card__form"
+          >
+            <div class="visually-hidden" aria-live="assertive" role="status" aria-atomic="true" ref="liveRegion"></div>
+            {%- form 'product', product, id: form_id, novalidate: 'novalidate', data-type: 'add-to-cart-form' -%}
+              <input type="hidden" name="id" ref="variantId" value="{{ price_variant.id }}">
+              <input
+                type="hidden"
+                name="quantity"
+                value="{% if price_variant.quantity_rule.min %}{{ price_variant.quantity_rule.min }}{% else %}1{% endif %}"
+              >
+              {%- capture add_label -%}{{ settings.ap_card_add_label | default: 'Add to cart' }}{%- endcapture -%}
+              {%- assign add_button_class = button_class | append: ' ap-card__button' -%}
+              {% render 'add-to-cart-button',
+                add_to_cart_text: add_label,
+                can_add_to_cart: true,
+                product: product,
+                class: add_button_class,
+                show_icon: false
+              %}
+            {%- endform -%}
+          </product-form-component>
+        {%- else -%}
+          <a class="{{ button_class }} ap-card__button" href="{{ product.url }}">
+            {{- settings.ap_card_choose_label | default: 'Shop now' -}}
+            <span class="visually-hidden">: {{ product.title | escape }}</span>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</article>
