@@ -328,10 +328,204 @@
         "padding-block-start": 48,
         "padding-block-end": 48
       }
+    },
+    "about_ascent_panels": {
+      "type": "ap-panels",
+      "name": "About Ascent — Full-Bleed Panels",
+      "blocks": {
+        "eyebrow": {
+          "type": "ap-eyebrow",
+          "settings": {
+            "text": "Why Ascent",
+            "size": "ap-label-sm",
+            "size_mobile": "ap-label-lg",
+            "weight": "700",
+            "uppercase": true,
+            "text_color": ""
+          },
+          "blocks": {}
+        },
+        "headline": {
+          "type": "ap-headline",
+          "settings": {
+            "text": "The cleanest protein we know how to make.",
+            "tag": "h2",
+            "preset": "h1",
+            "regular_weight": "inherit",
+            "balance": false,
+            "max_width": 16,
+            "text_color": ""
+          },
+          "blocks": {}
+        },
+        "link": {
+          "type": "button",
+          "settings": {
+            "open_in_new_tab": false,
+            "custom_button_background": "{{ settings.color_palette.foreground }}",
+            "custom_button_text": "{{ settings.color_palette.background }}",
+            "custom_button_border": "{{ settings.color_palette.background }}",
+            "link_text_color": "",
+            "width": "fit-content",
+            "custom_width": 100,
+            "width_mobile": "fit-content",
+            "custom_width_mobile": 100,
+            "label": "See the science",
+            "link": "shopify://blogs/news",
+            "style_class": "button-tertiary",
+            "button_size": "small",
+            "show_icon": true
+          },
+          "blocks": {}
+        },
+        "cards": {
+          "type": "ap-card-row",
+          "settings": {
+            "label": "Why Ascent",
+            "bleed": true,
+            "card_width": 300,
+            "card_height": 386,
+            "gap": 16,
+            "margin_top": 12,
+            "margin_bottom": 0,
+            "card_width_mobile": 300,
+            "card_height_mobile": 386,
+            "gap_mobile": 16,
+            "margin_top_mobile": 20,
+            "margin_bottom_mobile": 20
+          },
+          "blocks": {
+            "card_1": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "01",
+                "title": "Minimal ingredients, minimal processing",
+                "title_tag": "h3",
+                "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked.",
+                "link": "",
+                "tint_color": "#ffffff",
+                "tint_opacity": 4,
+                "blur": 24
+              },
+              "blocks": {}
+            },
+            "card_2": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "02",
+                "title": "Rigorous third-party testing",
+                "title_tag": "h3",
+                "text": "Informed Sport Certified. An outside lab checks every batch before it ships.",
+                "link": "",
+                "tint_color": "#ffffff",
+                "tint_opacity": 4,
+                "blur": 24
+              },
+              "blocks": {}
+            },
+            "card_3": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "03",
+                "title": "Tastes just like real milk",
+                "title_tag": "h3",
+                "text": "There's nothing artificial masking it, so it tastes like exactly what it's made from.",
+                "link": "",
+                "tint_color": "#ffffff",
+                "tint_opacity": 4,
+                "blur": 24
+              },
+              "blocks": {}
+            },
+            "card_4": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "04",
+                "title": "Gentle on your stomach",
+                "title_tag": "h3",
+                "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean.",
+                "link": "",
+                "tint_color": "#ffffff",
+                "tint_opacity": 4,
+                "blur": 24
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "card_1",
+            "card_2",
+            "card_3",
+            "card_4"
+          ]
+        },
+        "cta": {
+          "type": "ap-button-group",
+          "settings": {
+            "direction": "row",
+            "gap": 24,
+            "direction_mobile": "column",
+            "fill_mobile": true,
+            "gap_mobile": 16,
+            "vertical_alignment": "center",
+            "visibility": "mobile"
+          },
+          "blocks": {
+            "shop": {
+              "type": "button",
+              "settings": {
+                "open_in_new_tab": false,
+                "custom_button_background": "{{ settings.color_palette.foreground }}",
+                "custom_button_text": "{{ settings.color_palette.background }}",
+                "custom_button_border": "{{ settings.color_palette.background }}",
+                "link_text_color": "",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100,
+                "label": "Shop protein",
+                "link": "shopify://collections/all",
+                "style_class": "button",
+                "button_size": "large",
+                "show_icon": true
+              },
+              "blocks": {}
+            }
+          },
+          "block_order": [
+            "shop"
+          ]
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "headline",
+        "link",
+        "cards",
+        "cta"
+      ],
+      "settings": {
+        "image": "shopify://shop_images/ap-why-ascent-bg.jpg",
+        "background_color": "#1a1a1a",
+        "overlay_color": "#1a1a1a",
+        "overlay_opacity": 0,
+        "text_color": "#ffffff",
+        "content_max_width": 1240,
+        "gap": 24,
+        "padding_inline": 48,
+        "padding_top": 108,
+        "padding_bottom": 108,
+        "gap_mobile": 12,
+        "padding_left_mobile": 32,
+        "padding_right_mobile": 20,
+        "padding_top_mobile": 72,
+        "padding_bottom_mobile": 72
+      }
     }
   },
   "order": [
     "ap_hero",
-    "product_list_fa6P9H"
+    "product_list_fa6P9H",
+    "about_ascent_panels"
   ]
 }

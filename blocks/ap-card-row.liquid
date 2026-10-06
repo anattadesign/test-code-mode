@@ -1,0 +1,262 @@
+{%- doc -%}
+  AP-29 · Card row block (Ascent).
+
+  A horizontal row of fixed-size cards that scrolls sideways (with snap) when the
+  cards don't fit — the four glass panels in About Ascent (Figma 811:13145 desktop,
+  811:12850 mobile). Cards are nested blocks (Glass card, or any @theme block).
+
+  When "Bleed to the screen edge" is on, the row runs past the section's side
+  padding to the viewport edge. Sections opt in by setting --ap-bleed-start and
+  --ap-bleed-end to their side padding; elsewhere they default to 0.
+  Reusable in any section that accepts @theme blocks.
+{%- enddoc -%}
+
+{%- assign bs = block.settings -%}
+
+<div
+  class="ap-card-row{% if bs.bleed %} ap-card-row--bleed{% endif %}"
+  style="
+    --ap-card-width: {{ bs.card_width_mobile }}px;
+    --ap-card-height: {{ bs.card_height_mobile }}px;
+    --ap-card-row-gap: {{ bs.gap_mobile }}px;
+    --ap-card-row-mt: {{ bs.margin_top_mobile }}px;
+    --ap-card-row-mb: {{ bs.margin_bottom_mobile }}px;
+    --ap-card-width-desktop: {{ bs.card_width }}px;
+    --ap-card-height-desktop: {{ bs.card_height }}px;
+    --ap-card-row-gap-desktop: {{ bs.gap }}px;
+    --ap-card-row-mt-desktop: {{ bs.margin_top }}px;
+    --ap-card-row-mb-desktop: {{ bs.margin_bottom }}px;
+  "
+  {{ block.shopify_attributes }}
+>
+  <div
+    class="ap-card-row__track"
+    role="region"
+    aria-label="{{ bs.label | default: 'Cards' | escape }}"
+    tabindex="0"
+  >
+    {%- content_for 'blocks' -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-card-row {
+    --ap-card-row-bleed-start: 0px;
+    --ap-card-row-bleed-end: 0px;
+
+    min-inline-size: 0;
+    max-inline-size: 100%;
+    margin-block: var(--ap-card-row-mt) var(--ap-card-row-mb);
+  }
+
+  .ap-card-row--bleed {
+    --ap-card-row-bleed-start: var(--ap-bleed-start, 0px);
+    --ap-card-row-bleed-end: var(--ap-bleed-end, 0px);
+
+    max-inline-size: none;
+    margin-inline: calc(-1 * var(--ap-card-row-bleed-start)) calc(-1 * var(--ap-card-row-bleed-end));
+  }
+
+  .ap-card-row__track {
+    display: flex;
+    gap: var(--ap-card-row-gap);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--ap-card-row-bleed-start) var(--ap-card-row-bleed-end);
+    padding-inline: var(--ap-card-row-bleed-start) var(--ap-card-row-bleed-end);
+    scrollbar-width: none;
+  }
+
+  .ap-card-row__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ap-card-row__track:focus-visible {
+    outline: var(--ap-focus-ring-width, 2px) solid currentcolor;
+    outline-offset: 4px;
+  }
+
+  .ap-card-row__track > * {
+    flex: 0 0 var(--ap-card-width);
+    inline-size: var(--ap-card-width);
+    min-block-size: var(--ap-card-height);
+    scroll-snap-align: start;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-card-row {
+      margin-block: var(--ap-card-row-mt-desktop) var(--ap-card-row-mb-desktop);
+    }
+
+    .ap-card-row__track {
+      gap: var(--ap-card-row-gap-desktop);
+    }
+
+    .ap-card-row__track > * {
+      flex-basis: var(--ap-card-width-desktop);
+      inline-size: var(--ap-card-width-desktop);
+      min-block-size: var(--ap-card-height-desktop);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Card row",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Accessible name",
+      "info": "Read out by screen readers for the scrollable row.",
+      "default": "Cards"
+    },
+    {
+      "type": "checkbox",
+      "id": "bleed",
+      "label": "Bleed to the screen edge",
+      "info": "Lets cards scroll past the section's side padding.",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Desktop"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 200,
+      "max": 600,
+      "step": 4,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card minimum height",
+      "min": 86,
+      "max": 686,
+      "step": 6,
+      "unit": "px",
+      "default": 386
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Extra space above",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Extra space below",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Mobile"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width",
+      "min": 200,
+      "max": 400,
+      "step": 2,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "label": "Card minimum height",
+      "min": 86,
+      "max": 686,
+      "step": 6,
+      "unit": "px",
+      "default": 386
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "margin_top_mobile",
+      "label": "Extra space above",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom_mobile",
+      "label": "Extra space below",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Card row",
+      "category": "Layout",
+      "blocks": {
+        "card_1": {
+          "type": "ap-glass-card",
+          "settings": { "number": "01", "title": "Card title", "text": "Short supporting text for this card." }
+        },
+        "card_2": {
+          "type": "ap-glass-card",
+          "settings": { "number": "02", "title": "Card title", "text": "Short supporting text for this card." }
+        },
+        "card_3": {
+          "type": "ap-glass-card",
+          "settings": { "number": "03", "title": "Card title", "text": "Short supporting text for this card." }
+        }
+      },
+      "block_order": ["card_1", "card_2", "card_3"]
+    }
+  ]
+}
+{% endschema %}

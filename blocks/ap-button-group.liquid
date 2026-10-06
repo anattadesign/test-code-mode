@@ -17,7 +17,7 @@
 -%}
 
 <div
-  class="ap-button-group ap-button-group--{{ bs.direction_mobile }} ap-button-group--desktop-{{ bs.direction }}"
+  class="ap-button-group ap-button-group--{{ bs.direction_mobile }} ap-button-group--desktop-{{ bs.direction }}{% if bs.fill_mobile %} ap-button-group--fill-mobile{% endif %}{% if bs.visibility != 'all' and bs.visibility != blank %} ap-button-group--{{ bs.visibility }}-only{% endif %}"
   style="
     --ap-button-group-gap: {{ bs.gap_mobile }}px;
     --ap-button-group-gap-desktop: {{ bs.gap }}px;
@@ -42,6 +42,20 @@
     justify-content: var(--ap-content-align, flex-start);
   }
 
+  /* Mobile: stretch each button to the group width, label left / icon right. */
+  .ap-button-group--fill-mobile {
+    inline-size: 100%;
+  }
+
+  .ap-button-group--fill-mobile > :is(.button, .button-secondary, .button-dark, .button-custom) {
+    inline-size: 100%;
+    justify-content: space-between;
+  }
+
+  .ap-button-group--desktop-only {
+    display: none;
+  }
+
   .ap-button-group--column {
     flex-direction: column;
     align-items: var(--ap-content-align, flex-start);
@@ -50,6 +64,23 @@
   @media screen and (min-width: 750px) {
     .ap-button-group {
       gap: var(--ap-button-group-gap-desktop);
+    }
+
+    .ap-button-group--desktop-only {
+      display: flex;
+    }
+
+    .ap-button-group--mobile-only {
+      display: none;
+    }
+
+    .ap-button-group--fill-mobile {
+      inline-size: auto;
+    }
+
+    .ap-button-group--fill-mobile > :is(.button, .button-secondary, .button-dark, .button-custom) {
+      inline-size: var(--size-style-width, auto);
+      justify-content: center;
     }
 
     .ap-button-group--desktop-row {
@@ -130,6 +161,13 @@
       "default": "column"
     },
     {
+      "type": "checkbox",
+      "id": "fill_mobile",
+      "label": "Full-width buttons",
+      "info": "Buttons stretch to the full width, with the icon on the far right.",
+      "default": false
+    },
+    {
       "type": "range",
       "id": "gap_mobile",
       "label": "Gap",
@@ -158,6 +196,26 @@
         }
       ],
       "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "visibility",
+      "label": "Show on",
+      "options": [
+        {
+          "value": "all",
+          "label": "All devices"
+        },
+        {
+          "value": "mobile",
+          "label": "Mobile only"
+        },
+        {
+          "value": "desktop",
+          "label": "Desktop only"
+        }
+      ],
+      "default": "all"
     }
   ],
   "presets": [

@@ -1,0 +1,477 @@
+{%- comment -%}
+  AP-29 · About Ascent — full-bleed panels (desktop + mobile).
+
+  Figma: About Ascent — Full-Bleed Panels (811:13137, 1440)
+         Science · What we can prove · Mobile (811:12849, 390).
+
+  A full-bleed background image with content stacked on top. Everything in the
+  content column is a theme block, so merchants can add, remove and reorder it:
+    - ap-eyebrow       "WHY ASCENT"
+    - ap-headline      Headline
+    - button           Tertiary text link ("See the science")
+    - ap-card-row      Scrollable row of Glass cards that bleeds to the screen edge
+    - ap-button-group  CTA (mobile only in the design)
+  Any other theme block (@theme) or app block (@app) can be added too.
+
+  Section settings only cover the whole section: media, overlay, text colour and
+  spacing. The side padding is exposed as --ap-bleed-start / --ap-bleed-end so
+  the Card row can run to the viewport edge.
+{%- endcomment -%}
+
+{%- liquid
+  assign s = section.settings
+
+  assign image = s.image
+  assign image_mobile = s.image_mobile | default: s.image
+
+  assign loading = 'lazy'
+  if section.index <= 2
+    assign loading = 'eager'
+  endif
+
+  assign overlay_alpha = s.overlay_opacity | divided_by: 100.0
+  assign overlay = s.overlay_color | color_modify: 'alpha', overlay_alpha
+
+  assign focal = 'center'
+  assign focal_mobile = 'center'
+  if image != blank and image.presentation.focal_point != blank
+    assign focal = image.presentation.focal_point
+  endif
+  if image_mobile != blank and image_mobile.presentation.focal_point != blank
+    assign focal_mobile = image_mobile.presentation.focal_point
+  endif
+  assign image_style = '--ap-panels-focal: ' | append: focal | append: '; --ap-panels-focal-mobile: ' | append: focal_mobile | append: ';'
+-%}
+
+<div
+  class="ap-panels"
+  style="
+    --ap-panels-text: {{ s.text_color }};
+    --ap-panels-background: {{ s.background_color }};
+    --ap-panels-overlay: {{ overlay }};
+    --ap-panels-max-width: {{ s.content_max_width }}px;
+    --ap-panels-gap: {{ s.gap_mobile }}px;
+    --ap-panels-pt: {{ s.padding_top_mobile }}px;
+    --ap-panels-pb: {{ s.padding_bottom_mobile }}px;
+    --ap-panels-ps: {{ s.padding_left_mobile }}px;
+    --ap-panels-pe: {{ s.padding_right_mobile }}px;
+    --ap-panels-gap-desktop: {{ s.gap }}px;
+    --ap-panels-pt-desktop: {{ s.padding_top }}px;
+    --ap-panels-pb-desktop: {{ s.padding_bottom }}px;
+    --ap-panels-pi-desktop: {{ s.padding_inline }}px;
+  "
+>
+  <div class="ap-panels__media">
+    {%- if image != blank -%}
+      <picture>
+        {%- if s.image_mobile != blank -%}
+          <source
+            media="(max-width: 749px)"
+            srcset="
+              {{ image_mobile | image_url: width: 390 }} 390w,
+              {{ image_mobile | image_url: width: 780 }} 780w,
+              {{ image_mobile | image_url: width: 1170 }} 1170w
+            "
+            sizes="100vw"
+            width="{{ image_mobile.width }}"
+            height="{{ image_mobile.height }}"
+          >
+        {%- endif -%}
+        {{
+          image
+          | image_url: width: 3840
+          | image_tag:
+            widths: '750, 1100, 1500, 2000, 2880, 3840',
+            sizes: '100vw',
+            alt: image.alt,
+            loading: loading,
+            class: 'ap-panels__image',
+            style: image_style
+        }}
+      </picture>
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'ap-panels__image ap-panels__placeholder' }}
+    {%- endif -%}
+  </div>
+
+  {%- if s.overlay_opacity > 0 -%}
+    <div class="ap-panels__overlay" aria-hidden="true"></div>
+  {%- endif -%}
+
+  <div class="ap-panels__inner">
+    {%- content_for 'blocks' -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ap-panels {
+    /* Tokens that read "text/primary" (tertiary button, headline) follow the
+       section text colour so they stay legible on the image. */
+    --ap-text-primary: var(--ap-panels-text);
+    --color: var(--ap-panels-text);
+
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    container-type: inline-size;
+    color: var(--ap-panels-text);
+    background-color: var(--ap-panels-background);
+  }
+
+  .ap-panels__media {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+  }
+
+  .ap-panels__media picture {
+    display: contents;
+  }
+
+  .ap-panels__image {
+    display: block;
+    inline-size: 100%;
+    block-size: 100%;
+    object-fit: cover;
+    object-position: var(--ap-panels-focal-mobile, var(--ap-panels-focal, center));
+  }
+
+  .ap-panels__placeholder {
+    fill: rgb(255 255 255 / 0.12);
+    background-color: var(--ap-primitive-neutral-800, #414141);
+  }
+
+  .ap-panels__overlay {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: var(--ap-panels-overlay);
+  }
+
+  .ap-panels__inner {
+    --ap-bleed-start: max(var(--ap-panels-ps), var(--safe-area-inset-left, 0px));
+    --ap-bleed-end: max(var(--ap-panels-pe), var(--safe-area-inset-right, 0px));
+
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--ap-panels-gap);
+    padding-block: var(--ap-panels-pt) var(--ap-panels-pb);
+    padding-inline: var(--ap-bleed-start) var(--ap-bleed-end);
+  }
+
+  /* Text-sized blocks keep their own width; rows and button groups stretch. */
+  .ap-panels__inner > :is(.ap-eyebrow, .button-tertiary, .button-unstyled) {
+    align-self: flex-start;
+  }
+
+  .ap-panels__inner > * {
+    max-inline-size: 100%;
+  }
+
+  /* The design shows the tertiary link underlined at rest. */
+  .ap-panels .button-tertiary .button__label {
+    text-decoration-color: currentcolor;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-panels__image {
+      object-position: var(--ap-panels-focal, center);
+    }
+
+    .ap-panels__inner {
+      /* Content is capped at the max width and centred; the padding is never
+         smaller than the side padding setting. */
+      --ap-bleed-start: max(var(--ap-panels-pi-desktop), calc((100cqi - var(--ap-panels-max-width)) / 2));
+      --ap-bleed-end: var(--ap-bleed-start);
+
+      gap: var(--ap-panels-gap-desktop);
+      padding-block: var(--ap-panels-pt-desktop) var(--ap-panels-pb-desktop);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Full-bleed panels",
+  "tag": "section",
+  "class": "section-wrapper ap-panels-section",
+  "blocks": [
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "@app"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background image",
+      "info": "Recommended 2880 × 1690 px. Set a focal point to control cropping."
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile background image",
+      "info": "Optional. Recommended 780 × 1656 px. Falls back to the desktop image."
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Shown while the image loads or when no image is set.",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "paragraph",
+      "content": "Darkens the image behind the copy. Raise it if the image is light (WCAG 2.2 AA needs 4.5:1 for body text)."
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "%",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width (desktop)",
+      "info": "Content is centred inside this width on wide screens; card rows still bleed to the edge.",
+      "min": 800,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1240
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_inline",
+      "label": "Minimum side padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 108
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 240,
+      "step": 4,
+      "unit": "px",
+      "default": 108
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Space between blocks",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_left_mobile",
+      "label": "Left padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_right_mobile",
+      "label": "Right padding",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 72
+    }
+  ],
+  "presets": [
+    {
+      "name": "Full-bleed panels",
+      "category": "Banners",
+      "blocks": {
+        "eyebrow": {
+          "type": "ap-eyebrow",
+          "settings": {
+            "text": "Why Ascent"
+          }
+        },
+        "headline": {
+          "type": "ap-headline",
+          "settings": {
+            "text": "The cleanest protein we know how to make.",
+            "tag": "h2",
+            "preset": "h1",
+            "regular_weight": "inherit",
+            "max_width": 16
+          }
+        },
+        "link": {
+          "type": "button",
+          "settings": {
+            "label": "See the science",
+            "link": "shopify://blogs/news",
+            "style_class": "button-tertiary",
+            "button_size": "small",
+            "show_icon": true
+          }
+        },
+        "cards": {
+          "type": "ap-card-row",
+          "settings": {
+            "label": "Why Ascent",
+            "margin_top": 12,
+            "margin_top_mobile": 20,
+            "margin_bottom_mobile": 20
+          },
+          "blocks": {
+            "card_1": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "01",
+                "title": "Minimal ingredients, minimal processing",
+                "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked."
+              }
+            },
+            "card_2": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "02",
+                "title": "Rigorous third-party testing",
+                "text": "Informed Sport Certified. An outside lab checks every batch before it ships."
+              }
+            },
+            "card_3": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "03",
+                "title": "Tastes just like real milk",
+                "text": "There's nothing artificial masking it, so it tastes like exactly what it's made from."
+              }
+            },
+            "card_4": {
+              "type": "ap-glass-card",
+              "settings": {
+                "number": "04",
+                "title": "Gentle on your stomach",
+                "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean."
+              }
+            }
+          },
+          "block_order": ["card_1", "card_2", "card_3", "card_4"]
+        },
+        "cta": {
+          "type": "ap-button-group",
+          "settings": {
+            "direction_mobile": "column",
+            "fill_mobile": true,
+            "visibility": "mobile"
+          },
+          "blocks": {
+            "shop": {
+              "type": "button",
+              "settings": {
+                "label": "Shop protein",
+                "link": "shopify://collections/all",
+                "style_class": "button",
+                "button_size": "large",
+                "show_icon": true
+              }
+            }
+          },
+          "block_order": ["shop"]
+        }
+      },
+      "block_order": ["eyebrow", "headline", "link", "cards", "cta"]
+    }
+  ]
+}
+{% endschema %}

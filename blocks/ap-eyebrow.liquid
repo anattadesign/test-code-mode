@@ -1,0 +1,128 @@
+{%- doc -%}
+  AP-29 · Eyebrow block (Ascent).
+
+  Short uppercase mono label that sits above a headline ("WHY ASCENT" in the
+  About Ascent panels, Figma 811:13137 / 811:12849). Size comes from the AP-49
+  label presets and can differ between desktop and mobile.
+  Reusable in any section that accepts @theme blocks.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign size = bs.size | default: 'ap-label-sm'
+  assign size_mobile = bs.size_mobile | default: 'ap-label-lg'
+-%}
+
+{%- if bs.text != blank -%}
+  <p
+    class="ap-eyebrow{% if bs.uppercase %} ap-eyebrow--upper{% endif %}"
+    style="
+      --ap-eyebrow-family: var(--font-{{ size_mobile }}--family);
+      --ap-eyebrow-size: var(--font-{{ size_mobile }}--size);
+      --ap-eyebrow-line-height: var(--font-{{ size_mobile }}--line-height);
+      --ap-eyebrow-letter-spacing: var(--font-{{ size_mobile }}--letter-spacing);
+      --ap-eyebrow-family-desktop: var(--font-{{ size }}--family);
+      --ap-eyebrow-size-desktop: var(--font-{{ size }}--size);
+      --ap-eyebrow-line-height-desktop: var(--font-{{ size }}--line-height);
+      --ap-eyebrow-letter-spacing-desktop: var(--font-{{ size }}--letter-spacing);
+      --ap-eyebrow-weight: {{ bs.weight }};
+      {% if bs.text_color != blank and bs.text_color.alpha != 0 %}--color: {{ bs.text_color }};{% endif %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    {{- bs.text | escape -}}
+  </p>
+{%- endif -%}
+
+{% stylesheet %}
+  .ap-eyebrow {
+    margin: 0;
+    color: var(--color, currentcolor);
+    font-family: var(--ap-eyebrow-family);
+    font-weight: var(--ap-eyebrow-weight, 700);
+    font-size: var(--ap-eyebrow-size);
+    line-height: var(--ap-eyebrow-line-height);
+    letter-spacing: var(--ap-eyebrow-letter-spacing);
+    text-align: var(--ap-text-align, inherit);
+  }
+
+  .ap-eyebrow--upper {
+    text-transform: uppercase;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ap-eyebrow {
+      font-family: var(--ap-eyebrow-family-desktop);
+      font-size: var(--ap-eyebrow-size-desktop);
+      line-height: var(--ap-eyebrow-line-height-desktop);
+      letter-spacing: var(--ap-eyebrow-letter-spacing-desktop);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Eyebrow",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "Text",
+      "default": "Eyebrow"
+    },
+    {
+      "type": "select",
+      "id": "size",
+      "label": "Desktop size",
+      "options": [
+        { "value": "ap-label-sm", "label": "Label small (12px)" },
+        { "value": "ap-label-lg", "label": "Label large (14px)" },
+        { "value": "ap-button-sm", "label": "Button small (14px)" },
+        { "value": "ap-button", "label": "Button (16px)" }
+      ],
+      "default": "ap-label-sm"
+    },
+    {
+      "type": "select",
+      "id": "size_mobile",
+      "label": "Mobile size",
+      "options": [
+        { "value": "ap-label-sm", "label": "Label small (12px)" },
+        { "value": "ap-label-lg", "label": "Label large (14px)" },
+        { "value": "ap-button-sm", "label": "Button small (14px)" },
+        { "value": "ap-button", "label": "Button (16px)" }
+      ],
+      "default": "ap-label-lg"
+    },
+    {
+      "type": "select",
+      "id": "weight",
+      "label": "Weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Uppercase",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "info": "Leave empty to use the section text color."
+    }
+  ],
+  "presets": [
+    {
+      "name": "Eyebrow",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}
