@@ -598,6 +598,105 @@
         "padding-block-end": 108,
         "padding_block_mobile": 48
       }
+    },
+    "ascent_reviews": {
+      "type": "ascent-reviews",
+      "name": "Ascent reviews",
+      "blocks": {
+        "review_1": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "image",
+            "handle": "@coach.charles"
+          }
+        },
+        "review_2": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "quote_dark",
+            "headline": "“Mixes clean, no chalk”",
+            "name": "Marcus D."
+          }
+        },
+        "review_3": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "video",
+            "handle": "@coach.charles"
+          }
+        },
+        "review_4": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "quote_accent",
+            "headline": "“Recovery days feel completely different”",
+            "name": "Marcus D."
+          }
+        },
+        "review_5": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "image",
+            "handle": "@coach.charles"
+          }
+        },
+        "review_6": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "quote_dark",
+            "headline": "“The only one I re-order without thinking”",
+            "name": "Priya S."
+          }
+        },
+        "review_7": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "image",
+            "handle": "@coach.charles"
+          }
+        },
+        "review_8": {
+          "type": "_testimonial",
+          "settings": {
+            "style": "quote_accent",
+            "headline": "“Third-party tested, every batch”",
+            "name": "Marcus D."
+          }
+        }
+      },
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5",
+        "review_6",
+        "review_7",
+        "review_8"
+      ],
+      "settings": {
+        "eyebrow": "Reviews",
+        "heading": "What Our Customers Are Saying.",
+        "header_alignment": "center",
+        "header_alignment_mobile": "flex-start",
+        "placeholder_media": true,
+        "card_width": 300,
+        "card_width_mobile": 280,
+        "card_gap": 24,
+        "card_gap_mobile": 12,
+        "icons_style": "arrow",
+        "icons_shape": "circle",
+        "background_color": "#ffffff",
+        "eyebrow_color": "#696969",
+        "heading_color": "#1a1a1a",
+        "dark_background": "#1a1a1a",
+        "dark_text": "#fbec00",
+        "accent_background": "#fbec00",
+        "accent_text": "#1a1a1a",
+        "padding-block-start": 80,
+        "padding-block-end": 80,
+        "padding_block_mobile": 48
+      }
     }
   },
   "order": [
@@ -605,6 +704,7 @@
     "ascent_ticker_1",
     "ascent_bestsellers",
     "ascent_ticker_2",
-    "ascent_about"
+    "ascent_about",
+    "ascent_reviews"
   ]
 }
