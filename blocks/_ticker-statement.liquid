@@ -1,0 +1,116 @@
+{%- liquid
+  assign bs = block.settings
+-%}
+<div
+  class="ticker-statement"
+  style="--ticker-statement-color: {{ bs.text_color }}; --ticker-statement-muted: {{ bs.secondary_color }}; --ticker-mark-color: {{ bs.mark_color }};"
+  {{ block.shopify_attributes }}
+>
+  <p class="ticker-statement__text {{ bs.type_preset }}">
+    {%- if bs.text != blank -%}
+      <span class="ticker-statement__primary">{{ bs.text }}</span>
+    {%- endif -%}
+    {%- if bs.secondary_text != blank -%}
+      <span class="ticker-statement__secondary">{{ bs.secondary_text }}</span>
+    {%- endif -%}
+  </p>
+  {%- if bs.show_mark -%}
+    {% render 'ascent-mark', class: 'ticker-statement__mark' %}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .ticker-statement {
+    display: flex;
+    align-items: center;
+    gap: var(--marquee-gap, 40px);
+    flex-shrink: 0;
+  }
+
+  .ticker-statement__text {
+    display: flex;
+    gap: 12px;
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .ticker-statement__primary {
+    color: var(--ticker-statement-color);
+  }
+
+  .ticker-statement__secondary {
+    color: var(--ticker-statement-muted);
+  }
+
+  .ticker-statement__mark {
+    display: block;
+    flex-shrink: 0;
+    width: 18px;
+    height: auto;
+    color: var(--ticker-mark-color);
+  }
+
+  @media screen and (min-width: 750px) {
+    .ticker-statement__mark {
+      width: 24px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ticker_statement",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "Native whey."
+    },
+    {
+      "type": "text",
+      "id": "secondary_text",
+      "label": "t:settings.secondary_text",
+      "default": "Not cheese whey."
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        { "value": "h2", "label": "t:options.h2" },
+        { "value": "h3", "label": "t:options.h3" },
+        { "value": "h4", "label": "t:options.h4" },
+        { "value": "h5", "label": "t:options.h5" }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "secondary_color",
+      "label": "t:settings.secondary_text_color",
+      "default": "#a9a9a9"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mark",
+      "label": "t:settings.show_brand_mark",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "mark_color",
+      "label": "t:settings.icon_color",
+      "default": "#fbec00",
+      "visible_if": "{{ block.settings.show_mark }}"
+    }
+  ]
+}
+{% endschema %}

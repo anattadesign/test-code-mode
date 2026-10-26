@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "ascent_ticker_statements": "Ascent ticker (statements)",
+    "ticker_statement": "Ticker statement",
     "ascent_bestsellers": "Ascent bestsellers",
     "product_card_button": "Product button",
     "product_metafield": "Product metafield",
@@ -178,6 +180,10 @@
     "disclosures": "Opplysninger"
   },
   "settings": {
+    "padding_block_mobile": "Mobile top and bottom padding",
+    "show_brand_mark": "Show brand mark",
+    "secondary_text_color": "Secondary text color",
+    "secondary_text": "Secondary text",
     "count_format": "Rating format",
     "max_lines": "Maximum lines",
     "source": "Source",
@@ -189,7 +195,7 @@
     "card_width_desktop": "Card width (desktop)",
     "highlight_first_card": "Highlight first card",
     "gap_mobile": "Mobile gap",
-    "custom_mobile_gap": "Custom mobile gap",
+    "custom_mobile_gap": "Custom mobile spacing",
     "icon_color": "Icon color",
     "rating": "Rating",
     "rating_badge_rule": "Show divider",
