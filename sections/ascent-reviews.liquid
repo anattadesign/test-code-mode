@@ -1,0 +1,357 @@
+{%- comment -%}
+  Ascent reviews rail (WAK-29): static, editable testimonial blocks in Horizon's slideshow
+  component (drag on desktop, swipe on mobile, arrows that reveal on hover/keyboard focus).
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+  assign slide_count = section.blocks.size
+  assign show_arrows = false
+  if ss.icons_style != 'none'
+    assign show_arrows = true
+  endif
+-%}
+
+{% capture slides %}
+  {% content_for 'blocks' %}
+{% endcapture %}
+
+{% capture slideshow_style %}
+  --slideshow-gap: var(--ascent-reviews-gap);
+{% endcapture %}
+
+<div
+  class="ascent-reviews section section--page-width spacing-style"
+  style="
+    {% render 'spacing-style', settings: ss %}
+    --ascent-reviews-padding-mobile: {{ ss.padding_block_mobile }}px;
+    --ascent-reviews-card: {{ ss.card_width }}px;
+    --ascent-reviews-card-mobile: {{ ss.card_width_mobile }}px;
+    --ascent-reviews-gap-desktop: {{ ss.card_gap }}px;
+    --ascent-reviews-gap-mobile: {{ ss.card_gap_mobile }}px;
+    --ascent-reviews-align: {{ ss.header_alignment }};
+    --ascent-reviews-align-mobile: {{ ss.header_alignment_mobile }};
+    --ascent-reviews-text-align: {% if ss.header_alignment == 'center' %}center{% else %}left{% endif %};
+    --ascent-reviews-text-align-mobile: {% if ss.header_alignment_mobile == 'center' %}center{% else %}left{% endif %};
+    --testimonial-dark-bg: {{ ss.dark_background }};
+    --testimonial-dark-text: {{ ss.dark_text }};
+    --testimonial-accent-bg: {{ ss.accent_background }};
+    --testimonial-accent-text: {{ ss.accent_text }};
+    --testimonial-handle-color: {{ ss.heading_color }};
+    background-color: {{ ss.background_color }};
+  "
+>
+  <header class="ascent-reviews__header">
+    {%- if ss.eyebrow != blank -%}
+      <p class="ascent-reviews__eyebrow label-lg" style="color: {{ ss.eyebrow_color }};">{{ ss.eyebrow }}</p>
+    {%- endif -%}
+    {%- if ss.heading != blank -%}
+      <h2 class="ascent-reviews__heading h2" style="color: {{ ss.heading_color }};">{{ ss.heading }}</h2>
+    {%- endif -%}
+  </header>
+
+  <div class="ascent-reviews__rail force-full-width" style="--gutter-slide-width: var(--util-page-margin-offset);">
+    {% render 'slideshow',
+      class: 'ascent-reviews__slideshow',
+      style: slideshow_style,
+      slides: slides,
+      show_arrows: show_arrows,
+      icon_style: ss.icons_style,
+      icon_shape: ss.icons_shape,
+      auto_hide_controls: false,
+      infinite: false,
+      initial_slide: 0,
+      slide_count: slide_count,
+      slide_position: 'top',
+      slideshow_gutters: 'start end'
+    %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ascent-reviews {
+    --ascent-reviews-gap: var(--ascent-reviews-gap-desktop);
+
+    display: grid;
+    row-gap: 48px;
+  }
+
+  .ascent-reviews__header {
+    display: flex;
+    flex-direction: column;
+    align-items: var(--ascent-reviews-align);
+    gap: 16px;
+    text-align: var(--ascent-reviews-text-align);
+  }
+
+  .ascent-reviews__eyebrow,
+  .ascent-reviews__heading {
+    margin: 0;
+  }
+
+  .ascent-reviews__eyebrow {
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-reviews__slideshow slideshow-slides > .testimonial {
+    flex: 0 0 auto;
+    width: var(--ascent-reviews-card);
+  }
+
+  .ascent-reviews__slideshow .slideshow-control[disabled] {
+    display: none;
+  }
+
+  .ascent-reviews__slideshow slideshow-arrows {
+    padding-inline: var(--util-page-margin-offset);
+  }
+
+  .ascent-reviews__slideshow .slideshow-control--next {
+    margin-inline-start: auto;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-reviews {
+      --ascent-reviews-gap: var(--ascent-reviews-gap-mobile);
+
+      row-gap: 24px;
+    }
+
+    .ascent-reviews.spacing-style {
+      padding-block: var(--ascent-reviews-padding-mobile);
+    }
+
+    .ascent-reviews__header {
+      align-items: var(--ascent-reviews-align-mobile);
+      text-align: var(--ascent-reviews-text-align-mobile);
+    }
+
+    .ascent-reviews__eyebrow.label-lg {
+      font-size: var(--font-label-sm--size);
+    }
+
+    .ascent-reviews__slideshow slideshow-slides > .testimonial {
+      width: var(--ascent-reviews-card-mobile);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_reviews",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [{ "type": "_testimonial" }],
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Reviews"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "What Our Customers Are Saying."
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment_mobile",
+      "label": "t:settings.alignment_mobile",
+      "options": [
+        { "value": "flex-start", "label": "t:options.left" },
+        { "value": "center", "label": "t:options.center" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "checkbox",
+      "id": "placeholder_media",
+      "label": "t:settings.use_ascent_placeholder_media",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.cards"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "t:settings.card_width_desktop",
+      "min": 200,
+      "max": 400,
+      "step": 4,
+      "unit": "px",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "t:settings.card_width_mobile",
+      "min": 200,
+      "max": 360,
+      "step": 4,
+      "unit": "px",
+      "default": 280
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "t:settings.horizontal_gap",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "t:settings.gap_mobile",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "icons_style",
+      "label": "t:settings.icon",
+      "info": "t:info.reviews_arrows",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "arrow", "label": "t:options.arrows" },
+        { "value": "chevron", "label": "t:options.chevrons" },
+        { "value": "arrows_large", "label": "t:options.arrows_large" },
+        { "value": "chevron_large", "label": "t:options.chevron_large" }
+      ],
+      "default": "arrow"
+    },
+    {
+      "type": "select",
+      "id": "icons_shape",
+      "label": "t:settings.icon_background",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "circle", "label": "t:options.circle" },
+        { "value": "square", "label": "t:options.square" }
+      ],
+      "default": "circle",
+      "visible_if": "{{ section.settings.icons_style != 'none' }}"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "t:settings.muted_text_color",
+      "default": "#696969"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "t:settings.text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "dark_background",
+      "label": "t:settings.dark_card_background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "dark_text",
+      "label": "t:settings.dark_card_text",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "accent_background",
+      "label": "t:settings.accent_card_background",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "accent_text",
+      "label": "t:settings.accent_card_text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_reviews",
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "review_1": { "type": "_testimonial", "settings": { "style": "image", "handle": "@coach.charles" } },
+        "review_2": { "type": "_testimonial", "settings": { "style": "quote_dark", "headline": "“Mixes clean, no chalk”", "name": "Marcus D." } },
+        "review_3": { "type": "_testimonial", "settings": { "style": "video", "handle": "@coach.charles" } },
+        "review_4": { "type": "_testimonial", "settings": { "style": "quote_accent", "headline": "“Recovery days feel completely different”", "name": "Marcus D." } },
+        "review_5": { "type": "_testimonial", "settings": { "style": "image", "handle": "@coach.charles" } },
+        "review_6": { "type": "_testimonial", "settings": { "style": "quote_dark", "headline": "“The only one I re-order without thinking”", "name": "Priya S." } },
+        "review_7": { "type": "_testimonial", "settings": { "style": "image", "handle": "@coach.charles" } },
+        "review_8": { "type": "_testimonial", "settings": { "style": "quote_accent", "headline": "“Third-party tested, every batch”", "name": "Marcus D." } }
+      },
+      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5", "review_6", "review_7", "review_8"]
+    }
+  ]
+}
+{% endschema %}

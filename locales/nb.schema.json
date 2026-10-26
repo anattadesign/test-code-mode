@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "testimonial": "Testimonial",
+    "ascent_reviews": "Ascent reviews rail",
     "ascent_panels": "Ascent why panels",
     "about_panel": "Panel",
     "ascent_ticker_statements": "Ascent ticker (statements)",
@@ -182,6 +184,15 @@
     "disclosures": "Opplysninger"
   },
   "settings": {
+    "handle": "Handle",
+    "verified_label": "Verified label",
+    "verified_buyer": "Show verified buyer",
+    "reviewer_name": "Reviewer name",
+    "quote_headline": "Quote headline",
+    "accent_card_text": "Accent card text",
+    "accent_card_background": "Accent card background",
+    "dark_card_text": "Dark card text",
+    "dark_card_background": "Dark card background",
     "number": "Number",
     "accent_color": "Accent color",
     "heading_preset_mobile": "Heading preset (mobile)",
@@ -649,6 +660,8 @@
     "customer_account_menu": "Kundekontomeny"
   },
   "options": {
+    "quote_accent": "Quote (accent)",
+    "quote_dark": "Quote (dark)",
     "product_description": "Product description",
     "metafield_subtitle": "Subtitle (custom.subtitle)",
     "metafield_tag": "Tag (custom.tag)",
@@ -970,6 +983,7 @@
     "direction_top_start": "Oppe til venstre"
   },
   "content": {
+    "cards": "Cards",
     "product_card_button_info": "Links to the product.",
     "product_metafield_info": "Shows custom.badge, custom.tag or custom.subtitle (or the product description). Hidden when empty.",
     "card_style": "Card style",
@@ -1197,6 +1211,8 @@
     "disclosures": "Opplysninger"
   },
   "info": {
+    "testimonial_handle": "Optional, e.g. @coach.charles",
+    "reviews_arrows": "Arrows appear on hover and keyboard focus; cards can also be dragged or swiped.",
     "panel_number_auto": "Leave blank to number panels automatically (01, 02…)",
     "placeholder_media": "Shown until an image or video is selected.",
     "footer_brand_image": "Defaults to the Ascent mark.",
