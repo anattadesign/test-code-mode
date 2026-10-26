@@ -1,0 +1,131 @@
+{%- liquid
+  assign bs = block.settings
+  assign number = bs.number
+  if number == blank
+    for b in section.blocks
+      if b.id == block.id
+        assign number = forloop.index | prepend: '0' | slice: -2, 2
+        break
+      endif
+    endfor
+  endif
+-%}
+<article class="about-panel" {{ block.shopify_attributes }}>
+  <p class="about-panel__number h1" aria-hidden="true">{{ number }}</p>
+  <div class="about-panel__body">
+    {%- if bs.title != blank -%}
+      <h3 class="about-panel__title h5">{{ bs.title }}</h3>
+    {%- endif -%}
+    {%- if bs.text != blank -%}
+      <p class="about-panel__text body-lg">{{ bs.text }}</p>
+    {%- endif -%}
+  </div>
+</article>
+
+{% stylesheet %}
+  .about-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 386px;
+    padding: 31px;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    background: rgb(23 23 23 / 0.2);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    color: var(--ascent-panels-text, inherit);
+    scroll-snap-align: start;
+    transition: border-color 0.2s;
+  }
+
+  .about-panel__number,
+  .about-panel__title,
+  .about-panel__text {
+    margin: 0;
+    color: inherit;
+  }
+
+  .about-panel .about-panel__number {
+    font-weight: 400;
+    transition: font-weight 0.2s;
+  }
+
+  .about-panel__body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .about-panel:hover,
+  .ascent-panels__rail:not(:hover) .about-panel:first-child {
+    border-color: var(--ascent-panels-accent, currentColor);
+  }
+
+  .about-panel:hover .about-panel__number,
+  .ascent-panels__rail:not(:hover) .about-panel:first-child .about-panel__number {
+    font-weight: 700;
+  }
+
+  @media screen and (max-width: 749px) {
+    .about-panel {
+      justify-content: flex-start;
+      gap: 16px;
+      min-height: 0;
+      padding: 23px 15px;
+      border-radius: 24px;
+    }
+
+    .about-panel__number.h1 {
+      font-family: var(--font-label-sm--family);
+      font-size: var(--font-label-sm--size);
+      line-height: var(--font-label-sm--line-height);
+      letter-spacing: var(--font-label-sm--letter-spacing);
+      font-weight: 700;
+      color: var(--ascent-panels-accent, currentColor);
+    }
+
+    .about-panel__body {
+      gap: 8px;
+    }
+
+    .about-panel .about-panel__title {
+      font-size: var(--font-h4--size);
+      line-height: 1.2;
+    }
+
+    .about-panel__text.body-lg {
+      font-size: var(--font-body-md--size);
+      line-height: var(--font-body-md--line-height);
+      color: var(--ascent-panels-muted, inherit);
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.about_panel",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "number",
+      "label": "t:settings.number",
+      "info": "t:info.panel_number_auto"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:settings.title",
+      "default": "Minimal ingredients, minimal processing"
+    },
+    {
+      "type": "textarea",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked."
+    }
+  ]
+}
+{% endschema %}

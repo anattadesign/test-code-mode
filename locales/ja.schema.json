@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "ascent_panels": "Ascent why panels",
+    "about_panel": "Panel",
     "ascent_ticker_statements": "Ascent ticker (statements)",
     "ticker_statement": "Ticker statement",
     "ascent_bestsellers": "Ascent bestsellers",
@@ -180,6 +182,16 @@
     "disclosures": "開示情報"
   },
   "settings": {
+    "number": "Number",
+    "accent_color": "Accent color",
+    "heading_preset_mobile": "Heading preset (mobile)",
+    "eyebrow": "Eyebrow",
+    "overlay_opacity_mobile": "Overlay opacity (mobile)",
+    "product_image": "Product image",
+    "show_product_image": "Show product image",
+    "use_ascent_placeholder_media": "Use Ascent sample images when empty",
+    "background_image_mobile": "Mobile background image",
+    "background_image": "Background image",
     "padding_block_mobile": "Mobile top and bottom padding",
     "show_brand_mark": "Show brand mark",
     "secondary_text_color": "Secondary text color",
@@ -1185,6 +1197,7 @@
     "disclosures": "開示情報"
   },
   "info": {
+    "panel_number_auto": "Leave blank to number panels automatically (01, 02…)",
     "placeholder_media": "Shown until an image or video is selected.",
     "footer_brand_image": "Defaults to the Ascent mark.",
     "footer_wordmark_image": "Defaults to the Ascent wordmark.",

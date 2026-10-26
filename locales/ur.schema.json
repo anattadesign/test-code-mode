@@ -219,6 +219,7 @@
     "work_quickly_to_ship": "<p>ہم جلد از جلد آپ کا آرڈر شپ کرنے کے لیے تیزی سے کام کریں گے۔ آپ کا آرڈر شپ ہونے کے بعد، آپ کو مزید معلومات کے ساتھ ایک ای میل موصول ہوگی۔ آپ کے مقام کے لحاظ سے ترسیل کے اوقات مختلف ہو سکتے ہیں۔</p>"
   },
   "info": {
+    "panel_number_auto": "Leave blank to number panels automatically (01, 02…)",
     "placeholder_media": "Shown until an image or video is selected.",
     "footer_brand_image": "Defaults to the Ascent mark.",
     "footer_wordmark_image": "Defaults to the Ascent wordmark.",
@@ -257,6 +258,8 @@
     "media_type_info": "خصوصیات آپ کے مینو کے لنک سے پُر کی گئی ہیں"
   },
   "names": {
+    "ascent_panels": "Ascent why panels",
+    "about_panel": "Panel",
     "ascent_ticker_statements": "Ascent ticker (statements)",
     "ticker_statement": "Ticker statement",
     "ascent_bestsellers": "Ascent bestsellers",
@@ -749,6 +752,16 @@
     "below_media": "میڈیا کے نیچے"
   },
   "settings": {
+    "number": "Number",
+    "accent_color": "Accent color",
+    "heading_preset_mobile": "Heading preset (mobile)",
+    "eyebrow": "Eyebrow",
+    "overlay_opacity_mobile": "Overlay opacity (mobile)",
+    "product_image": "Product image",
+    "show_product_image": "Show product image",
+    "use_ascent_placeholder_media": "Use Ascent sample images when empty",
+    "background_image_mobile": "Mobile background image",
+    "background_image": "Background image",
     "padding_block_mobile": "Mobile top and bottom padding",
     "show_brand_mark": "Show brand mark",
     "secondary_text_color": "Secondary text color",

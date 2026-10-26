@@ -1,0 +1,479 @@
+{%- comment -%}
+  Ascent "Why Ascent" full-bleed panels (WAK-28): background image with overlay, intro row
+  (product image, eyebrow, heading) and numbered glass panels (blocks). Panels sit in a row on
+  desktop and become a swipeable rail on mobile. Hovering a panel highlights it; the first panel
+  is highlighted while none is hovered.
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+  assign bg_alt = ss.heading | strip_html | escape
+-%}
+
+<div
+  class="ascent-panels spacing-style"
+  style="
+    {% render 'spacing-style', settings: ss %}
+    --ascent-panels-text: {{ ss.text_color }};
+    --ascent-panels-muted: {{ ss.muted_color }};
+    --ascent-panels-accent: {{ ss.accent_color }};
+    --ascent-panels-overlay: {{ ss.overlay_color }};
+    --ascent-panels-overlay-opacity: {{ ss.overlay_opacity | divided_by: 100.0 }};
+    --ascent-panels-overlay-opacity-mobile: {{ ss.overlay_opacity_mobile | divided_by: 100.0 }};
+    --ascent-panels-heading-mobile: var(--font-{{ ss.heading_preset_mobile }}--size);
+    --ascent-panels-padding-mobile: {{ ss.padding_block_mobile }}px;
+  "
+>
+  <div class="ascent-panels__media" aria-hidden="true">
+    {%- if ss.background_image != blank -%}
+      {%- assign mobile_bg = ss.background_image_mobile | default: ss.background_image -%}
+      <picture>
+        <source
+          media="(max-width: 749px)"
+          srcset="{{ mobile_bg | image_url: width: 800 }} 800w, {{ mobile_bg | image_url: width: 1200 }} 1200w"
+          sizes="100vw"
+        >
+        {{
+          ss.background_image
+          | image_url: width: 2400
+          | image_tag: widths: '1000, 1440, 1920, 2400', sizes: '100vw', loading: 'lazy', alt: '', class: 'ascent-panels__bg'
+        }}
+      </picture>
+    {%- elsif ss.placeholder_media -%}
+      <picture>
+        <source media="(max-width: 749px)" srcset="{{ 'ascent-about-bg-mobile.jpg' | asset_url }}">
+        <img
+          class="ascent-panels__bg"
+          src="{{ 'ascent-about-bg.jpg' | asset_url }}"
+          alt=""
+          width="2400"
+          height="1800"
+          loading="lazy"
+        >
+      </picture>
+    {%- endif -%}
+    <span class="ascent-panels__overlay"></span>
+  </div>
+
+  <div class="ascent-panels__inner">
+    <div class="ascent-panels__intro">
+      {%- if ss.show_product_image -%}
+        <div class="ascent-panels__product">
+          {%- if ss.product_image != blank -%}
+            {{
+              ss.product_image
+              | image_url: width: 360
+              | image_tag: width: 178, height: 178, loading: 'lazy', alt: ss.product_image.alt | default: bg_alt
+            }}
+          {%- elsif ss.placeholder_media -%}
+            <img
+              src="{{ 'ascent-about-product.png' | asset_url }}"
+              alt=""
+              width="178"
+              height="178"
+              loading="lazy"
+            >
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      <div class="ascent-panels__headline">
+        {%- if ss.eyebrow != blank -%}
+          <p class="ascent-panels__eyebrow label-sm">{{ ss.eyebrow }}</p>
+        {%- endif -%}
+        {%- if ss.heading != blank -%}
+          <h2 class="ascent-panels__heading {{ ss.heading_preset }}">{{ ss.heading }}</h2>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="ascent-panels__rail" tabindex="0" role="group" aria-label="{{ ss.heading | strip_html | escape }}">
+      {% content_for 'blocks' %}
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .ascent-panels {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    color: var(--ascent-panels-text);
+  }
+
+  .ascent-panels__media,
+  .ascent-panels__overlay,
+  .ascent-panels__bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ascent-panels__media {
+    z-index: -1;
+  }
+
+  .ascent-panels__bg {
+    object-fit: cover;
+  }
+
+  .ascent-panels__overlay {
+    background: var(--ascent-panels-overlay);
+    opacity: var(--ascent-panels-overlay-opacity);
+  }
+
+  .ascent-panels__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    width: 100%;
+    max-width: calc(1240px + 2 * var(--page-margin));
+    margin-inline: auto;
+    padding-inline: var(--page-margin);
+  }
+
+  .ascent-panels__intro {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .ascent-panels__product {
+    flex: 0 0 auto;
+    width: 178px;
+    aspect-ratio: 1;
+  }
+
+  .ascent-panels__product img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ascent-panels__headline {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+
+  .ascent-panels__eyebrow,
+  .ascent-panels__heading {
+    margin: 0;
+    color: var(--ascent-panels-text);
+  }
+
+  .ascent-panels__eyebrow {
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .ascent-panels__heading {
+    max-width: 15em;
+  }
+
+  .ascent-panels__rail {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: 16px;
+  }
+
+  .ascent-panels__rail:focus-visible {
+    outline: 2px solid var(--ascent-panels-accent);
+    outline-offset: 4px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-panels.spacing-style {
+      padding-block: var(--ascent-panels-padding-mobile);
+    }
+
+    .ascent-panels__overlay {
+      opacity: var(--ascent-panels-overlay-opacity-mobile);
+    }
+
+    .ascent-panels__inner {
+      gap: 24px;
+      padding-inline: 0;
+    }
+
+    .ascent-panels__intro {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+      padding-inline: var(--page-margin);
+    }
+
+    .ascent-panels__product {
+      width: 96px;
+    }
+
+    .ascent-panels__headline {
+      gap: 16px;
+    }
+
+    .ascent-panels__eyebrow {
+      font-weight: 700;
+    }
+
+    .ascent-panels .ascent-panels__heading {
+      font-size: var(--ascent-panels-heading-mobile);
+      line-height: 1;
+    }
+
+    .ascent-panels__rail {
+      grid-auto-columns: min(322px, calc(100vw - 2 * var(--page-margin) - 28px));
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--page-margin);
+      padding: 8px var(--page-margin);
+      scrollbar-width: none;
+      overscroll-behavior-x: contain;
+    }
+
+    .ascent-panels__rail::-webkit-scrollbar {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_panels",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": [
+      "header",
+      "footer"
+    ]
+  },
+  "blocks": [
+    {
+      "type": "_about-panel"
+    }
+  ],
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "t:settings.background_image"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image_mobile",
+      "label": "t:settings.background_image_mobile"
+    },
+    {
+      "type": "checkbox",
+      "id": "placeholder_media",
+      "label": "t:settings.use_ascent_placeholder_media",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_product_image",
+      "label": "t:settings.show_product_image",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "product_image",
+      "label": "t:settings.product_image",
+      "visible_if": "{{ section.settings.show_product_image }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "t:settings.overlay_color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "t:settings.overlay_opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 69
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity_mobile",
+      "label": "t:settings.overlay_opacity_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 44
+    },
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Why Ascent"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "The cleanest protein we know how to make."
+    },
+    {
+      "type": "select",
+      "id": "heading_preset",
+      "label": "t:settings.heading_preset",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        }
+      ],
+      "default": "h1"
+    },
+    {
+      "type": "select",
+      "id": "heading_preset_mobile",
+      "label": "t:settings.heading_preset_mobile",
+      "options": [
+        {
+          "value": "h1",
+          "label": "t:options.h1"
+        },
+        {
+          "value": "h2",
+          "label": "t:options.h2"
+        },
+        {
+          "value": "h3",
+          "label": "t:options.h3"
+        },
+        {
+          "value": "h4",
+          "label": "t:options.h4"
+        }
+      ],
+      "default": "h3"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:settings.muted_text_color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "t:settings.accent_color",
+      "default": "#fbec00"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 108
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 108
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_panels",
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "panel_1": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Minimal ingredients, minimal processing",
+            "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked."
+          }
+        },
+        "panel_2": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Rigorous third-party testing",
+            "text": "Informed Sport Certified. An outside lab checks every batch before it ships."
+          }
+        },
+        "panel_3": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Tastes just like real milk",
+            "text": "There’s nothing artificial masking it, so it tastes like exactly what it’s made from."
+          }
+        },
+        "panel_4": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Gentle on your stomach",
+            "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean."
+          }
+        }
+      },
+      "block_order": [
+        "panel_1",
+        "panel_2",
+        "panel_3",
+        "panel_4"
+      ]
+    }
+  ]
+}
+{% endschema %}
