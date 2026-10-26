@@ -130,6 +130,7 @@
     "zoom_media": "Medyayı yakınlaştır: {{ index }}"
   },
   "content": {
+    "legal": "Legal",
     "rewards": "Rewards",
     "reviews": "değerlendirme",
     "language": "Dil",

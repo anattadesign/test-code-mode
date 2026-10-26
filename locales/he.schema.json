@@ -30,6 +30,7 @@
     "text": "טקסט"
   },
   "content": {
+    "footer_brand": "Brand",
     "visible_if_collection_has_more_products": "גלוי אם באוסף יש יותר מוצרים ממה שמוצג",
     "advanced": "מתקדם",
     "appearance": "מראה",
@@ -215,6 +216,9 @@
     "work_quickly_to_ship": "<p>נעבוד מהר כדי לשלוח את ההזמנה שלך בהקדם האפשרי. לאחר שההזמנה שלך תישלח, תקבל דוא&quot;ל עם מידע נוסף. זמני האספקה משתנים בהתאם למיקומך.</p>"
   },
   "info": {
+    "footer_brand_image": "Defaults to the Ascent mark.",
+    "footer_wordmark_image": "Defaults to the Ascent wordmark.",
+    "footer_copyright_name": "Defaults to the store name.",
     "header_floating": "Inset rounded bar with a frosted-glass background. Combine with a transparent home header to float it over the hero.",
     "header_rewards_link": "Shows a star icon linking to your rewards page. Leave empty to hide.",
     "announcement_inline": "Inline shows all announcements in one row with a separator and scrolls on mobile.",
@@ -411,6 +415,7 @@
     "comparison_slider": "מחוון השוואה"
   },
   "options": {
+    "footer_ascent": "Ascent (brand, columns, wordmark)",
     "header_floating": "Floating (glass pill)",
     "logo_theme_settings": "Theme settings logo",
     "logo_ascent_svg": "Ascent wordmark (SVG)",
@@ -715,6 +720,11 @@
     "direction_top_start": "למעלה, התחלה"
   },
   "settings": {
+    "footer_brand_image": "Brand mark",
+    "footer_tagline": "Tagline",
+    "footer_wordmark_image": "Wordmark image",
+    "footer_legal_menu": "Legal menu",
+    "footer_copyright_name": "Copyright name",
     "header_style": "Header style",
     "header_floating_tint": "Glass tint over hero",
     "header_floating_blur": "Glass blur",

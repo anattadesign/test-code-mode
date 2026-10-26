@@ -9,50 +9,106 @@
 <div
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
-<div
-  class="section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
->
-  {% liquid
-    assign total_blocks = section.blocks.size
+{% capture footer_blocks %}{% content_for 'blocks' %}{% endcapture %}
 
-    # Grid layout calculations
-    assign grid_columns = total_blocks | at_most: 4
-
-    # Calculate last row counts using modulo arithmetic
-    # last_row_count = (total_blocks - 1) % N + 1
-    assign last_row_count = total_blocks | minus: 1 | modulo: 4 | plus: 1
-    assign tablet_last_row_count = total_blocks | minus: 1 | modulo: 2 | plus: 1
-
-    # Check if there are orphaned elements (single item in last row)
-    assign has_isolated_grid_item_desktop = false
-    assign has_isolated_grid_item_tablet = false
-
-    if total_blocks > 4 and last_row_count == 1
-      assign has_isolated_grid_item_desktop = true
-    endif
-
-    if total_blocks == 5
-      assign has_isolated_grid_item_tablet = true
-    endif
-  %}
+{% if section.settings.layout == 'ascent' %}
+  {%- comment -%}
+    Ascent footer (Figma 2158:1056 desktop / 2158:1247 mobile): brand column + menu blocks as link columns,
+    then a wordmark row with copyright and the legal menu. Colours derive from the section colour scheme.
+  {%- endcomment -%}
   <div
-    class="
-      footer-content
-      spacing-style
-      {% if has_isolated_grid_item_desktop %}footer-content--isolated-grid-item-desktop{% endif %}
-      {% if has_isolated_grid_item_tablet %}footer-content--isolated-grid-item-tablet{% endif %}
-    "
-    style="
-      {%  render 'spacing-style', settings: section.settings %}
-      --footer-gap: {{ section.settings.gap }}px;
-      --grid-columns: {{ grid_columns }};
-      --last-row-count: {{ last_row_count }};
-      --tablet-last-row-count: {{ tablet_last_row_count }};
-    "
+    class="section section--{{ section.settings.section_width }} footer-ascent{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+    style="{% render 'spacing-padding', settings: section.settings %}"
   >
-    {% content_for 'blocks' %}
+    <div class="footer-ascent__top">
+      <div class="footer-ascent__brand">
+        <a href="{{ routes.root_url }}" class="footer-ascent__mark-link" aria-label="{{ shop.name | escape }}">
+          {%- if section.settings.brand_image != blank -%}
+            {{ section.settings.brand_image | image_url: width: 128 | image_tag: class: 'footer-ascent__mark', alt: '', loading: 'lazy' }}
+          {%- else -%}
+            {% render 'ascent-mark', class: 'footer-ascent__mark' %}
+          {%- endif -%}
+        </a>
+        {%- if section.settings.tagline != blank -%}
+          <p class="footer-ascent__tagline">{{ section.settings.tagline | escape | newline_to_br }}</p>
+        {%- endif -%}
+      </div>
+      {{ footer_blocks }}
+    </div>
+
+    <div class="footer-ascent__bottom">
+      <div class="footer-ascent__wordmark">
+        {%- if section.settings.wordmark_image != blank -%}
+          {{ section.settings.wordmark_image | image_url: width: 1200 | image_tag: widths: '400, 600, 800, 1200', sizes: '(min-width: 750px) 580px, 100vw', class: 'footer-ascent__wordmark-image', alt: shop.name, loading: 'lazy' }}
+        {%- else -%}
+          <img
+            src="{{ 'ascent-footer-wordmark.png' | asset_url }}"
+            width="1160"
+            height="258"
+            alt="{{ shop.name | escape }}"
+            class="footer-ascent__wordmark-image"
+            loading="lazy"
+          >
+        {%- endif -%}
+      </div>
+
+      <nav class="footer-ascent__legal" aria-label="{{ 'content.legal' | t }}">
+        <ul class="footer-ascent__legal-list list-unstyled">
+          {%- for link in section.settings.legal_menu.links -%}
+            <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+          {%- endfor -%}
+          <li class="footer-ascent__copyright">&copy; {{ 'now' | date: '%Y' }} {{ section.settings.copyright_name | default: shop.name }}</li>
+        </ul>
+      </nav>
+    </div>
   </div>
-</div>
+{% else %}
+  <div
+    class="section section--{{ section.settings.section_width }}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  >
+    {% liquid
+      assign total_blocks = section.blocks.size
+
+      # Grid layout calculations
+      assign grid_columns = total_blocks | at_most: 4
+
+      # Calculate last row counts using modulo arithmetic
+      # last_row_count = (total_blocks - 1) % N + 1
+      assign last_row_count = total_blocks | minus: 1 | modulo: 4 | plus: 1
+      assign tablet_last_row_count = total_blocks | minus: 1 | modulo: 2 | plus: 1
+
+      # Check if there are orphaned elements (single item in last row)
+      assign has_isolated_grid_item_desktop = false
+      assign has_isolated_grid_item_tablet = false
+
+      if total_blocks > 4 and last_row_count == 1
+        assign has_isolated_grid_item_desktop = true
+      endif
+
+      if total_blocks == 5
+        assign has_isolated_grid_item_tablet = true
+      endif
+    %}
+    <div
+      class="
+        footer-content
+        spacing-style
+        {% if has_isolated_grid_item_desktop %}footer-content--isolated-grid-item-desktop{% endif %}
+        {% if has_isolated_grid_item_tablet %}footer-content--isolated-grid-item-tablet{% endif %}
+      "
+      style="
+        {%  render 'spacing-style', settings: section.settings %}
+        --footer-gap: {{ section.settings.gap }}px;
+        --grid-columns: {{ grid_columns }};
+        --last-row-count: {{ last_row_count }};
+        --tablet-last-row-count: {{ tablet_last_row_count }};
+      "
+    >
+      {{ footer_blocks }}
+    </div>
+  </div>
+
+{% endif %}
 
 {% stylesheet %}
   .footer-content {
@@ -95,6 +151,223 @@
 
     .footer-content--isolated-grid-item-desktop > :last-child {
       grid-column: 1 / -1;
+    }
+  }
+  /* ==========================================================================
+     Ascent footer (layout: ascent). Figma 2158:1056 (1440) / 2158:1247 (390).
+     Colours come from the section scheme: links 80%, labels 52%, rules 17% of the foreground.
+     ========================================================================== */
+  .footer-ascent {
+    --footer-ascent-link: rgb(var(--color-foreground-rgb) / 0.8);
+    --footer-ascent-muted: rgb(var(--color-foreground-rgb) / 0.52);
+    --footer-ascent-rule: rgb(var(--color-foreground-rgb) / 0.17);
+    --footer-ascent-pad-inline: 1.25rem;
+
+    /* Section padding settings drive desktop; mobile scales them to the 390 frame (80→56, 40→36) */
+    padding-block: calc(var(--padding-block-start) * 0.7) calc(var(--padding-block-end) * 0.9);
+    color: var(--color-foreground);
+
+    @media screen and (min-width: 750px) {
+      padding-block: var(--padding-block-start) var(--padding-block-end);
+      border-block-start: 1px solid var(--footer-ascent-rule);
+    }
+
+    @media screen and (min-width: 750px) {
+      --footer-ascent-pad-inline: 3rem;
+    }
+  }
+
+  .footer-ascent > * {
+    grid-column: 1 / -1;
+    padding-inline: var(--footer-ascent-pad-inline);
+  }
+
+  .footer-ascent__top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2rem;
+      padding-block-end: 3.5rem;
+    }
+  }
+
+  .footer-ascent__brand {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+
+    @media screen and (min-width: 750px) {
+      gap: 1.375rem;
+    }
+  }
+
+  .footer-ascent__mark-link {
+    display: block;
+    width: fit-content;
+    color: var(--color-primary-button-background);
+  }
+
+  .footer-ascent__mark {
+    display: block;
+    width: 2rem;
+    height: auto;
+  }
+
+  .footer-ascent__tagline {
+    margin: 0;
+    max-width: 22rem;
+    font-family: var(--font-heading--family);
+    font-style: var(--font-heading--style);
+    font-weight: var(--font-heading--weight);
+    font-size: 2rem;
+    line-height: 0.94;
+    letter-spacing: 0;
+    color: var(--color-foreground);
+
+    @media screen and (min-width: 750px) {
+      font-size: 1.625rem;
+      line-height: 1;
+    }
+  }
+
+  /* Menu blocks as link columns */
+  .footer-ascent .menu .menu__details {
+    padding: 0;
+  }
+
+  .footer-ascent .menu__heading {
+    font-family: var(--font-accent--family);
+    font-style: normal;
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--footer-ascent-muted);
+    list-style: none;
+    padding-block: 0;
+    cursor: default;
+
+    @media screen and (min-width: 750px) {
+      font-size: 0.875rem;
+      line-height: 1.43;
+    }
+  }
+
+  .footer-ascent .menu__heading__default {
+    font-weight: inherit;
+  }
+
+  .footer-ascent .menu:not(:has(.menu__heading--empty)) .details-content {
+    margin-block-start: 1.25rem;
+  }
+
+  .footer-ascent .menu .details-content ul {
+    display: grid;
+    /* Mobile: two 156px link columns (Figma 390 "Links" grid) */
+    grid-template-columns: repeat(2, minmax(0, 9.75rem));
+    row-gap: 0.5rem;
+
+    @media screen and (min-width: 750px) {
+      grid-template-columns: 1fr;
+      row-gap: 0.375rem;
+    }
+  }
+
+  .footer-ascent .menu .menu__item {
+    margin: 0;
+    font-family: var(--font-body--family);
+    font-style: var(--font-body--style);
+    font-weight: var(--font-body--weight);
+    font-size: 1rem;
+    line-height: 1.375;
+    letter-spacing: 0;
+  }
+
+  .footer-ascent .menu__item a,
+  .footer-ascent__legal a {
+    color: var(--footer-ascent-link);
+    text-decoration: none;
+    transition: color var(--animation-speed) var(--animation-easing);
+  }
+
+  .footer-ascent .menu__item a:hover,
+  .footer-ascent__legal a:hover {
+    color: var(--color-foreground);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  /* Wordmark row */
+  .footer-ascent__bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    margin-block-start: 1.5rem;
+
+    @media screen and (min-width: 750px) {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-block-start: 0;
+      padding-block-start: 2.25rem;
+      border-block-start: 1px solid var(--footer-ascent-rule);
+      margin-inline: var(--footer-ascent-pad-inline);
+      padding-inline: 0;
+    }
+  }
+
+  .footer-ascent__wordmark {
+    min-width: 0;
+
+    @media screen and (min-width: 750px) {
+      flex: 0 1 36.25rem;
+    }
+  }
+
+  .footer-ascent__wordmark-image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .footer-ascent__legal-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    margin: 0;
+    font-family: var(--font-accent--family);
+    font-weight: 400;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--footer-ascent-muted);
+
+    @media screen and (min-width: 750px) {
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 1.125rem;
+      padding-block-end: 0.75rem;
+      text-transform: none;
+    }
+  }
+
+  .footer-ascent__legal-list a {
+    color: inherit;
+  }
+
+  /* Copyright: last on mobile, first on desktop (Figma) */
+  .footer-ascent__copyright {
+    order: 99;
+
+    @media screen and (min-width: 750px) {
+      order: -1;
     }
   }
 {% endstylesheet %}
@@ -148,9 +421,66 @@
     }
   ],
   "enabled_on": {
-    "groups": ["footer"]
+    "groups": [
+      "footer"
+    ]
   },
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:settings.layout",
+      "options": [
+        {
+          "value": "grid",
+          "label": "t:options.grid"
+        },
+        {
+          "value": "ascent",
+          "label": "t:options.footer_ascent"
+        }
+      ],
+      "default": "grid"
+    },
+    {
+      "type": "header",
+      "content": "t:content.footer_brand",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_image",
+      "label": "t:settings.footer_brand_image",
+      "info": "t:info.footer_brand_image",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
+    {
+      "type": "textarea",
+      "id": "tagline",
+      "label": "t:settings.footer_tagline",
+      "default": "Clean, honest nutrition.\nMade in Colorado.",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
+    {
+      "type": "image_picker",
+      "id": "wordmark_image",
+      "label": "t:settings.footer_wordmark_image",
+      "info": "t:info.footer_wordmark_image",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
+    {
+      "type": "link_list",
+      "id": "legal_menu",
+      "label": "t:settings.footer_legal_menu",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
+    {
+      "type": "text",
+      "id": "copyright_name",
+      "label": "t:settings.footer_copyright_name",
+      "info": "t:info.footer_copyright_name",
+      "visible_if": "{{ section.settings.layout == 'ascent' }}"
+    },
     {
       "type": "select",
       "id": "section_width",
@@ -248,7 +578,10 @@
               }
             }
           },
-          "block_order": ["newsletter-heading", "newsletter-text"]
+          "block_order": [
+            "newsletter-heading",
+            "newsletter-text"
+          ]
         },
         "newsletter-form": {
           "type": "email-signup",
@@ -257,7 +590,10 @@
           }
         }
       },
-      "block_order": ["newsletter-group", "newsletter-form"]
+      "block_order": [
+        "newsletter-group",
+        "newsletter-form"
+      ]
     }
   ]
 }

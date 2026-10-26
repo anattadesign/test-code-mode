@@ -132,6 +132,7 @@
     "zoom_media": "Fă zoom pe elementul media {{ index }}"
   },
   "content": {
+    "legal": "Legal",
     "rewards": "Rewards",
     "reviews": "recenzii",
     "language": "Limba",
