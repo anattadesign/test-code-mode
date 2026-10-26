@@ -1,0 +1,510 @@
+{%- comment -%}
+  Ascent "Shop by goal" / Athletes section (WAK-32): eyebrow + heading, goal card blocks (4-up grid on desktop,
+  swipe rail on mobile) and the protein calculator promo card. Cards without a link render disabled.
+{%- endcomment -%}
+{%- liquid
+  assign ss = section.settings
+  assign has_link = false
+  if ss.calculator_link != blank
+    assign has_link = true
+  endif
+-%}
+
+<div
+  class="ascent-goals"
+  style="
+    --ascent-goals-bg: {{ ss.background_color }};
+    --ascent-goals-text: {{ ss.text_color }};
+    --ascent-goals-eyebrow: {{ ss.eyebrow_color }};
+    --ascent-goals-columns: {{ ss.columns }};
+    --goal-card-text: {{ ss.card_text_color }};
+    --goal-card-accent: {{ ss.accent_color }};
+    --goal-card-accent-text: {{ ss.accent_text_color }};
+    --goal-card-disabled: {{ ss.disabled_color }};
+    --goal-card-disabled-text: {{ ss.disabled_text_color }};
+    --ascent-goals-calc-bg: {{ ss.calculator_background }};
+    --ascent-goals-calc-text: {{ ss.calculator_text_color }};
+    --ascent-goals-calc-muted: {{ ss.calculator_muted_color }};
+    --ascent-goals-padding: {{ ss.padding_block }}px;
+    --ascent-goals-padding-mobile: {{ ss.padding_block_mobile }}px;
+  "
+>
+  <div class="ascent-goals__inner">
+    <div class="ascent-goals__header">
+      {%- if ss.eyebrow != blank -%}
+        <p class="ascent-goals__eyebrow label-lg">{{ ss.eyebrow }}</p>
+      {%- endif -%}
+      {%- if ss.heading != blank -%}
+        <h2 class="ascent-goals__heading h2">{{ ss.heading }}</h2>
+      {%- endif -%}
+    </div>
+
+    <div class="ascent-goals__rail">
+      {% content_for 'blocks' %}
+    </div>
+
+    {%- if ss.show_calculator -%}
+      <div class="ascent-goals__calc">
+        <div class="ascent-goals__calc-top">
+          <span class="ascent-goals__calc-icon" aria-hidden="true">
+            <svg viewBox="0 0 40 40" fill="none" focusable="false">
+              <g stroke="currentColor" stroke-width="2.917" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 3.333h20a3.333 3.333 0 0 1 3.333 3.334v26.666A3.333 3.333 0 0 1 30 36.667H10a3.333 3.333 0 0 1-3.333-3.334V6.667A3.333 3.333 0 0 1 10 3.333z"/>
+                <path d="M13.333 10h13.334M26.667 23.333V30M26.667 16.667h.016M20 16.667h.017M13.333 16.667h.017M20 23.333h.017M13.333 23.333h.017M20 30h.017M13.333 30h.017"/>
+              </g>
+            </svg>
+          </span>
+          <div class="ascent-goals__calc-head">
+            {%- if ss.calculator_eyebrow != blank -%}
+              <p class="ascent-goals__calc-eyebrow label-sm">{{ ss.calculator_eyebrow }}</p>
+            {%- endif -%}
+            {%- if ss.calculator_title != blank -%}
+              <h3 class="ascent-goals__calc-title title-card">{{ ss.calculator_title }}</h3>
+            {%- endif -%}
+            {%- if ss.calculator_text != blank -%}
+              <p class="ascent-goals__calc-text ascent-goals__calc-text--desktop body-md">{{ ss.calculator_text }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+        {%- if ss.calculator_text != blank -%}
+          <p class="ascent-goals__calc-text ascent-goals__calc-text--mobile body-md">{{ ss.calculator_text }}</p>
+        {%- endif -%}
+        {%- if ss.calculator_button != blank -%}
+          <a
+            class="ascent-goals__calc-button button button--medium button--arrow"
+            {% if has_link %}
+              href="{{ ss.calculator_link }}"
+            {% else %}
+              role="link" aria-disabled="true"
+            {% endif %}
+          >
+            <span class="button__label">{{ ss.calculator_button }}</span>
+            <span class="button__arrow" aria-hidden="true">
+              <svg viewBox="0 0 20 20" focusable="false"><path d="M6.843 4.736v1.053h6.626l-8.732 8.731.742.742 8.732-8.731v6.626h1.053V4.736z" fill="currentColor"/></svg>
+            </span>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ascent-goals {
+    padding: var(--ascent-goals-padding) var(--page-margin, 64px);
+    background-color: var(--ascent-goals-bg);
+    color: var(--ascent-goals-text);
+  }
+
+  .ascent-goals__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 1312px;
+    margin-inline: auto;
+  }
+
+  .ascent-goals__header {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ascent-goals .ascent-goals__eyebrow {
+    margin: 0;
+    color: var(--ascent-goals-eyebrow);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-goals .ascent-goals__heading {
+    margin: 0;
+    color: var(--ascent-goals-text);
+  }
+
+  .ascent-goals__rail {
+    display: grid;
+    grid-template-columns: repeat(var(--ascent-goals-columns), minmax(0, 1fr));
+    gap: 21px;
+  }
+
+  .ascent-goals__calc {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    margin-top: 8px;
+    padding: 24px 32px;
+    box-shadow: inset 0 0 0 0.5px var(--goal-card-accent);
+    border-radius: 6px;
+    background-color: var(--ascent-goals-calc-bg);
+    color: var(--ascent-goals-calc-text);
+  }
+
+  .ascent-goals__calc-top {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 28px;
+    min-width: 0;
+  }
+
+  .ascent-goals__calc-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 88px;
+    height: 88px;
+    border-radius: 4px;
+    background-color: var(--goal-card-accent);
+    color: var(--goal-card-accent-text);
+  }
+
+  .ascent-goals__calc-icon svg {
+    width: 40px;
+    height: 40px;
+  }
+
+  .ascent-goals__calc-head {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .ascent-goals .ascent-goals__calc-eyebrow {
+    margin: 0;
+    color: var(--ascent-goals-calc-text);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .ascent-goals .ascent-goals__calc-title {
+    margin: 0;
+    color: var(--ascent-goals-calc-text);
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1.04;
+    letter-spacing: 0;
+  }
+
+  .ascent-goals .ascent-goals__calc-text {
+    margin: 0;
+    color: var(--ascent-goals-calc-text);
+    line-height: 20px;
+  }
+
+  .ascent-goals__calc-text--mobile {
+    display: none;
+  }
+
+  .ascent-goals__calc-button {
+    flex: none;
+  }
+
+  @media screen and (min-width: 750px) and (max-width: 1099px) {
+    .ascent-goals__rail {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-goals {
+      padding: var(--ascent-goals-padding-mobile) 20px;
+      overflow: hidden;
+    }
+
+    .ascent-goals__inner {
+      gap: 32px;
+    }
+
+    .ascent-goals__header + .ascent-goals__rail {
+      margin-top: -8px;
+    }
+
+    .ascent-goals .ascent-goals__eyebrow {
+      font-size: var(--font-label-sm--size);
+      line-height: 17px;
+    }
+
+    .ascent-goals .ascent-goals__heading {
+      font-size: 2rem;
+      line-height: 30px;
+    }
+
+    .ascent-goals__rail {
+      display: flex;
+      gap: 12px;
+      margin-inline: -20px;
+      padding-inline: 20px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: 20px;
+      scrollbar-width: none;
+    }
+
+    .ascent-goals__rail::-webkit-scrollbar {
+      display: none;
+    }
+
+    .ascent-goals__rail > * {
+      flex: 0 0 236px;
+      scroll-snap-align: start;
+
+      --goal-card-band: 68px;
+      --goal-card-band-padding: 12px;
+      --goal-card-title-size: 1.25rem;
+    }
+
+    .ascent-goals__calc {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 16px;
+      margin-top: 0;
+      padding: 24px;
+    }
+
+    .ascent-goals__calc-top {
+      gap: 16px;
+    }
+
+    .ascent-goals__calc-icon {
+      width: 64px;
+      height: 64px;
+    }
+
+    .ascent-goals__calc-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .ascent-goals .ascent-goals__calc-eyebrow {
+      font-weight: 700;
+      line-height: 17px;
+      letter-spacing: 0.1em;
+    }
+
+    .ascent-goals .ascent-goals__calc-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    .ascent-goals__calc-text--desktop {
+      display: none;
+    }
+
+    .ascent-goals .ascent-goals__calc-text--mobile {
+      display: block;
+      color: var(--ascent-goals-calc-muted);
+      line-height: 21px;
+    }
+
+    .ascent-goals__calc-button {
+      justify-content: space-between;
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_goals",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [{ "type": "_goal-card" }],
+  "max_blocks": 8,
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Shop by goals"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "What Moves You?"
+    },
+    {
+      "type": "header",
+      "content": "t:content.cards"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "t:settings.columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "text",
+      "id": "link_prefix",
+      "label": "t:settings.card_link_prefix",
+      "info": "t:info.card_link_prefix",
+      "default": "Shop for"
+    },
+    {
+      "type": "text",
+      "id": "disabled_label",
+      "label": "t:settings.disabled_label",
+      "info": "t:info.disabled_label",
+      "default": "Coming soon"
+    },
+    {
+      "type": "header",
+      "content": "t:content.protein_calculator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_calculator",
+      "label": "t:settings.show_calculator",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "calculator_eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Protein calculator"
+    },
+    {
+      "type": "text",
+      "id": "calculator_title",
+      "label": "t:settings.title",
+      "default": "Find out how much protein you actually need."
+    },
+    {
+      "type": "textarea",
+      "id": "calculator_text",
+      "label": "t:settings.text",
+      "default": "Answer a few questions about your training and we’ll point you to a daily target and the gear to hit it."
+    },
+    {
+      "type": "text",
+      "id": "calculator_button",
+      "label": "t:settings.button_label",
+      "default": "Calculate now"
+    },
+    {
+      "type": "url",
+      "id": "calculator_link",
+      "label": "t:settings.link",
+      "info": "t:info.calculator_link"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.heading_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "t:settings.eyebrow_color",
+      "default": "#a9a9a9"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "t:settings.card_text_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "t:settings.accent_color",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "t:settings.accent_text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "disabled_color",
+      "label": "t:settings.disabled_color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "color",
+      "id": "disabled_text_color",
+      "label": "t:settings.disabled_text_color",
+      "default": "#696969"
+    },
+    {
+      "type": "color",
+      "id": "calculator_background",
+      "label": "t:settings.calculator_background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "calculator_text_color",
+      "label": "t:settings.calculator_text_color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "calculator_muted_color",
+      "label": "t:settings.calculator_muted_color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "t:settings.padding_block",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_goals",
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "goal_strength": { "type": "_goal-card", "settings": { "sample": "build-strength", "title": "Build", "subtitle": "Strength", "link": "/collections/all" } },
+        "goal_recover": { "type": "_goal-card", "settings": { "sample": "recover-faster", "title": "Recover", "subtitle": "Faster", "link": "/collections/all" } },
+        "goal_weight": { "type": "_goal-card", "settings": { "sample": "manage-weight", "title": "Manage", "subtitle": "Weight", "link": "/collections/all" } },
+        "goal_mobility": { "type": "_goal-card", "settings": { "sample": "support-mobility", "title": "Support", "subtitle": "Mobility", "link": "/collections/all" } }
+      },
+      "block_order": ["goal_strength", "goal_recover", "goal_weight", "goal_mobility"]
+    }
+  ]
+}
+{% endschema %}

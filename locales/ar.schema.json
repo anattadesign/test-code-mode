@@ -30,6 +30,7 @@
     "text": "نص"
   },
   "content": {
+    "protein_calculator": "Protein calculator",
     "purchase_options": "Purchase options",
     "add_on": "Add-on",
     "logos": "Logos",
@@ -223,6 +224,11 @@
     "work_quickly_to_ship": "<p>سنعمل بسرعة لشحن طلبك في أقرب وقت ممكن. بمجرد شحن طلبك، ستتلقى رسالة بريد إلكتروني تحتوي على مزيد من المعلومات. تختلف أوقات التوصيل حسب موقعك.</p>"
   },
   "info": {
+    "goal_card_link": "Cards without a link show the disabled state.",
+    "sample_image_fallback": "Used when no image is selected.",
+    "calculator_link": "The button shows a disabled state until a link is set.",
+    "disabled_label": "Shown on cards without a link. Leave empty to hide.",
+    "card_link_prefix": "Read by screen readers before the card title, e.g. Shop for Build Strength.",
     "second_product": "Optional. Added to the cart together with the main product.",
     "membership_badge_tokens": "Use [percent] for the subscription discount and [savings] for the per-delivery savings.",
     "sample_logo": "Used when no logo image is uploaded.",
@@ -267,6 +273,8 @@
     "media_type_info": "تمت تعبئة الميزات من روابط القائمة الخاصة بك"
   },
   "names": {
+    "goal_card": "Goal card",
+    "ascent_goals": "Ascent shop by goal",
     "badge": "Badge",
     "benefit": "Benefit",
     "ascent_membership": "Ascent membership bundle",
@@ -447,6 +455,10 @@
     "comparison_slider": "شريط تمرير المقارنة"
   },
   "options": {
+    "support_mobility": "Support mobility",
+    "manage_weight": "Manage weight",
+    "recover_faster": "Recover faster",
+    "build_strength": "Build strength",
     "one_time": "One-time purchase",
     "subscribe": "Subscribe",
     "next_to_price": "Next to price",
@@ -777,6 +789,21 @@
     "below_media": "أسفل الوسائط"
   },
   "settings": {
+    "sub_label": "Sub-label",
+    "sample_image": "Sample image",
+    "padding_block": "Vertical padding",
+    "calculator_muted_color": "Calculator text color (mobile)",
+    "calculator_text_color": "Calculator text color",
+    "calculator_background": "Calculator background",
+    "disabled_text_color": "Disabled text color",
+    "disabled_color": "Disabled color",
+    "accent_text_color": "Accent text color",
+    "card_text_color": "Card text color",
+    "eyebrow_color": "Eyebrow color",
+    "heading_color": "Heading color",
+    "show_calculator": "Show protein calculator",
+    "disabled_label": "Disabled card label",
+    "card_link_prefix": "Card link prefix",
     "padding_mobile": "Padding (mobile)",
     "padding_desktop": "Padding (desktop)",
     "inactive_border_color": "Inactive border color",
