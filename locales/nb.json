@@ -29,6 +29,7 @@
     "slider_label": "Glidefelt"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "Spill av 3D-modell",
     "play_video": "Spill av video",
     "unit_price": "Enhetspris",

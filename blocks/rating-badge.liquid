@@ -1,0 +1,148 @@
+{% doc %}
+  Rating badge: a vertical rule, a star row and a label (Figma "Stars Row" in hero 2022:10527 / 2022:10707).
+  Stars use the heading font, the label uses the accent (mono) font. Colours follow the surrounding scheme.
+
+  @example
+  {% content_for 'block', type: 'rating-badge', id: 'rating' %}
+{% enddoc %}
+
+{%- liquid
+  assign rating = block.settings.rating | default: 5
+  assign full = rating | floor
+-%}
+
+<div
+  class="rating-badge{% if block.settings.show_rule %} rating-badge--rule{% endif %}"
+  style="{% if block.settings.color != blank %}--rating-badge-color: {{ block.settings.color }};{% endif %}{% if block.settings.rule_color != blank %} --rating-badge-rule: {{ block.settings.rule_color }};{% endif %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="rating-badge__body">
+    <p class="rating-badge__stars" role="img" aria-label="{{ 'accessibility.rating_label' | t: rating: rating, max: 5 }}">
+      {%- for i in (1..5) -%}
+        <span aria-hidden="true"{% if i > full %} class="rating-badge__star--empty"{% endif %}>★</span>
+      {%- endfor -%}
+    </p>
+    {%- if block.settings.label != blank -%}
+      <p class="rating-badge__label">{{ block.settings.label }}</p>
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  .rating-badge {
+    --rating-badge-color: currentcolor;
+    --rating-badge-rule: rgb(var(--color-foreground-rgb) / 0.8);
+
+    display: flex;
+    align-items: stretch;
+    gap: 0.75rem;
+    color: var(--rating-badge-color);
+
+    @media screen and (min-width: 750px) {
+      gap: 0.875rem;
+    }
+  }
+
+  .rating-badge--rule::before {
+    content: '';
+    flex: none;
+    inline-size: 1px;
+    background: var(--rating-badge-rule);
+  }
+
+  .rating-badge__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.375rem;
+
+    @media screen and (min-width: 750px) {
+      gap: 1rem;
+    }
+  }
+
+  .rating-badge__stars,
+  .rating-badge__label {
+    margin: 0;
+  }
+
+  .rating-badge__stars {
+    display: flex;
+    font-family: var(--font-heading--family);
+    font-weight: 700;
+    font-size: 1.25rem;
+    line-height: 1;
+    letter-spacing: 0;
+
+    @media screen and (min-width: 750px) {
+      font-size: 1.625rem;
+      letter-spacing: -0.02em;
+    }
+  }
+
+  .rating-badge__star--empty {
+    opacity: 0.3;
+  }
+
+  .rating-badge__label {
+    font-family: var(--font-accent--family);
+    font-weight: 700;
+    font-size: 0.75rem;
+    line-height: 1.4;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+
+    @media screen and (min-width: 750px) {
+      font-size: 0.875rem;
+      line-height: 1.43;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.rating_badge",
+  "tag": null,
+  "settings": [
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "t:settings.rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "inline_richtext",
+      "id": "label",
+      "label": "t:settings.text",
+      "default": "6,000+ five star reviews"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_rule",
+      "label": "t:settings.rating_badge_rule",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "color",
+      "label": "t:settings.text_color",
+      "alpha": true
+    },
+    {
+      "type": "color",
+      "id": "rule_color",
+      "label": "t:settings.rating_badge_rule_color",
+      "alpha": true,
+      "visible_if": "{{ block.settings.show_rule }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.rating_badge",
+      "category": "t:categories.basic"
+    }
+  ]
+}
+{% endschema %}

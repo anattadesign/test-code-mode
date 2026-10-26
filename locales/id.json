@@ -29,6 +29,7 @@
     "slider_label": "Slider"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "Putar model 3D",
     "play_video": "Putar video",
     "unit_price": "Harga satuan",

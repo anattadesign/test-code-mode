@@ -29,6 +29,7 @@
     "slider_label": "Billedkarrusel"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "Afspil 3D-model",
     "play_video": "Afspil video",
     "unit_price": "Stykpris",

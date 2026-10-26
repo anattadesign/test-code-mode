@@ -9,6 +9,7 @@
  */
 {
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "account": "الحساب",
     "active_filters": "عوامل التصفية النشطة:",
     "cart": "سلة التسوق",

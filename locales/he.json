@@ -9,6 +9,7 @@
  */
 {
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "account": "חשבון",
     "active_filters": "מסננים פעילים:",
     "cart": "סל",

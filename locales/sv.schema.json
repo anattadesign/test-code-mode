@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "ascent_hero": "Ascent hero",
+    "rating_badge": "Rating badge",
     "404": "404",
     "colors": "Färgpalett",
     "custom_section": "Anpassad sektion",
@@ -171,6 +173,15 @@
     "disclosures": "Upplysningar"
   },
   "settings": {
+    "rating": "Rating",
+    "rating_badge_rule": "Show divider",
+    "rating_badge_rule_color": "Divider color",
+    "gradient_extent": "Gradient length",
+    "overlay_mobile_custom": "Different overlay on mobile",
+    "overlay_color_mobile": "Mobile overlay color",
+    "gradient_direction_mobile": "Mobile gradient direction",
+    "gradient_extent_mobile": "Mobile gradient length",
+    "placeholder_media": "Placeholder media",
     "footer_brand_image": "Brand mark",
     "footer_tagline": "Tagline",
     "footer_wordmark_image": "Wordmark image",
@@ -602,6 +613,7 @@
     "customer_account_menu": "Kundkontomeny"
   },
   "options": {
+    "placeholder_ascent_photo": "Ascent sample photo",
     "footer_ascent": "Ascent (brand, columns, wordmark)",
     "header_floating": "Floating (glass pill)",
     "logo_theme_settings": "Theme settings logo",
@@ -1131,6 +1143,7 @@
     "disclosures": "Upplysningar"
   },
   "info": {
+    "placeholder_media": "Shown until an image or video is selected.",
     "footer_brand_image": "Defaults to the Ascent mark.",
     "footer_wordmark_image": "Defaults to the Ascent wordmark.",
     "footer_copyright_name": "Defaults to the store name.",

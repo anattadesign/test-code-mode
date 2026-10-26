@@ -29,6 +29,7 @@
     "slider_label": "Ползунок"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "Открыть объемную модель",
     "play_video": "Воспроизвести видео",
     "unit_price": "Цена за единицу",

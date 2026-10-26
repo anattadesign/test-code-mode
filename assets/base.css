@@ -273,7 +273,8 @@ p:empty {
 .page-width-normal,
 .page-width-narrow,
 .page-width-content {
-  --page-margin: max(16px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  /* Ascent grid margins: 20px mobile, 40px tablet, 64px desktop (Figma 390 / 1440 frames) */
+  --page-margin: max(20px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
 }
 
 @media screen and (min-width: 750px) {
@@ -282,6 +283,15 @@ p:empty {
   .page-width-narrow,
   .page-width-content {
     --page-margin: max(40px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .page-width-wide,
+  .page-width-normal,
+  .page-width-narrow,
+  .page-width-content {
+    --page-margin: max(64px, var(--safe-area-inset-left, 0px), var(--safe-area-inset-right, 0px));
   }
 }
 

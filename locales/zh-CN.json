@@ -29,6 +29,7 @@
     "slider_label": "滑块"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "演示 3D 模型",
     "play_video": "播放视频",
     "unit_price": "单价",

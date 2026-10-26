@@ -327,7 +327,22 @@
   {{ media_slot_2 }}
 
   {% if media_count == 0 %}
-    {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__media' }}
+    {%- if section.settings.placeholder_media == 'ascent' -%}
+      {%- comment -%} Bundled Ascent sample photo (Figma 2022:10527 / 2022:10707) until a merchant image is chosen {%- endcomment -%}
+      <picture class="hero__media" data-testid="hero-sample-picture">
+        <source media="(max-width: 749px)" srcset="{{ 'ascent-hero-mobile.jpg' | asset_url }}" width="1000" height="913">
+        <img
+          src="{{ 'ascent-hero-desktop.jpg' | asset_url }}"
+          width="2400"
+          height="1325"
+          alt=""
+          class="hero__media"
+          fetchpriority="{{ fetch_priority }}"
+        >
+      </picture>
+    {%- else -%}
+      {{ 'hero-apparel-1' | placeholder_svg_tag: 'hero__media' }}
+    {%- endif -%}
   {%- endif -%}
 {% endcapture %}
 
@@ -798,12 +813,31 @@
     }
   ],
   "disabled_on": {
-    "groups": ["header"]
+    "groups": [
+      "header"
+    ]
   },
   "settings": [
     {
       "type": "header",
       "content": "t:content.media_1"
+    },
+    {
+      "type": "select",
+      "id": "placeholder_media",
+      "label": "t:settings.placeholder_media",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "ascent",
+          "label": "t:options.placeholder_ascent_photo"
+        }
+      ],
+      "default": "default",
+      "info": "t:info.placeholder_media"
     },
     {
       "type": "select",
@@ -1211,10 +1245,79 @@
         {
           "value": "to bottom",
           "label": "t:options.down"
+        },
+        {
+          "value": "to right",
+          "label": "t:options.right"
+        },
+        {
+          "value": "to left",
+          "label": "t:options.left"
         }
       ],
       "default": "to top",
       "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "range",
+      "id": "gradient_extent",
+      "label": "t:settings.gradient_extent",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_mobile_custom",
+      "label": "t:settings.overlay_mobile_custom",
+      "default": false,
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_style == 'gradient' }}"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color_mobile",
+      "label": "t:settings.overlay_color_mobile",
+      "alpha": true,
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_mobile_custom }}"
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction_mobile",
+      "label": "t:settings.gradient_direction_mobile",
+      "options": [
+        {
+          "value": "to top",
+          "label": "t:options.up"
+        },
+        {
+          "value": "to bottom",
+          "label": "t:options.down"
+        },
+        {
+          "value": "to right",
+          "label": "t:options.right"
+        },
+        {
+          "value": "to left",
+          "label": "t:options.left"
+        }
+      ],
+      "default": "to top",
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_mobile_custom }}"
+    },
+    {
+      "type": "range",
+      "id": "gradient_extent_mobile",
+      "label": "t:settings.gradient_extent_mobile",
+      "min": 10,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 100,
+      "visible_if": "{{ section.settings.toggle_overlay and section.settings.overlay_mobile_custom }}"
     },
     {
       "type": "checkbox",
@@ -1290,7 +1393,11 @@
           }
         }
       },
-      "block_order": ["text_1", "text_2", "button"],
+      "block_order": [
+        "text_1",
+        "text_2",
+        "button"
+      ],
       "settings": {
         "horizontal_alignment_flex_direction_column": "center",
         "gap": 16,
@@ -1323,7 +1430,9 @@
               }
             }
           },
-          "block_order": ["text"]
+          "block_order": [
+            "text"
+          ]
         },
         "button": {
           "type": "button",
@@ -1333,7 +1442,11 @@
           }
         }
       },
-      "block_order": ["spacer", "marquee", "button"],
+      "block_order": [
+        "spacer",
+        "marquee",
+        "button"
+      ],
       "settings": {
         "horizontal_alignment_flex_direction_column": "center",
         "vertical_alignment_flex_direction_column": "space-between",
@@ -1454,7 +1567,10 @@
                   }
                 }
               },
-              "block_order": ["text_intro", "text_main"]
+              "block_order": [
+                "text_intro",
+                "text_main"
+              ]
             },
             "text_description": {
               "type": "text",
@@ -1478,10 +1594,15 @@
               }
             }
           },
-          "block_order": ["content_group", "text_description"]
+          "block_order": [
+            "content_group",
+            "text_description"
+          ]
         }
       },
-      "block_order": ["group_main"],
+      "block_order": [
+        "group_main"
+      ],
       "settings": {
         "media_type_1": "image",
         "horizontal_alignment_flex_direction_column": "center",
@@ -1493,6 +1614,160 @@
         "toggle_overlay": true,
         "overlay_style": "gradient",
         "gradient_direction": "to top"
+      }
+    },
+    {
+      "name": "t:names.ascent_hero",
+      "category": "t:categories.banners",
+      "blocks": {
+        "heading": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h1>Cleanest fuel for what moves you!</h1>",
+            "type_preset": "h1",
+            "width": "fit-content",
+            "max_width": "narrow",
+            "alignment": "left",
+            "text_color": "#ffffff"
+          }
+        },
+        "spacer_heading": {
+          "type": "spacer",
+          "settings": {
+            "size": "pixel",
+            "pixel_size": 40,
+            "custom_mobile_size": true,
+            "size_mobile": "pixel",
+            "pixel_size_mobile": 20
+          }
+        },
+        "ctas": {
+          "type": "group",
+          "settings": {
+            "content_direction": "row",
+            "vertical_on_mobile": true,
+            "horizontal_alignment": "flex-start",
+            "vertical_alignment": "center",
+            "align_baseline": false,
+            "horizontal_alignment_flex_direction_column": "flex-start",
+            "vertical_alignment_flex_direction_column": "center",
+            "gap": 24,
+            "width": "fill",
+            "custom_width": 100,
+            "width_mobile": "fill",
+            "custom_width_mobile": 100,
+            "height": "fit",
+            "custom_height": 100,
+            "padding-block-start": 0,
+            "padding-block-end": 0,
+            "padding-inline-start": 0,
+            "padding-inline-end": 0
+          },
+          "blocks": {
+            "cta_primary": {
+              "type": "button",
+              "settings": {
+                "label": "Shop protein",
+                "link": "shopify://collections/all",
+                "open_in_new_tab": false,
+                "style_class": "button",
+                "button_size": "large",
+                "show_arrow": true,
+                "secondary_tone": "accent",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "custom",
+                "custom_width_mobile": 100
+              }
+            },
+            "cta_secondary": {
+              "type": "button",
+              "settings": {
+                "label": "See the science",
+                "link": "shopify://pages/story",
+                "open_in_new_tab": false,
+                "style_class": "button-tertiary",
+                "button_size": "small",
+                "show_arrow": true,
+                "secondary_tone": "accent",
+                "width": "fit-content",
+                "custom_width": 100,
+                "width_mobile": "fit-content",
+                "custom_width_mobile": 100,
+                "link_text_color": "#ffffff"
+              }
+            }
+          },
+          "block_order": [
+            "cta_primary",
+            "cta_secondary"
+          ]
+        },
+        "spacer_rating": {
+          "type": "spacer",
+          "settings": {
+            "size": "pixel",
+            "pixel_size": 120,
+            "custom_mobile_size": true,
+            "size_mobile": "pixel",
+            "pixel_size_mobile": 44
+          }
+        },
+        "rating": {
+          "type": "rating-badge",
+          "settings": {
+            "rating": 5,
+            "label": "6,000+ five star reviews",
+            "show_rule": true,
+            "color": "#ffffff",
+            "rule_color": "#d0d0d0"
+          }
+        },
+        "spacer_bottom": {
+          "type": "spacer",
+          "settings": {
+            "size": "pixel",
+            "pixel_size": 20,
+            "custom_mobile_size": true,
+            "size_mobile": "pixel",
+            "pixel_size_mobile": 40
+          }
+        }
+      },
+      "block_order": [
+        "heading",
+        "spacer_heading",
+        "ctas",
+        "spacer_rating",
+        "rating",
+        "spacer_bottom"
+      ],
+      "settings": {
+        "placeholder_media": "ascent",
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "flex-end",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "flex-end",
+        "gap": 0,
+        "section_width": "page-width",
+        "section_height": "custom",
+        "section_height_custom": 85,
+        "background_color": "#1a1a1a",
+        "toggle_overlay": true,
+        "overlay_color": "#282828",
+        "overlay_style": "gradient",
+        "gradient_direction": "to right",
+        "gradient_extent": 51,
+        "overlay_mobile_custom": true,
+        "overlay_color_mobile": "rgba(0,0,0,0.72)",
+        "gradient_direction_mobile": "to top",
+        "gradient_extent_mobile": 66,
+        "padding-block-start": 0,
+        "padding-block-end": 0
       }
     }
   ]

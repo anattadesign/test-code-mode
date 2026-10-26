@@ -136,7 +136,7 @@
       "id": "link_text_color",
       "label": "t:settings.link_text_color",
       "placeholder": "t:settings.default",
-      "visible_if": "{{ block.settings.style_class == 'button-unstyled' }}"
+      "visible_if": "{{ block.settings.style_class == 'button-unstyled' or block.settings.style_class == 'button-tertiary' }}"
     },
     {
       "type": "header",

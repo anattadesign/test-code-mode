@@ -23,6 +23,14 @@
   {% endstyle %}
 {% endif %}
 
+{% if block_settings.style_class == 'button-tertiary' and block_settings.link_text_color != blank %}
+  {% style %}
+    .button-tertiary--{{ block_id }} {
+      --color: {{ block_settings.link_text_color }};
+    }
+  {% endstyle %}
+{% endif %}
+
 {% if block_settings.style_class == 'button-custom' %}
   {%- assign effective_background_color = block_settings.custom_button_background
     | default: settings.palette_primary_button_background

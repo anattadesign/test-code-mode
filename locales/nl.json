@@ -29,6 +29,7 @@
     "slider_label": "Schuifregelaar"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "3D-model afspelen",
     "play_video": "Video afspelen",
     "unit_price": "Eenheidsprijs",

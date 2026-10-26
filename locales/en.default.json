@@ -9,6 +9,7 @@
  */
 {
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "account": "Account",
     "active_filters": "Active filters:",
     "cart": "Cart",

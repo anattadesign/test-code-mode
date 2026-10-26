@@ -29,6 +29,7 @@
     "slider_label": "Bild"
   },
   "accessibility": {
+    "rating_label": "Rated {{ rating }} out of {{ max }} stars",
     "play_model": "Spela 3D-modell",
     "play_video": "Spela video",
     "unit_price": "Enhetspris",
