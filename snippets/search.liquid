@@ -22,6 +22,8 @@
       <span class="{% if display_style == 'icon' %}hidden{% else %}mobile:hidden{% endif %}">
         {{ 'content.search' | t }}
       </span>
+      {%- comment -%} Visible only in the floating header's desktop search pill {%- endcomment -%}
+      <span class="search-action__label" aria-hidden="true">{{ 'content.search' | t }}</span>
 
       <span class="svg-wrapper {% if display_style != 'icon' %}desktop:hidden{% endif %}">
         {{ 'icon-search.svg' | inline_asset_content }}

@@ -27,7 +27,7 @@
       --line-height: 1;
     "
     {{ block.shopify_attributes }}
-    aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
+    aria-hidden="{% if block_index == 0 or section.settings.layout == 'inline' %}false{% else %}true{% endif %}"
   >
     <p class="announcement-bar__text">
       {{ block.settings.text }}
@@ -222,6 +222,10 @@
         {
           "value": "loose",
           "label": "t:options.loose"
+        },
+        {
+          "value": "wide",
+          "label": "t:options.wide"
         }
       ],
       "default": "normal"

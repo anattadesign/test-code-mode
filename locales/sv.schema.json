@@ -171,6 +171,14 @@
     "disclosures": "Upplysningar"
   },
   "settings": {
+    "header_style": "Header style",
+    "header_floating_tint": "Glass tint over hero",
+    "header_floating_blur": "Glass blur",
+    "header_rewards_link": "Rewards link",
+    "logo_type": "Logo",
+    "logo_svg_color": "Logo color",
+    "announcement_separator": "Separator",
+    "announcement_separator_color": "Separator color",
     "button_tone": "Secondary color",
     "button_show_arrow": "Show arrow icon",
     "alignment": "Justering",
@@ -589,6 +597,11 @@
     "customer_account_menu": "Kundkontomeny"
   },
   "options": {
+    "header_floating": "Floating (glass pill)",
+    "logo_theme_settings": "Theme settings logo",
+    "logo_ascent_svg": "Ascent wordmark (SVG)",
+    "announcement_slideshow": "Slideshow",
+    "announcement_inline": "Inline row",
     "dark": "Dark",
     "button_tone_accent": "Accent (for dark backgrounds)",
     "button_tone_palette": "Theme secondary",
@@ -1111,6 +1124,9 @@
     "disclosures": "Upplysningar"
   },
   "info": {
+    "header_floating": "Inset rounded bar with a frosted-glass background. Combine with a transparent home header to float it over the hero.",
+    "header_rewards_link": "Shows a star icon linking to your rewards page. Leave empty to hide.",
+    "announcement_inline": "Inline shows all announcements in one row with a separator and scrolls on mobile.",
     "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "video_alt_text": "Beskriv videon för användare av hjälpmedelsteknik",

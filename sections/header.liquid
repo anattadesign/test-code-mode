@@ -205,6 +205,11 @@
     assign class = class | append: ' ' | append: collapse_header_paddings_class
   endif
 
+  # Ascent floating header: the top row becomes an inset glass pill (Figma Header 2269:12784)
+  if section.settings.header_style == 'floating'
+    assign class = class | append: ' header--floating'
+  endif
+
   # Determine transparent background value
   assign top_transparent = false
   assign bottom_transparent = false
@@ -362,6 +367,10 @@
   style="
     --color-background-top-row: rgba({{ section.settings.background_color_top.rgba | default: settings.page_background_color.rgba }});
     --color-background-bottom-row: rgba({{ section.settings.background_color_bottom.rgba | default: settings.page_background_color.rgba }});
+    {% if section.settings.header_style == 'floating' %}
+      --header-floating-tint-transparent: {{ section.settings.floating_tint_transparent | default: 'rgb(248 248 248 / 0.08)' }};
+      --header-floating-blur: {{ section.settings.floating_blur }}px;
+    {% endif %}
     {% if transparent and text_color_transparent != blank %}
       --color-transparent-text: {{ text_color_transparent }};
       --color-transparent-text-rgb: {{ text_color_transparent.rgb }};
@@ -1242,6 +1251,202 @@
     font-family: var(--menu-localization-font);
     font-size: var(--menu-localization-font-size);
   }
+
+  /* ==========================================================================
+     Ascent floating header (header_style: floating). Figma Header 2269:12784.
+     Desktop: 64px pill inset 64px, radius 40. Mobile: 44px pill inset 12px, fully rounded.
+     The gap above the pill is a layout token (--header-float-offset), not part of the pill itself.
+     ========================================================================== */
+  /* Layout tokens, declared on :root so page-level rules can read them */
+  :root {
+    --header-float-offset: 1rem;
+    --header-float-inset: 0.75rem;
+
+    @media screen and (min-width: 750px) {
+      --header-float-offset: 1.25rem;
+      --header-float-inset: 4rem;
+    }
+  }
+
+  /* The offset is padding on the header itself, so the sticky IntersectionObserver (threshold 1 on
+     #header-component) still detects the stuck state. Over the hero, the hero starts right under the
+     announcement bar instead of Horizon's default of sliding under the whole header group. */
+  #header-group:has(> .header-section > #header-component.header--floating[transparent])
+    ~ .content-for-layout
+    > .shopify-section:first-child {
+    margin-top: 0;
+  }
+
+  .header--floating {
+    --header-pill-height: 2.75rem;
+    --header-pill-radius: 999px;
+    --header-pill-padding-inline: 1rem;
+    --header-icon-size: 2rem;
+    --header-icon-border: 1px;
+
+    padding-block: var(--header-float-offset) 0;
+    padding-inline: var(--header-float-inset);
+
+    &:not([transparent]) {
+      padding-block-end: var(--header-float-offset);
+    }
+
+    @media screen and (min-width: 750px) {
+      --header-pill-height: 4rem;
+      --header-pill-radius: 2.5rem;
+      --header-pill-padding-inline: 1.75rem;
+      --header-icon-size: 2.5rem;
+      --header-icon-border: 1.5px;
+    }
+
+    .header__underlay-closed {
+      display: none;
+    }
+
+    .header__row--top {
+      display: block;
+      max-width: none;
+      border-radius: var(--header-pill-radius);
+      /* stylelint-disable-next-line declaration-no-important */
+      background-color: var(--color-background-top-row) !important;
+      -webkit-backdrop-filter: blur(var(--header-floating-blur)) saturate(140%);
+      backdrop-filter: blur(var(--header-floating-blur)) saturate(140%);
+      border-bottom: 0;
+    }
+
+    /* Over the hero (transparent, not yet stuck, no menu open): translucent glass tint */
+    &[transparent]:not([data-sticky-state='active']):not(:has(header-menu[aria-expanded='true'])) .header__row--top {
+      /* stylelint-disable-next-line declaration-no-important */
+      background-color: var(--header-floating-tint-transparent) !important;
+    }
+
+    /* Mobile (Figma 390 Nav): menu | logo | search, cart. Account lives in the drawer; rewards is desktop-only. */
+    @media screen and (max-width: 749px) {
+      .header__row--top .header__columns {
+        --header-template-columns: 2rem 2rem 1fr 2rem 2rem;
+
+        column-gap: 0.75rem;
+      }
+
+      .header__row--top .header__columns .search-action--hidden-on-menu,
+      header-actions .header-actions__rewards,
+      header-actions .account-button {
+        display: none;
+      }
+
+      .header__row--top .header__columns .search-action--hidden-on-drawer {
+        display: flex;
+        grid-area: rightA;
+      }
+    }
+
+    /* Pill height is set by the row; the drawer toggle must not force Horizon's 60px minimum */
+    .header__drawer {
+      --header-drawer-min-height: 0px;
+    }
+
+    /* Hamburger: 32px hit area, 21×16 icon (Figma Nav icon) */
+    .header__icon--menu.header__icon--summary {
+      inline-size: 2rem;
+      block-size: 2rem;
+      padding: 0;
+    }
+
+    .header__icon--menu .header-drawer-icon {
+      inline-size: 1.3125rem;
+      block-size: 1rem;
+    }
+
+    .header__row--top .header__columns {
+      --padding-block-start: 0px;
+      --padding-block-end: 0px;
+
+      align-items: center;
+      min-height: var(--header-pill-height);
+      padding-inline: var(--header-pill-padding-inline);
+      margin-inline: 0;
+    }
+
+    /* Menu: Figma Inter 600 16px, 32px apart */
+    .menu-list__list {
+      column-gap: 2rem;
+    }
+
+    .menu-list__link {
+      font-family: var(--font-nav-link--family);
+      font-weight: var(--font-nav-link--weight);
+      font-size: var(--font-nav-link--size);
+      line-height: var(--font-nav-link--line-height);
+      letter-spacing: var(--font-nav-link--letter-spacing);
+      padding-inline: 0;
+    }
+
+    /* Actions: outlined circular icon buttons */
+    .header-actions__action {
+      display: inline-grid;
+      place-items: center;
+      inline-size: var(--header-icon-size);
+      block-size: var(--header-icon-size);
+      padding: 0;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 var(--header-icon-border) currentcolor;
+    }
+
+    .header-actions__action :is(.svg-wrapper, svg),
+    .header-actions__action .account-button__icon {
+      inline-size: 1.25rem;
+      block-size: 1.25rem;
+    }
+
+    .header-actions {
+      gap: 0.75rem;
+
+      @media screen and (min-width: 750px) {
+        gap: 1rem;
+      }
+    }
+
+    /* Mobile menu (hamburger) stays borderless, 32px */
+    .header__icon--menu,
+    .header-drawer .header__icon--summary {
+      box-shadow: none;
+    }
+
+    /* Search becomes a pill with a label on desktop */
+    @media screen and (min-width: 750px) {
+      .search-action .header-actions__action {
+        display: inline-flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        inline-size: auto;
+        min-inline-size: 13.4375rem;
+        padding-inline: 1rem 0.75rem;
+        border-radius: 1.5rem;
+      }
+
+      .search-action__label {
+        display: inline;
+        font-family: var(--font-body--family);
+        font-size: 0.875rem;
+        line-height: 1.5;
+        font-weight: var(--font-body--weight);
+        text-transform: none;
+        letter-spacing: 0;
+      }
+    }
+  }
+
+  .search-action__label {
+    display: none;
+  }
+
+  .header-actions__rewards {
+    display: none;
+
+    @media screen and (min-width: 750px) {
+      display: inline-grid;
+    }
+  }
 {% endstylesheet %}
 
 {% unless request.design_mode %}
@@ -1496,6 +1701,48 @@
     {
       "type": "header",
       "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "header_style",
+      "label": "t:settings.header_style",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "floating",
+          "label": "t:options.header_floating"
+        }
+      ],
+      "default": "default",
+      "info": "t:info.header_floating"
+    },
+    {
+      "type": "color",
+      "id": "floating_tint_transparent",
+      "label": "t:settings.header_floating_tint",
+      "alpha": true,
+      "default": "rgba(248,248,248,0.08)",
+      "visible_if": "{{ section.settings.header_style == 'floating' }}"
+    },
+    {
+      "type": "range",
+      "id": "floating_blur",
+      "label": "t:settings.header_floating_blur",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20,
+      "visible_if": "{{ section.settings.header_style == 'floating' }}"
+    },
+    {
+      "type": "url",
+      "id": "rewards_link",
+      "label": "t:settings.header_rewards_link",
+      "info": "t:info.header_rewards_link"
     },
     {
       "type": "select",
