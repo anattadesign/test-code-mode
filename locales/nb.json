@@ -130,6 +130,7 @@
     "zoom_media": "Zoom medier {{ index }}"
   },
   "content": {
+    "legal": "Legal",
     "rewards": "Rewards",
     "reviews": "anmeldelser",
     "no_results_found": "Fant ingen resultater",

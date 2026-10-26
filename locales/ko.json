@@ -130,6 +130,7 @@
     "zoom_media": "{{ index }} 미디어 확대/축소"
   },
   "content": {
+    "legal": "Legal",
     "rewards": "Rewards",
     "reviews": "리뷰",
     "language": "언어",

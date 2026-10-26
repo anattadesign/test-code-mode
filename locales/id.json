@@ -130,6 +130,7 @@
     "zoom_media": "Perbesar media {{ index }}"
   },
   "content": {
+    "legal": "Legal",
     "rewards": "Rewards",
     "reviews": "ulasan",
     "language": "Bahasa",

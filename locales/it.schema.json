@@ -171,6 +171,11 @@
     "disclosures": "Informative"
   },
   "settings": {
+    "footer_brand_image": "Brand mark",
+    "footer_tagline": "Tagline",
+    "footer_wordmark_image": "Wordmark image",
+    "footer_legal_menu": "Legal menu",
+    "footer_copyright_name": "Copyright name",
     "header_style": "Header style",
     "header_floating_tint": "Glass tint over hero",
     "header_floating_blur": "Glass blur",
@@ -597,6 +602,7 @@
     "customer_account_menu": "Menu dell’account cliente"
   },
   "options": {
+    "footer_ascent": "Ascent (brand, columns, wordmark)",
     "header_floating": "Floating (glass pill)",
     "logo_theme_settings": "Theme settings logo",
     "logo_ascent_svg": "Ascent wordmark (SVG)",
@@ -901,6 +907,7 @@
     "direction_top_start": "In alto a sinistra"
   },
   "content": {
+    "footer_brand": "Brand",
     "advanced": "Avanzate",
     "background_image": "Immagine di sfondo",
     "background_video": "Video di sfondo",
@@ -1124,6 +1131,9 @@
     "disclosures": "Informative"
   },
   "info": {
+    "footer_brand_image": "Defaults to the Ascent mark.",
+    "footer_wordmark_image": "Defaults to the Ascent wordmark.",
+    "footer_copyright_name": "Defaults to the store name.",
     "header_floating": "Inset rounded bar with a frosted-glass background. Combine with a transparent home header to float it over the hero.",
     "header_rewards_link": "Shows a star icon linking to your rewards page. Leave empty to hide.",
     "announcement_inline": "Inline shows all announcements in one row with a separator and scrolls on mobile.",
