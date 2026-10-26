@@ -33,6 +33,8 @@
     "text": "Text"
   },
   "content": {
+    "purchase_options": "Purchase options",
+    "add_on": "Add-on",
     "logos": "Logos",
     "cards": "Cards",
     "product_card_button_info": "Links to the product.",
@@ -229,6 +231,8 @@
     "work_quickly_to_ship": "<p>We will work quickly to ship your order as soon as possible. Once your order has shipped, you will receive an email with further information. Delivery times vary depending on your location.</p>"
   },
   "info": {
+    "second_product": "Optional. Added to the cart together with the main product.",
+    "membership_badge_tokens": "Use [percent] for the subscription discount and [savings] for the per-delivery savings.",
     "sample_logo": "Used when no logo image is uploaded.",
     "testimonial_handle": "Optional, e.g. @coach.charles",
     "reviews_arrows": "Arrows appear on hover and keyboard focus; cards can also be dragged or swiped.",
@@ -271,6 +275,9 @@
     "media_type_info": "Features are populated from your menu links"
   },
   "names": {
+    "badge": "Badge",
+    "benefit": "Benefit",
+    "ascent_membership": "Ascent membership bundle",
     "press_logo": "Press logo",
     "ascent_press": "Ascent as seen in",
     "testimonial": "Testimonial",
@@ -455,6 +462,12 @@
     "comparison_slider": "Comparison slider"
   },
   "options": {
+    "one_time": "One-time purchase",
+    "subscribe": "Subscribe",
+    "next_to_price": "Next to price",
+    "subscribe_option": "Subscribe option",
+    "check": "Check",
+    "north_star": "North star",
     "three_number": "3",
     "quote_accent": "Quote (accent)",
     "quote_dark": "Quote (dark)",
@@ -822,6 +835,23 @@
     "below_media": "Below media"
   },
   "settings": {
+    "padding_mobile": "Padding (mobile)",
+    "padding_desktop": "Padding (desktop)",
+    "inactive_border_color": "Inactive border color",
+    "card_background": "Card background",
+    "button_label": "Button label",
+    "price_suffix": "Subscription price suffix",
+    "one_time_label": "One-time label",
+    "frequency_label": "Frequency label",
+    "subscribe_label_fallback": "Subscribe label without discount",
+    "subscribe_label": "Subscribe label",
+    "purchase_options_label": "Purchase options label",
+    "show_add_on": "Show add-on",
+    "show_eyebrow_dot": "Show eyebrow dot",
+    "show_pattern": "Show background pattern",
+    "alt_text": "Image alt text",
+    "default_purchase_option": "Default purchase option",
+    "second_product": "Second bundle product",
     "sample_logo": "Sample logo",
     "publication_name": "Publication name",
     "logo_text_color": "Logo text color",

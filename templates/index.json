@@ -768,6 +768,53 @@
         "padding-block-end": 56,
         "padding_block_mobile": 48
       }
+    },
+    "ascent_membership": {
+      "type": "ascent-membership",
+      "blocks": {
+        "badge_option": {
+          "type": "badge",
+          "settings": {
+            "text": "Save [percent]",
+            "placement": "option"
+          }
+        },
+        "benefit_off": {
+          "type": "benefit",
+          "settings": {
+            "text": "15% off every bag of native whey"
+          }
+        },
+        "benefit_shipping": {
+          "type": "benefit",
+          "settings": {
+            "text": "Free shipping, always"
+          }
+        },
+        "benefit_cancel": {
+          "type": "benefit",
+          "settings": {
+            "text": "Skip, swap or cancel anytime"
+          }
+        },
+        "badge_price": {
+          "type": "badge",
+          "settings": {
+            "text": "[savings] savings",
+            "placement": "price"
+          }
+        }
+      },
+      "block_order": [
+        "badge_option",
+        "benefit_off",
+        "benefit_shipping",
+        "benefit_cancel",
+        "badge_price"
+      ],
+      "settings": {
+        "product": "customisable-bundle"
+      }
     }
   },
   "order": [
@@ -777,6 +824,7 @@
     "ascent_ticker_2",
     "ascent_about",
     "ascent_reviews",
-    "ascent_press"
+    "ascent_press",
+    "ascent_membership"
   ]
 }

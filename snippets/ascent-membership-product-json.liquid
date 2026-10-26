@@ -1,0 +1,38 @@
+{%- doc -%}
+  Serialises a product for the Ascent membership module (assets/ascent-membership.js):
+  selling plans, variants and per-plan allocation prices.
+
+  @param {object} product - The product to serialise
+{%- enddoc -%}
+{
+  "id": {{ product.id }},
+  "requiresPlan": {{ product.requires_selling_plan | json }},
+  "selectedVariantId": {{ product.selected_or_first_available_variant.id }},
+  "plans": [
+    {%- assign first_plan = true -%}
+    {%- for group in product.selling_plan_groups -%}
+      {%- for plan in group.selling_plans -%}
+        {%- unless first_plan -%},{%- endunless -%}
+        {%- assign first_plan = false -%}
+        { "id": {{ plan.id }}, "name": {{ plan.name | json }} }
+      {%- endfor -%}
+    {%- endfor -%}
+  ],
+  "variants": [
+    {%- for v in product.variants -%}
+      {
+        "id": {{ v.id }},
+        "available": {{ v.available | json }},
+        "price": {{ v.price }},
+        "options": {{ v.options | json }},
+        "allocations": {
+          {%- for allocation in v.selling_plan_allocations -%}
+            "{{ allocation.selling_plan.id }}": {{ allocation.price }}
+            {%- unless forloop.last -%},{%- endunless -%}
+          {%- endfor -%}
+        }
+      }
+      {%- unless forloop.last -%},{%- endunless -%}
+    {%- endfor -%}
+  ]
+}
