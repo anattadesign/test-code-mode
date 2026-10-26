@@ -966,6 +966,51 @@
         "media_prep"
       ],
       "settings": {}
+    },
+    "ascent_cta": {
+      "type": "ascent-cta-band",
+      "blocks": {
+        "eyebrow": {
+          "type": "text",
+          "settings": {
+            "text": "<p><strong>WHATEVER FIRST PLACE LOOKS LIKE FOR YOU</strong></p>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "label-lg",
+            "wrap": "balance",
+            "text_color": "#919191"
+          }
+        },
+        "heading": {
+          "type": "text",
+          "settings": {
+            "text": "<h2>Now go build something.</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "h1",
+            "wrap": "balance",
+            "text_color": "#ffffff"
+          }
+        },
+        "button": {
+          "type": "button",
+          "settings": {
+            "label": "Start with protein",
+            "link": "shopify://collections/all",
+            "style_class": "button",
+            "button_size": "large",
+            "show_arrow": false
+          }
+        }
+      },
+      "block_order": [
+        "eyebrow",
+        "heading",
+        "button"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -979,6 +1024,7 @@
     "ascent_membership",
     "ascent_goals",
     "ascent_knowledge",
-    "ascent_community"
+    "ascent_community",
+    "ascent_cta"
   ]
 }

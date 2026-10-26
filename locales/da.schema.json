@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "eyebrow": "Eyebrow",
+    "ascent_cta_band": "Ascent CTA band",
     "community_media": "Community media",
     "ascent_community": "Ascent community carousel",
     "knowledge_tab": "Topic tab",
@@ -195,6 +197,7 @@
     "disclosures": "Oplysninger"
   },
   "settings": {
+    "heading_size_mobile": "Heading size (mobile)",
     "orientation": "Orientation",
     "pill_background": "Pill background",
     "article_tag": "Article tag",

@@ -1,0 +1,181 @@
+{%- comment -%}
+  Ascent closing CTA band (WAK-35): theme text + button blocks, centred.
+  A dedicated section rather than a sections/section.liquid preset: that section has no per-breakpoint padding or
+  type sizes, and the mobile design needs 48px padding, a 12px eyebrow and a 32px heading.
+{%- endcomment -%}
+{%- assign ss = section.settings -%}
+
+<div
+  class="ascent-cta"
+  style="
+    --ascent-cta-bg: {{ ss.background_color }};
+    --ascent-cta-gap: {{ ss.gap }}px;
+    --ascent-cta-gap-mobile: {{ ss.gap_mobile }}px;
+    --ascent-cta-padding: {{ ss.padding_block }}px;
+    --ascent-cta-padding-mobile: {{ ss.padding_block_mobile }}px;
+    --ascent-cta-heading-mobile: {{ ss.heading_size_mobile }}px;
+  "
+>
+  {% content_for 'blocks' %}
+</div>
+
+{% stylesheet %}
+  .ascent-cta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--ascent-cta-gap);
+    padding: var(--ascent-cta-padding) var(--page-margin, 20px);
+    background-color: var(--ascent-cta-bg);
+    text-align: center;
+  }
+
+  .ascent-cta > * {
+    max-width: 100%;
+  }
+
+  .ascent-cta .text-block > * {
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-cta {
+      gap: var(--ascent-cta-gap-mobile);
+      padding: var(--ascent-cta-padding-mobile) 20px;
+    }
+
+    .ascent-cta .text-block:is(.h1, .h2, .h3) > *,
+    .ascent-cta .text-block:is(.h1, .h2, .h3) :is(h1, h2, h3, h4, h5, h6) {
+      font-size: var(--ascent-cta-heading-mobile);
+      line-height: 0.94;
+      letter-spacing: 0;
+    }
+
+    .ascent-cta .text-block.label-lg > *,
+    .ascent-cta .text-block.label-lg :is(h1, h2, h3, h4, h5, h6) {
+      font-size: var(--font-label-sm--size);
+      line-height: 17px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_cta_band",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [{ "type": "text" }, { "type": "button" }],
+  "max_blocks": 6,
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "t:settings.heading_size_mobile",
+      "min": 20,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "t:content.layout"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:settings.gap_mobile",
+      "min": 0,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "t:settings.padding_block",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_cta_band",
+      "category": "t:categories.banners",
+      "blocks": {
+        "eyebrow": {
+          "type": "text",
+          "name": "t:names.eyebrow",
+          "settings": {
+            "text": "<p><strong>WHATEVER FIRST PLACE LOOKS LIKE FOR YOU</strong></p>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "label-lg",
+            "wrap": "balance",
+            "text_color": "#919191"
+          }
+        },
+        "heading": {
+          "type": "text",
+          "name": "t:names.heading",
+          "settings": {
+            "text": "<h2>Now go build something.</h2>",
+            "width": "100%",
+            "max_width": "none",
+            "alignment": "center",
+            "type_preset": "h1",
+            "wrap": "balance",
+            "text_color": "#ffffff"
+          }
+        },
+        "button": {
+          "type": "button",
+          "name": "t:names.button",
+          "settings": {
+            "label": "Start with protein",
+            "link": "shopify://collections/all",
+            "style_class": "button",
+            "button_size": "large",
+            "show_arrow": false
+          }
+        }
+      },
+      "block_order": ["eyebrow", "heading", "button"]
+    }
+  ]
+}
+{% endschema %}
