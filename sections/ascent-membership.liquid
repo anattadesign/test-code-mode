@@ -1,0 +1,1214 @@
+{%- comment -%}
+  Ascent "Membership · Bundle" purchase module (WAK-31).
+  - Primary product (required) + optional second bundle product.
+  - Subscribe (product selling plans) vs One-time; prices, "/mo" price and savings update live (assets/ascent-membership.js).
+  - Flavour selector built from the primary product's variant options.
+  - Add to cart posts both lines to the Cart AJAX API (with selling_plan when subscribing) and opens the cart drawer.
+  - Benefits and badges are section blocks. Badge text tokens: [percent] (subscription discount), [savings] (per-delivery savings).
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+  assign product = ss.product
+  assign second = ss.second_product
+  if second != blank and product != blank and second.id == product.id
+    assign second = blank
+  endif
+
+  if product != blank
+    assign variant = product.selected_or_first_available_variant
+    assign has_plans = false
+    if product.selling_plan_groups.size > 0
+      assign has_plans = true
+    endif
+
+    comment
+      Default plan = the plan with the biggest discount for the selected variant (JS recomputes the same).
+    endcomment
+    assign best_plan_id = blank
+    assign best_plan_price = variant.price
+    assign best_saving = -1
+    for allocation in variant.selling_plan_allocations
+      assign saving = variant.price | minus: allocation.price
+      if saving > best_saving
+        assign best_saving = saving
+        assign best_plan_id = allocation.selling_plan.id
+        assign best_plan_price = allocation.price
+      endif
+    endfor
+
+    assign onetime_total = variant.price
+    assign sub_total = best_plan_price
+    if second != blank
+      assign second_variant = second.selected_or_first_available_variant
+      assign onetime_total = onetime_total | plus: second_variant.price
+      assign second_sub = second_variant.price
+      for allocation in second_variant.selling_plan_allocations
+        if allocation.selling_plan.id == best_plan_id
+          assign second_sub = allocation.price
+        endif
+      endfor
+      assign sub_total = sub_total | plus: second_sub
+    endif
+    assign savings = onetime_total | minus: sub_total
+    assign percent = 0
+    if onetime_total > 0
+      assign percent = savings | times: 100.0 | divided_by: onetime_total | round
+    endif
+
+    assign mode = 'onetime'
+    if has_plans and ss.default_option == 'subscribe'
+      assign mode = 'subscribe'
+    endif
+    if product.requires_selling_plan and has_plans
+      assign mode = 'subscribe'
+    endif
+
+    assign percent_text = percent | append: '%'
+    assign savings_text = savings | money_without_trailing_zeros
+  endif
+
+  assign suffix = ss.price_suffix
+-%}
+
+<div
+  class="ascent-membership"
+  style="
+    --am-panel-bg: {{ ss.background_color }};
+    --am-text: {{ ss.text_color }};
+    --am-muted: {{ ss.muted_color }};
+    --am-body: {{ ss.body_color }};
+    --am-accent: {{ ss.accent_color }};
+    --am-border: {{ ss.border_color }};
+    --am-border-muted: {{ ss.border_muted_color }};
+    --am-card-bg: {{ ss.card_color | color_modify: 'alpha', 0.8 }};
+    --am-padding-desktop: {{ ss.padding_desktop }}px;
+    --am-padding-mobile: {{ ss.padding_mobile }}px;
+    {% if ss.show_pattern %}--am-pattern: url('{{ 'ascent-topo-pattern.svg' | asset_url }}');{% endif %}
+  "
+>
+  <div class="ascent-membership__panel">
+    <div class="ascent-membership__row">
+      <div class="ascent-membership__imagery">
+        {%- if ss.image != blank -%}
+          {{
+            ss.image
+            | image_url: width: 1000
+            | image_tag:
+              class: 'ascent-membership__image',
+              loading: 'lazy',
+              sizes: '(min-width: 750px) 411px, 100vw',
+              widths: '400, 600, 800, 1000'
+          }}
+        {%- elsif ss.placeholder_media -%}
+          <img
+            class="ascent-membership__image ascent-membership__image--composite"
+            src="{{ 'ascent-membership-bundle.png' | asset_url }}"
+            alt="{{ ss.image_alt | escape }}"
+            width="1304"
+            height="1116"
+            loading="lazy"
+          >
+        {%- elsif product.featured_media != blank -%}
+          {{
+            product.featured_media
+            | image_url: width: 1000
+            | image_tag: class: 'ascent-membership__image', loading: 'lazy', sizes: '(min-width: 750px) 411px, 100vw'
+          }}
+        {%- else -%}
+          {{ 'product-1' | placeholder_svg_tag: 'ascent-membership__image ascent-membership__image--placeholder' }}
+        {%- endif -%}
+      </div>
+
+      <div class="ascent-membership__card">
+        <div class="ascent-membership__intro">
+          <div class="ascent-membership__intro-text">
+            {%- if ss.eyebrow != blank -%}
+              <p class="ascent-membership__eyebrow label-sm">
+                {%- if ss.show_eyebrow_dot -%}<span class="ascent-membership__dot" aria-hidden="true"></span>{%- endif -%}
+                {{- ss.eyebrow -}}
+              </p>
+            {%- endif -%}
+            {%- if ss.heading != blank -%}
+              <h2 class="ascent-membership__heading h2">{{ ss.heading }}</h2>
+            {%- endif -%}
+          </div>
+          {%- if ss.text != blank -%}
+            <div class="ascent-membership__text body-lg">{{ ss.text }}</div>
+          {%- endif -%}
+
+          {%- if ss.show_addon -%}
+            <div class="ascent-membership__addon">
+              <div class="ascent-membership__addon-media">
+                {%- if ss.addon_image != blank -%}
+                  {{ ss.addon_image | image_url: width: 176 | image_tag: loading: 'lazy', width: 88, height: 88 }}
+                {%- elsif ss.placeholder_media -%}
+                  <img
+                    src="{{ 'ascent-membership-addon.png' | asset_url }}"
+                    alt=""
+                    width="88"
+                    height="88"
+                    loading="lazy"
+                  >
+                {%- endif -%}
+              </div>
+              <div class="ascent-membership__addon-copy">
+                {%- if ss.addon_title != blank -%}
+                  <p class="ascent-membership__addon-title subtitle">{{ ss.addon_title }}</p>
+                {%- endif -%}
+                {%- if ss.addon_text != blank -%}
+                  <p class="ascent-membership__addon-text body-lg">{{ ss.addon_text }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        <span class="ascent-membership__divider" aria-hidden="true"></span>
+
+        {%- if product == blank -%}
+          <div class="ascent-membership__buy">
+            {%- if request.design_mode -%}
+              <p class="ascent-membership__empty body-md">Select a product in the section settings.</p>
+            {%- endif -%}
+          </div>
+        {%- else -%}
+          <ascent-membership
+            class="ascent-membership__buy"
+            data-mode="{{ mode }}"
+            data-section-id="{{ section.id }}"
+            data-suffix="{{ suffix | escape }}"
+          >
+            <script type="application/json" data-membership-data>
+              {
+                "moneyFormat": {{ shop.money_format | strip_html | json }},
+                "currency": {{ cart.currency.iso_code | json }},
+                "cartUrl": {{ routes.cart_url | json }},
+                "planId": {{ best_plan_id | json }},
+                "products": [
+                  {%- render 'ascent-membership-product-json', product: product -%}
+                  {%- if second != blank -%},{%- render 'ascent-membership-product-json', product: second -%}{%- endif -%}
+                ]
+              }
+            </script>
+
+            <div class="ascent-membership__options" role="radiogroup" aria-label="{{ ss.options_label | escape }}">
+              {%- if has_plans -%}
+                <label class="ascent-membership__option ascent-membership__option--subscribe">
+                  {%- for block in section.blocks -%}
+                    {%- if block.type == 'badge' and block.settings.placement == 'option' -%}
+                      <span
+                        class="ascent-membership__chip label-sm"
+                        data-badge="{{ block.settings.text | escape }}"
+                        {% if block.settings.text contains '[' and percent <= 0 %}hidden{% endif %}
+                        {{ block.shopify_attributes }}
+                      >
+                        {{- block.settings.text | replace: '[percent]', percent_text | replace: '[savings]', savings_text -}}
+                      </span>
+                    {%- endif -%}
+                  {%- endfor -%}
+                  <span class="ascent-membership__option-body">
+                    <span class="ascent-membership__option-head">
+                      <input
+                        type="radio"
+                        name="purchase-{{ section.id }}"
+                        value="subscribe"
+                        class="ascent-membership__radio"
+                        {% if mode == 'subscribe' %}checked{% endif %}
+                      >
+                      <span
+                        class="ascent-membership__option-title body-md"
+                        data-subscribe-label="{{ ss.subscribe_label | escape }}"
+                        data-subscribe-fallback="{{ ss.subscribe_label_fallback | escape }}"
+                      >
+                        {%- if percent > 0 -%}
+                          {{- ss.subscribe_label | replace: '[percent]', percent_text | replace: '[savings]', savings_text -}}
+                        {%- else -%}
+                          {{- ss.subscribe_label_fallback -}}
+                        {%- endif -%}
+                      </span>
+                      <span class="ascent-membership__option-prices">
+                        <span class="ascent-membership__option-price body-md" data-price="sub">
+                          {{- sub_total | money }}{{ suffix -}}
+                        </span>
+                        <s class="ascent-membership__compare label-lg" data-price="sub-compare" {% if savings <= 0 %}hidden{% endif %}>
+                          {{- onetime_total | money }}{{ suffix -}}
+                        </s>
+                      </span>
+                    </span>
+
+                    {%- liquid
+                      assign plan_count = 0
+                      for group in product.selling_plan_groups
+                        assign plan_count = plan_count | plus: group.selling_plans.size
+                      endfor
+                    -%}
+                    <span class="ascent-membership__frequency" {% if plan_count < 2 %}hidden{% endif %}>
+                      <span class="visually-hidden">{{ ss.frequency_label }}</span>
+                      <select class="ascent-membership__select body-md" name="plan" aria-label="{{ ss.frequency_label | escape }}">
+                        {%- for group in product.selling_plan_groups -%}
+                          {%- for plan in group.selling_plans -%}
+                            <option value="{{ plan.id }}" {% if plan.id == best_plan_id %}selected{% endif %}>
+                              {{- plan.name -}}
+                            </option>
+                          {%- endfor -%}
+                        {%- endfor -%}
+                      </select>
+                    </span>
+
+                    {%- liquid
+                      assign benefit_count = 0
+                      for block in section.blocks
+                        if block.type == 'benefit'
+                          assign benefit_count = benefit_count | plus: 1
+                        endif
+                      endfor
+                    -%}
+                    {%- if benefit_count > 0 -%}
+                      <span class="ascent-membership__rule" aria-hidden="true"></span>
+                      <span class="ascent-membership__benefits">
+                        {%- for block in section.blocks -%}
+                          {%- if block.type == 'benefit' -%}
+                            <span class="ascent-membership__benefit body-md" {{ block.shopify_attributes }}>
+                              {%- case block.settings.icon -%}
+                                {%- when 'north_star' -%}
+                                  <svg class="ascent-membership__benefit-icon" viewBox="0 0 13 13" aria-hidden="true" focusable="false">
+                                    <path d="M2 6.5h9M6.5 2v9M3.8 3.8l5.4 5.4M9.2 3.8L3.8 9.2" fill="none" stroke="currentColor" stroke-width="1"/>
+                                  </svg>
+                                {%- when 'check' -%}
+                                  <svg class="ascent-membership__benefit-icon" viewBox="0 0 13 13" aria-hidden="true" focusable="false">
+                                    <path d="M2.5 6.8l2.6 2.6 5.4-5.6" fill="none" stroke="currentColor" stroke-width="1.3"/>
+                                  </svg>
+                              {%- endcase -%}
+                              <span>{{ block.settings.text }}</span>
+                            </span>
+                          {%- endif -%}
+                        {%- endfor -%}
+                      </span>
+                    {%- endif -%}
+                  </span>
+                </label>
+              {%- endif -%}
+
+              {%- unless product.requires_selling_plan and has_plans -%}
+                <label class="ascent-membership__option ascent-membership__option--onetime">
+                  <span class="ascent-membership__option-body">
+                    <span class="ascent-membership__option-head">
+                      <input
+                        type="radio"
+                        name="purchase-{{ section.id }}"
+                        value="onetime"
+                        class="ascent-membership__radio"
+                        {% if mode == 'onetime' %}checked{% endif %}
+                      >
+                      <span class="ascent-membership__option-title body-md">{{ ss.onetime_label }}</span>
+                      <span class="ascent-membership__option-prices">
+                        <span class="ascent-membership__option-price body-md" data-price="onetime">
+                          {{- onetime_total | money -}}
+                        </span>
+                      </span>
+                    </span>
+                  </span>
+                </label>
+              {%- endunless -%}
+            </div>
+
+            {%- unless product.has_only_default_variant -%}
+              <div class="ascent-membership__variants">
+                {%- for option in product.options_with_values -%}
+                  <fieldset class="ascent-membership__fieldset">
+                    <legend class="ascent-membership__legend label-sm">{{ option.name }}</legend>
+                    <div class="ascent-membership__pills">
+                      {%- for value in option.values -%}
+                        <label class="ascent-membership__pill body-md">
+                          <input
+                            type="radio"
+                            name="option{{ forloop.parentloop.index }}-{{ section.id }}"
+                            value="{{ value | escape }}"
+                            data-option-index="{{ forloop.parentloop.index0 }}"
+                            {% if variant.options[forloop.parentloop.index0] == value %}checked{% endif %}
+                          >
+                          <span>{{ value }}</span>
+                        </label>
+                      {%- endfor -%}
+                    </div>
+                  </fieldset>
+                {%- endfor -%}
+              </div>
+            {%- endunless -%}
+
+            <div class="ascent-membership__price">
+              <p class="ascent-membership__total subtitle">
+                <s class="ascent-membership__total-compare" data-price="total-compare" {% if mode != 'subscribe' or savings <= 0 %}hidden{% endif %}>
+                  {{- onetime_total | money -}}
+                </s>
+                <span class="ascent-membership__total-price" data-price="total">
+                  {%- if mode == 'subscribe' -%}
+                    {{- sub_total | money }}{{ suffix -}}
+                  {%- else -%}
+                    {{- onetime_total | money -}}
+                  {%- endif -%}
+                </span>
+              </p>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'badge' and block.settings.placement == 'price' -%}
+                  {%- liquid
+                    assign badge_hidden = false
+                    if block.settings.text contains '['
+                      if mode != 'subscribe' or savings <= 0
+                        assign badge_hidden = true
+                      endif
+                    endif
+                  -%}
+                  <span
+                    class="ascent-membership__badge label-sm"
+                    data-badge="{{ block.settings.text | escape }}"
+                    {% if badge_hidden %}hidden{% endif %}
+                    {{ block.shopify_attributes }}
+                  >
+                    {{- block.settings.text | replace: '[percent]', percent_text | replace: '[savings]', savings_text -}}
+                  </span>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+
+            <div class="ascent-membership__actions">
+              <button
+                type="button"
+                class="ascent-membership__button button-dark button--large button--arrow"
+                data-add-to-cart
+                data-label="{{ ss.button_label | escape }}"
+                data-sold-out="{{ 'products.product.sold_out' | t | escape }}"
+                data-unavailable="{{ 'products.product.unavailable' | t | escape }}"
+                data-error="{{ 'products.product.add_to_cart_error' | t | escape }}"
+                {% unless variant.available %}disabled{% endunless %}
+              >
+                <span class="button__label" data-button-label>
+                  {%- if variant.available -%}
+                    {{- ss.button_label -}}
+                  {%- else -%}
+                    {{- 'products.product.sold_out' | t -}}
+                  {%- endif -%}
+                </span>
+                <span class="button__arrow" aria-hidden="true">
+                  <svg viewBox="0 0 20 20" focusable="false"><path d="M6.843 4.736v1.053h6.626l-8.732 8.731.742.742 8.732-8.731v6.626h1.053V4.736z" fill="currentColor"/></svg>
+                </span>
+              </button>
+              <p class="ascent-membership__error body-md" role="alert" data-error-message hidden></p>
+            </div>
+          </ascent-membership>
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'ascent-membership.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{% stylesheet %}
+  .ascent-membership {
+    color: var(--am-text);
+  }
+
+  .ascent-membership__panel {
+    position: relative;
+    overflow: hidden;
+    padding: var(--am-padding-desktop);
+    background-color: var(--am-panel-bg);
+    background-image: var(--am-pattern, none);
+    background-repeat: no-repeat;
+    background-size: 1634px auto;
+    background-position: -109px -203px;
+  }
+
+  .ascent-membership__row {
+    display: grid;
+    grid-template-columns: 411px minmax(0, 1fr);
+    align-items: center;
+    gap: 40px;
+    max-width: 1328px;
+    margin-inline: auto;
+  }
+
+  .ascent-membership__imagery {
+    position: relative;
+    aspect-ratio: 1;
+  }
+
+  .ascent-membership__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  /* Figma "Group 1748": whey + creatine composite overflows its 411 / 358 frame. */
+  .ascent-membership__image--composite {
+    position: absolute;
+    left: -29.2%;
+    top: -17.8%;
+    width: 158.6%;
+    max-width: none;
+    height: auto;
+  }
+
+  .ascent-membership__card {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 1px minmax(0, 333px);
+    gap: 44px;
+    padding: 32px;
+    border-radius: 8px;
+    background-color: var(--am-card-bg);
+    backdrop-filter: blur(27px);
+    -webkit-backdrop-filter: blur(27px);
+  }
+
+  .ascent-membership__intro {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  .ascent-membership__intro-text {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ascent-membership .ascent-membership__eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: var(--am-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-membership__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--am-text);
+  }
+
+  .ascent-membership .ascent-membership__heading {
+    margin: 0;
+    color: var(--am-text);
+  }
+
+  .ascent-membership .ascent-membership__text {
+    color: var(--am-muted);
+  }
+
+  .ascent-membership__text > * {
+    margin: 0;
+  }
+
+  .ascent-membership__addon {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    padding: 18px;
+    border: 1.5px solid var(--am-border);
+    border-radius: 4px;
+  }
+
+  .ascent-membership__addon-media {
+    flex: none;
+    width: 88px;
+    height: 88px;
+  }
+
+  .ascent-membership__addon-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .ascent-membership__addon-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .ascent-membership .ascent-membership__addon-title {
+    margin: 0;
+    color: var(--am-text);
+    font-weight: 700;
+  }
+
+  .ascent-membership .ascent-membership__addon-text {
+    margin: 0;
+    color: var(--am-muted);
+  }
+
+  .ascent-membership__divider {
+    width: 1px;
+    background-color: var(--am-body);
+    opacity: 0.28;
+  }
+
+  .ascent-membership__buy {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+  }
+
+  .ascent-membership__options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ascent-membership__option {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--am-border-muted);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color var(--animation-speed, 0.2s) ease;
+  }
+
+  .ascent-membership__option:has(.ascent-membership__radio:checked) {
+    border-color: var(--am-border);
+    box-shadow: 0 0 0 0.5px var(--am-border);
+  }
+
+  .ascent-membership__option:has(.ascent-membership__radio:focus-visible) {
+    outline: 2px solid var(--am-border);
+    outline-offset: 2px;
+  }
+
+  .ascent-membership .ascent-membership__chip {
+    display: block;
+    padding: 6px;
+    border-radius: 2px;
+    background-color: var(--am-accent);
+    color: var(--am-text);
+    font-weight: 700;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .ascent-membership__chip[hidden],
+  .ascent-membership__badge[hidden] {
+    display: none;
+  }
+
+  .ascent-membership__option-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .ascent-membership__option-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .ascent-membership__radio {
+    appearance: none;
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    border: 1px solid var(--am-border-muted);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+  }
+
+  .ascent-membership__radio:checked {
+    border-color: var(--am-text);
+    background-color: var(--am-text);
+  }
+
+  .ascent-membership__radio:checked::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background-color: var(--am-accent);
+  }
+
+  .ascent-membership__radio:focus-visible {
+    outline: none;
+  }
+
+  .ascent-membership .ascent-membership__option-title {
+    flex: 1;
+    min-width: 0;
+    color: var(--am-text);
+    font-weight: 700;
+  }
+
+  .ascent-membership__option-prices {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    text-align: end;
+  }
+
+  .ascent-membership .ascent-membership__option-price {
+    color: var(--am-text);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .ascent-membership .ascent-membership__compare {
+    color: var(--am-muted);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .ascent-membership__frequency[hidden] {
+    display: none;
+  }
+
+  .ascent-membership .ascent-membership__select {
+    width: 100%;
+    padding: 4px 28px 4px 10px;
+    border: 1px solid var(--am-border-muted);
+    border-radius: 4px;
+    background-color: transparent;
+    color: var(--am-text);
+    cursor: pointer;
+  }
+
+  .ascent-membership__rule {
+    height: 1px;
+    background-color: var(--am-body);
+    opacity: 0.28;
+  }
+
+  .ascent-membership__benefits {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ascent-membership .ascent-membership__benefit {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--am-muted);
+  }
+
+  .ascent-membership__benefit-icon {
+    flex: none;
+    width: 13px;
+    height: 13px;
+    color: var(--am-text);
+  }
+
+  .ascent-membership__variants {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .ascent-membership__fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .ascent-membership .ascent-membership__legend {
+    margin-bottom: 8px;
+    padding: 0;
+    color: var(--am-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-membership__pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .ascent-membership .ascent-membership__pill {
+    position: relative;
+    cursor: pointer;
+  }
+
+  .ascent-membership__pill input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  .ascent-membership__pill span {
+    display: inline-block;
+    padding: 6px 14px;
+    border: 1px solid var(--am-border-muted);
+    border-radius: 999px;
+    color: var(--am-text);
+  }
+
+  .ascent-membership__pill input:checked + span {
+    border-color: var(--am-text);
+    background-color: var(--am-text);
+    color: var(--am-card-text, #fff);
+  }
+
+  .ascent-membership__pill input:focus-visible + span {
+    outline: 2px solid var(--am-border);
+    outline-offset: 2px;
+  }
+
+  .ascent-membership__price {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 24px;
+  }
+
+  .ascent-membership .ascent-membership__total {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+    color: var(--am-text);
+  }
+
+  .ascent-membership__total-compare {
+    color: var(--am-muted);
+  }
+
+  .ascent-membership__total-compare[hidden] {
+    display: none;
+  }
+
+  .ascent-membership__total-price {
+    font-weight: 700;
+  }
+
+  .ascent-membership .ascent-membership__badge {
+    padding: 6px 12px;
+    border-radius: 999px;
+    background-color: var(--am-accent);
+    color: var(--am-text);
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ascent-membership__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .ascent-membership__button {
+    justify-content: space-between;
+    width: min(100%, 298px);
+  }
+
+  .ascent-membership__button[aria-busy='true'] {
+    opacity: 0.7;
+    pointer-events: none;
+  }
+
+  .ascent-membership .ascent-membership__error {
+    margin: 0;
+    color: #b42318;
+  }
+
+  .ascent-membership__error[hidden] {
+    display: none;
+  }
+
+  @media screen and (max-width: 1199px) {
+    .ascent-membership__row {
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+    }
+
+    .ascent-membership__imagery {
+      width: min(100%, 411px);
+    }
+
+    .ascent-membership__card {
+      width: 100%;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-membership__panel {
+      padding: calc(var(--am-padding-mobile) * 2.5) var(--am-padding-mobile);
+      background-size: 1977px auto;
+      background-position: -794px 20px;
+    }
+
+    .ascent-membership__row {
+      gap: 24px;
+    }
+
+    .ascent-membership__imagery {
+      width: 100%;
+    }
+
+    .ascent-membership__card {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 20px;
+      padding: 24px 20px;
+    }
+
+    .ascent-membership__intro {
+      gap: 16px;
+    }
+
+    .ascent-membership .ascent-membership__heading {
+      font-size: 2rem;
+      line-height: 1.03;
+    }
+
+    .ascent-membership__addon {
+      gap: 16px;
+    }
+
+    .ascent-membership .ascent-membership__addon-title {
+      font-size: 1.125rem;
+    }
+
+    .ascent-membership .ascent-membership__addon-text {
+      font-size: 0.875rem;
+      line-height: 1.43;
+    }
+
+    .ascent-membership__divider {
+      width: auto;
+      height: 1px;
+    }
+
+    .ascent-membership__buy {
+      gap: 20px;
+    }
+
+    .ascent-membership__actions {
+      margin-top: 0;
+    }
+
+    .ascent-membership__button {
+      width: 100%;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_membership",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "t:names.benefit",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:settings.text",
+          "default": "Free shipping, always"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "t:settings.icon",
+          "options": [
+            { "value": "north_star", "label": "t:options.north_star" },
+            { "value": "check", "label": "t:options.check" },
+            { "value": "none", "label": "t:options.none" }
+          ],
+          "default": "north_star"
+        }
+      ]
+    },
+    {
+      "type": "badge",
+      "name": "t:names.badge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "t:settings.text",
+          "info": "t:info.membership_badge_tokens",
+          "default": "Save [percent]"
+        },
+        {
+          "type": "select",
+          "id": "placement",
+          "label": "t:settings.placement",
+          "options": [
+            { "value": "option", "label": "t:options.subscribe_option" },
+            { "value": "price", "label": "t:options.next_to_price" }
+          ],
+          "default": "option"
+        }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "t:settings.product"
+    },
+    {
+      "type": "product",
+      "id": "second_product",
+      "label": "t:settings.second_product",
+      "info": "t:info.second_product"
+    },
+    {
+      "type": "select",
+      "id": "default_option",
+      "label": "t:settings.default_purchase_option",
+      "options": [
+        { "value": "subscribe", "label": "t:options.subscribe" },
+        { "value": "onetime", "label": "t:options.one_time" }
+      ],
+      "default": "subscribe"
+    },
+    {
+      "type": "header",
+      "content": "t:content.media"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "checkbox",
+      "id": "placeholder_media",
+      "label": "t:settings.placeholder_media",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "t:settings.alt_text",
+      "default": "Native whey and Clean Creatine"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pattern",
+      "label": "t:settings.show_pattern",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Bundle and save 20%"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_eyebrow_dot",
+      "label": "t:settings.show_eyebrow_dot",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Save 20% when you bundle Creatine"
+    },
+    {
+      "type": "richtext",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "<p>Get your whey and creatine delivered together and save up to $15 every month.</p>"
+    },
+    {
+      "type": "header",
+      "content": "t:content.add_on"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_addon",
+      "label": "t:settings.show_add_on",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "addon_image",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "text",
+      "id": "addon_title",
+      "label": "t:settings.title",
+      "default": "Get a free shaker with your stack"
+    },
+    {
+      "type": "text",
+      "id": "addon_text",
+      "label": "t:settings.text",
+      "default": "Our legendary shaker, free with every stack"
+    },
+    {
+      "type": "header",
+      "content": "t:content.purchase_options"
+    },
+    {
+      "type": "text",
+      "id": "options_label",
+      "label": "t:settings.purchase_options_label",
+      "default": "Purchase options"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_label",
+      "label": "t:settings.subscribe_label",
+      "info": "t:info.membership_badge_tokens",
+      "default": "Subscribe & Save [percent]"
+    },
+    {
+      "type": "text",
+      "id": "subscribe_label_fallback",
+      "label": "t:settings.subscribe_label_fallback",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "frequency_label",
+      "label": "t:settings.frequency_label",
+      "default": "Delivery frequency"
+    },
+    {
+      "type": "text",
+      "id": "onetime_label",
+      "label": "t:settings.one_time_label",
+      "default": "One Time Purchase"
+    },
+    {
+      "type": "text",
+      "id": "price_suffix",
+      "label": "t:settings.price_suffix",
+      "default": "/mo"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "t:settings.button_label",
+      "default": "Add to cart"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "card_color",
+      "label": "t:settings.card_background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:settings.muted_text_color",
+      "default": "#696969"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "t:settings.divider_color",
+      "default": "#414141"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "t:settings.accent_color",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.border_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "border_muted_color",
+      "label": "t:settings.inactive_border_color",
+      "default": "#a9a9a9"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "label": "t:settings.padding_desktop",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_mobile",
+      "label": "t:settings.padding_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_membership",
+      "category": "t:categories.products",
+      "blocks": {
+        "badge_option": { "type": "badge", "settings": { "text": "Save [percent]", "placement": "option" } },
+        "benefit_off": { "type": "benefit", "settings": { "text": "15% off every bag of native whey" } },
+        "benefit_shipping": { "type": "benefit", "settings": { "text": "Free shipping, always" } },
+        "benefit_cancel": { "type": "benefit", "settings": { "text": "Skip, swap or cancel anytime" } },
+        "badge_price": { "type": "badge", "settings": { "text": "[savings] savings", "placement": "price" } }
+      },
+      "block_order": ["badge_option", "benefit_off", "benefit_shipping", "benefit_cancel", "badge_price"]
+    }
+  ]
+}
+{% endschema %}
