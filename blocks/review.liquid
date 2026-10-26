@@ -98,7 +98,14 @@
       {% endif %}
     </div>
 
-    {%- if block_settings.show_number or block_settings.stars_style == 'single' -%}
+    {%- if block_settings.count_format == 'compact' -%}
+      <p class="rating-count rating-count--compact {{ block_settings.type_preset }}">
+        <span aria-hidden="true">{{- rating | round: 1 -}}</span>
+        {%- if block_settings.show_number and rating_count != blank %} <span aria-hidden="true">({{ rating_count }})</span>
+          <span class="visually-hidden">{{ 'content.reviews' | t }}: {{ rating_count }}</span>
+        {%- endif -%}
+      </p>
+    {%- elsif block_settings.show_number or block_settings.stars_style == 'single' -%}
       <p class="rating-count {{ block_settings.type_preset }}">
         {%- if block_settings.stars_style == 'single' -%}
           <span aria-hidden="true">{{- rating | round: 1 }}</span>
@@ -201,6 +208,22 @@
       "id": "show_number",
       "label": "t:settings.review_count",
       "default": true
+    },
+    {
+      "type": "select",
+      "id": "count_format",
+      "label": "t:settings.count_format",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "compact",
+          "label": "t:options.rating_compact"
+        }
+      ],
+      "default": "default"
     },
     {
       "type": "color",

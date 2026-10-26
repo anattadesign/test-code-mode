@@ -1,0 +1,185 @@
+{%- doc -%}
+  Product card detail driven by a product metafield (custom.badge, custom.tag, custom.subtitle)
+  or the product description. Renders nothing when the source is empty.
+  List metafields (list.single_line_text_field) render one pill per value.
+{%- enddoc -%}
+
+{%- liquid
+  assign bs = block.settings
+  assign product = closest.product
+  assign values = blank
+
+  case bs.source
+    when 'badge'
+      assign mf = product.metafields.custom.badge
+    when 'tag'
+      assign mf = product.metafields.custom.tag
+    when 'subtitle'
+      assign mf = product.metafields.custom.subtitle
+    when 'description'
+      assign mf = blank
+      assign description = product.description | strip_html | strip | truncatewords: 30
+  endcase
+
+  if bs.source == 'description'
+    assign values = description
+  elsif mf != blank
+    if mf.type contains 'list.'
+      assign values = mf.value
+    else
+      assign values = mf.value | strip
+    endif
+  endif
+-%}
+
+{%- if values != blank and values != empty -%}
+  {%- case bs.display -%}
+    {%- when 'badges' -%}
+      <div class="product-meta product-meta--badges" {{ block.shopify_attributes }}>
+        {%- if mf.type contains 'list.' -%}
+          {%- for value in values limit: 3 -%}
+            <span class="product-meta__pill product-meta__badge label-sm">{{ value | escape }}</span>
+          {%- endfor -%}
+        {%- else -%}
+          <span class="product-meta__pill product-meta__badge label-sm">{{ values | escape }}</span>
+        {%- endif -%}
+      </div>
+    {%- when 'tag' -%}
+      <div class="product-meta product-meta--tag" {{ block.shopify_attributes }}>
+        {%- if mf.type contains 'list.' -%}
+          <span class="product-meta__pill product-meta__tag label-sm">{{ values.first | escape }}</span>
+        {%- else -%}
+          <span class="product-meta__pill product-meta__tag label-sm">{{ values | escape }}</span>
+        {%- endif -%}
+      </div>
+    {%- else -%}
+      <div
+        class="product-meta product-meta--text{% if bs.display == 'hover_text' %} product-meta--hover{% endif %}"
+        style="--product-meta-lines: {{ bs.lines }}; --product-meta-height: calc({{ bs.lines }} * var(--font-{{ bs.type_preset }}--size) * var(--font-{{ bs.type_preset }}--line-height));"
+        {{ block.shopify_attributes }}
+      >
+        <p class="product-meta__text {{ bs.type_preset }}">
+          {%- if mf.type contains 'list.' -%}{{ values | join: ' · ' | escape }}{%- else -%}{{ values | escape }}{%- endif -%}
+        </p>
+      </div>
+  {%- endcase -%}
+{%- endif -%}
+
+{% stylesheet %}
+  .product-meta {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    pointer-events: none;
+  }
+
+  .product-meta--badges,
+  .product-meta--tag {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .product-meta__pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-weight: 700;
+    line-height: 17px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .product-meta__badge {
+    padding: 6px 12px;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    box-shadow: inset 0 0 0 1.5px var(--ascent-muted, rgb(var(--color-foreground-rgb) / 0.5));
+  }
+
+  .product-meta__badge:nth-child(2) {
+    background: var(--color-foreground);
+    color: var(--color-primary-button-background);
+    box-shadow: none;
+  }
+
+  .product-meta__tag {
+    padding: 0 8px;
+    background: var(--color-foreground);
+    color: var(--color-primary-button-background);
+  }
+
+  .product-meta__text {
+    margin: 0;
+    color: var(--product-meta-color, inherit);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--product-meta-lines, 3);
+    overflow: hidden;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.product_metafield",
+  "tag": null,
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "t:content.product_metafield_info"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "t:settings.source",
+      "options": [
+        { "value": "badge", "label": "t:options.metafield_badge" },
+        { "value": "tag", "label": "t:options.metafield_tag" },
+        { "value": "subtitle", "label": "t:options.metafield_subtitle" },
+        { "value": "description", "label": "t:options.product_description" }
+      ],
+      "default": "subtitle"
+    },
+    {
+      "type": "select",
+      "id": "display",
+      "label": "t:settings.style",
+      "options": [
+        { "value": "badges", "label": "t:options.badges" },
+        { "value": "tag", "label": "t:options.tag" },
+        { "value": "text", "label": "t:options.text" },
+        { "value": "hover_text", "label": "t:options.text_on_hover" }
+      ],
+      "default": "text"
+    },
+    {
+      "type": "select",
+      "id": "type_preset",
+      "label": "t:settings.preset",
+      "options": [
+        { "value": "body-lg", "label": "t:options.body_lg" },
+        { "value": "body-md", "label": "t:options.body_md" },
+        { "value": "body-sm", "label": "t:options.body_sm" },
+        { "value": "label-sm", "label": "t:options.label_sm" }
+      ],
+      "default": "body-md",
+      "visible_if": "{{ block.settings.display == 'text' or block.settings.display == 'hover_text' }}"
+    },
+    {
+      "type": "range",
+      "id": "lines",
+      "label": "t:settings.max_lines",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "visible_if": "{{ block.settings.display == 'text' or block.settings.display == 'hover_text' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.product_metafield"
+    }
+  ]
+}
+{% endschema %}
