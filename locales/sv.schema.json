@@ -9,6 +9,9 @@
  */
 {
   "names": {
+    "ascent_bestsellers": "Ascent bestsellers",
+    "product_card_button": "Product button",
+    "product_metafield": "Product metafield",
     "ticker_item": "Ticker item",
     "ascent_ticker": "Ascent ticker",
     "ascent_hero": "Ascent hero",
@@ -175,6 +178,16 @@
     "disclosures": "Upplysningar"
   },
   "settings": {
+    "count_format": "Rating format",
+    "max_lines": "Maximum lines",
+    "source": "Source",
+    "highlight_muted_text": "Highlight muted text",
+    "highlight_text": "Highlight text",
+    "highlight_background": "Highlight background",
+    "muted_text_color": "Muted text color",
+    "card_width_mobile": "Card width (mobile)",
+    "card_width_desktop": "Card width (desktop)",
+    "highlight_first_card": "Highlight first card",
     "gap_mobile": "Mobile gap",
     "custom_mobile_gap": "Custom mobile gap",
     "icon_color": "Icon color",
@@ -618,6 +631,15 @@
     "customer_account_menu": "Kundkontomeny"
   },
   "options": {
+    "product_description": "Product description",
+    "metafield_subtitle": "Subtitle (custom.subtitle)",
+    "metafield_tag": "Tag (custom.tag)",
+    "metafield_badge": "Badge (custom.badge)",
+    "text_on_hover": "Text on hover",
+    "tag": "Tag",
+    "badges": "Badges",
+    "rating_compact": "4.7 (128)",
+    "ascent": "Ascent",
     "leucine": "Leucine",
     "clean_build": "Clean build",
     "lab_tested": "Lab tested",
@@ -930,6 +952,9 @@
     "direction_top_start": "Uppe till vänster"
   },
   "content": {
+    "product_card_button_info": "Links to the product.",
+    "product_metafield_info": "Shows custom.badge, custom.tag or custom.subtitle (or the product description). Hidden when empty.",
+    "card_style": "Card style",
     "footer_brand": "Brand",
     "advanced": "Avancerat",
     "background_image": "Bakgrundsbild",
