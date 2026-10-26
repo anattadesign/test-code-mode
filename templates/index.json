@@ -245,7 +245,8 @@
         "padding-block-end": 12,
         "gap_between_elements": 24,
         "custom_mobile_gap": true,
-        "gap_mobile": 32
+        "gap_mobile": 32,
+        "padding_block_mobile": 12
       }
     },
     "ascent_bestsellers": {
@@ -291,7 +292,8 @@
                 "text": "<h2>Work. Replenish. Recover.</h2>",
                 "type_preset": "h2",
                 "width": "fit-content",
-                "max_width": "none", "text_color": "#1a1a1a",
+                "max_width": "none",
+                "text_color": "#1a1a1a",
                 "alignment": "left",
                 "padding-block-start": 0,
                 "padding-block-end": 0,
@@ -482,11 +484,69 @@
         "padding-block-start": 80,
         "padding-block-end": 80
       }
+    },
+    "ascent_ticker_2": {
+      "type": "marquee",
+      "name": "Ascent ticker 2",
+      "blocks": {
+        "statement_1": {
+          "type": "_ticker-statement",
+          "settings": {
+            "text": "Native whey.",
+            "secondary_text": "Not cheese whey.",
+            "type_preset": "h3",
+            "text_color": "#1a1a1a",
+            "secondary_color": "#a9a9a9",
+            "show_mark": true,
+            "mark_color": "#fbec00"
+          }
+        },
+        "statement_2": {
+          "type": "_ticker-statement",
+          "settings": {
+            "text": "We don’t buy our protein.",
+            "secondary_text": "We make it.",
+            "type_preset": "h3",
+            "text_color": "#1a1a1a",
+            "secondary_color": "#a9a9a9",
+            "show_mark": true,
+            "mark_color": "#fbec00"
+          }
+        },
+        "statement_3": {
+          "type": "_ticker-statement",
+          "settings": {
+            "text": "Born in the mountains.",
+            "secondary_text": "Bred to help you climb them.",
+            "type_preset": "h3",
+            "text_color": "#1a1a1a",
+            "secondary_color": "#a9a9a9",
+            "show_mark": true,
+            "mark_color": "#fbec00"
+          }
+        }
+      },
+      "block_order": [
+        "statement_1",
+        "statement_2",
+        "statement_3"
+      ],
+      "settings": {
+        "movement_direction": "normal",
+        "background_color": "#ffffff",
+        "padding-block-start": 32,
+        "padding-block-end": 32,
+        "gap_between_elements": 40,
+        "custom_mobile_gap": true,
+        "gap_mobile": 24,
+        "padding_block_mobile": 24
+      }
     }
   },
   "order": [
     "ascent_hero",
     "ascent_ticker_1",
-    "ascent_bestsellers"
+    "ascent_bestsellers",
+    "ascent_ticker_2"
   ]
 }
