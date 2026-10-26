@@ -1,0 +1,125 @@
+{%- liquid
+  assign bs = block.settings
+  assign alt = bs.name | escape
+-%}
+{%- capture logo -%}
+  {%- if bs.image != blank -%}
+    {{
+      bs.image
+      | image_url: height: 112
+      | image_tag: height: 28, loading: 'lazy', alt: bs.image.alt | default: alt, class: 'press-logo__img'
+    }}
+  {%- elsif bs.sample != 'none' -%}
+    {%- assign file = 'ascent-press-' | append: bs.sample | append: '.png' -%}
+    {%- case bs.sample -%}
+      {%- when 'self' -%}{%- assign sample_width = 84 -%}
+      {%- when 'outside' -%}{%- assign sample_width = 111 -%}
+      {%- when 'women-s-health' -%}{%- assign sample_width = 139 -%}
+      {%- when 'men-s-health' -%}{%- assign sample_width = 124 -%}
+      {%- when 'forbes' -%}{%- assign sample_width = 111 -%}
+      {%- when 'shape' -%}{%- assign sample_width = 103 -%}
+    {%- endcase -%}
+    <img class="press-logo__img" src="{{ file | asset_url }}" alt="{{ alt }}" width="{{ sample_width }}" height="28" loading="lazy">
+  {%- else -%}
+    <span class="press-logo__name label-lg">{{ bs.name }}</span>
+  {%- endif -%}
+{%- endcapture -%}
+<div class="press-logo" {{ block.shopify_attributes }}>
+  {%- if bs.link != blank -%}
+    <a
+      class="press-logo__link"
+      href="{{ bs.link }}"
+      {% if bs.open_in_new_tab %}
+        target="_blank" rel="noopener"
+      {% endif %}
+    >
+      {{- logo -}}
+    </a>
+  {%- else -%}
+    {{- logo -}}
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .press-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--press-logo-width, 120px);
+    height: var(--press-logo-height, 28px);
+  }
+
+  .press-logo__link {
+    display: contents;
+    color: inherit;
+  }
+
+  .press-logo__img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    opacity: var(--press-logo-opacity, 1);
+    transition: opacity 0.2s;
+  }
+
+  .press-logo__link:hover .press-logo__img,
+  .press-logo__link:focus-visible .press-logo__img {
+    opacity: 1;
+  }
+
+  .press-logo__name {
+    font-weight: 700;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.press_logo",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "name",
+      "label": "t:settings.publication_name",
+      "default": "Forbes"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.logo"
+    },
+    {
+      "type": "select",
+      "id": "sample",
+      "label": "t:settings.sample_logo",
+      "info": "t:info.sample_logo",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "self", "label": "SELF" },
+        { "value": "outside", "label": "Outside" },
+        { "value": "women-s-health", "label": "Women’s Health" },
+        { "value": "men-s-health", "label": "Men’s Health" },
+        { "value": "forbes", "label": "Forbes" },
+        { "value": "shape", "label": "Shape" }
+      ],
+      "default": "forbes"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "t:settings.link"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_in_new_tab",
+      "label": "t:settings.open_new_tab",
+      "default": true
+    }
+  ]
+}
+{% endschema %}
