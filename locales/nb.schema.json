@@ -171,6 +171,8 @@
     "disclosures": "Opplysninger"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "alignment": "Justering",
     "autoplay": "Autospill",
     "background": "Bakgrunn",
@@ -587,6 +589,9 @@
     "customer_account_menu": "Kundekontomeny"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -1106,6 +1111,7 @@
     "disclosures": "Opplysninger"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "carousel_layout_on_mobile": "Karusell brukes alltid på mobil",
     "video_alt_text": "Beskriv videoen for brukere av hjelpeteknologi",

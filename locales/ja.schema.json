@@ -171,6 +171,8 @@
     "disclosures": "開示情報"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "alignment": "配置",
     "autoplay": "自動再生",
     "background": "背景",
@@ -587,6 +589,9 @@
     "customer_account_menu": "お客様アカウントメニュー"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -1106,6 +1111,7 @@
     "disclosures": "開示情報"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "video_alt_text": "支援技術のユーザーのために動画の説明を記述します",
     "video_autoplay": "動画はデフォルトでミュートになります",

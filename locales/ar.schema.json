@@ -215,6 +215,7 @@
     "work_quickly_to_ship": "<p>سنعمل بسرعة لشحن طلبك في أقرب وقت ممكن. بمجرد شحن طلبك، ستتلقى رسالة بريد إلكتروني تحتوي على مزيد من المعلومات. تختلف أوقات التوصيل حسب موقعك.</p>"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "actions_display_style": "تُستخدم الأيقونات دائماً على الهاتف المحمول",
     "applies_on_image_only": "ينطبق على الصور فقط",
@@ -407,6 +408,9 @@
     "comparison_slider": "شريط تمرير المقارنة"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -703,6 +707,8 @@
     "below_media": "أسفل الوسائط"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "accordion": "أكورديون",
     "account": "حساب",
     "actions_display_style": "نمط القائمة",

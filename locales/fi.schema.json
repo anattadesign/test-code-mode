@@ -171,6 +171,8 @@
     "disclosures": "Ilmoitukset"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "alignment": "Tasaus",
     "autoplay": "Automaattinen toisto",
     "background": "Tausta",
@@ -587,6 +589,9 @@
     "customer_account_menu": "Asiakastilin valikko"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -1106,6 +1111,7 @@
     "disclosures": "Ilmoitukset"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "carousel_layout_on_mobile": "Mobiilissa käytetään aina karusellia.",
     "video_alt_text": "Kuvaile video avustavan teknologian käyttäjille",

@@ -171,6 +171,8 @@
     "disclosures": "Pflichtangaben"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "autoplay": "Autoplay",
     "background": "Hintergrund",
     "border_radius": "Eckenradius",
@@ -587,6 +589,9 @@
     "customer_account_menu": "Kundenkontomenü"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -1106,6 +1111,7 @@
     "disclosures": "Pflichtangaben"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "video_alt_text": "Beschreibe das Video für Benutzer von Hilfstechnologien",
     "video_autoplay": "Videos werden standardmäßig stummgeschaltet",

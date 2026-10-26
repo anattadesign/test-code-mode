@@ -215,6 +215,7 @@
     "work_quickly_to_ship": "<p>נעבוד מהר כדי לשלוח את ההזמנה שלך בהקדם האפשרי. לאחר שההזמנה שלך תישלח, תקבל דוא&quot;ל עם מידע נוסף. זמני האספקה משתנים בהתאם למיקומך.</p>"
   },
   "info": {
+    "button_tone": "Accent uses the primary button color as the outline. Theme secondary uses Theme settings → Buttons.",
     "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "actions_display_style": "תמיד נעשה שימוש בסמלים בנייד",
     "applies_on_image_only": "חל על תמונות בלבד",
@@ -407,6 +408,9 @@
     "comparison_slider": "מחוון השוואה"
   },
   "options": {
+    "dark": "Dark",
+    "button_tone_accent": "Accent (for dark backgrounds)",
+    "button_tone_palette": "Theme secondary",
     "fluid": "Fluid",
     "wordmark": "Wordmark",
     "display_xl": "Display",
@@ -703,6 +707,8 @@
     "direction_top_start": "למעלה, התחלה"
   },
   "settings": {
+    "button_tone": "Secondary color",
+    "button_show_arrow": "Show arrow icon",
     "accordion": "אקורדיון",
     "account": "חשבון",
     "actions_display_style": "סגנון תפריט",

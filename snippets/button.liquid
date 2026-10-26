@@ -1,5 +1,7 @@
 {%- doc -%}
   Intended for use in a block similar to the button block.
+  Reads style_class, button_size, secondary_tone and show_arrow from the block settings
+  (Ascent button system: Primary, Secondary, Tertiary, Dark × Small/Medium/Large, optional arrow).
 
   @param {string} link - link to render
   @param {object} [block] - The block
@@ -8,7 +10,23 @@
   {% render 'button', link: '/collections/all' %}
 {%- enddoc -%}
 
-{% assign block_settings = block.settings %}
+{% liquid
+  assign block_settings = block.settings
+  assign style_class = block_settings.style_class | default: 'button'
+  assign button_size = block_settings.button_size | default: 'medium'
+
+  capture button_modifiers
+    if style_class != 'button-unstyled'
+      echo ' button--' | append: button_size
+      if block_settings.show_arrow
+        echo ' button--arrow'
+      endif
+    endif
+    if style_class == 'button-secondary' and block_settings.secondary_tone != 'palette'
+      echo ' button-secondary--accent'
+    endif
+  endcapture
+%}
 {% render 'button-custom-styles', block_settings: block_settings, block_id: block.id %}
 
 <a
@@ -20,8 +38,9 @@
   {% endif %}
   class="
     size-style
-    {{ block_settings.style_class }}
-    {{ block_settings.style_class }}--{{ block.id }}
+    {{ style_class }}
+    {{ style_class }}--{{ block.id }}
+    {{ button_modifiers }}
   "
   style="{% render 'size-style', settings: block_settings %}"
   {%- if block_settings.open_in_new_tab -%}
@@ -30,5 +49,13 @@
   {%- endif -%}
   {{ block.shopify_attributes }}
 >
-  {{ block_settings.label }}
+  {%- if block_settings.show_arrow and style_class != 'button-unstyled' -%}
+    <span class="button__label">{{ block_settings.label }}</span>
+    <span class="button__arrow" aria-hidden="true">
+      {%- comment -%} Figma "Icon" (arrow up-right, 20×20) {%- endcomment -%}
+      <svg viewBox="0 0 20 20" focusable="false"><path d="M6.843 4.736v1.053h6.626l-8.732 8.731.742.742 8.732-8.731v6.626h1.053V4.736z" fill="currentColor"/></svg>
+    </span>
+  {%- else -%}
+    {{ block_settings.label }}
+  {%- endif -%}
 </a>
