@@ -541,12 +541,70 @@
         "gap_mobile": 24,
         "padding_block_mobile": 24
       }
+    },
+    "ascent_about": {
+      "type": "ascent-panels",
+      "name": "Ascent why panels",
+      "blocks": {
+        "panel_1": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Minimal ingredients, minimal processing",
+            "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked."
+          }
+        },
+        "panel_2": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Rigorous third-party testing",
+            "text": "Informed Sport Certified. An outside lab checks every batch before it ships."
+          }
+        },
+        "panel_3": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Tastes just like real milk",
+            "text": "There’s nothing artificial masking it, so it tastes like exactly what it’s made from."
+          }
+        },
+        "panel_4": {
+          "type": "_about-panel",
+          "settings": {
+            "title": "Gentle on your stomach",
+            "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean."
+          }
+        }
+      },
+      "block_order": [
+        "panel_1",
+        "panel_2",
+        "panel_3",
+        "panel_4"
+      ],
+      "settings": {
+        "placeholder_media": true,
+        "show_product_image": true,
+        "overlay_color": "#000000",
+        "overlay_opacity": 69,
+        "overlay_opacity_mobile": 44,
+        "eyebrow": "Why Ascent",
+        "heading": "The cleanest protein we know how to make.",
+        "heading_preset": "h1",
+        "heading_preset_mobile": "h3",
+        "text_color": "#f8f8f8",
+        "muted_color": "#d0d0d0",
+        "accent_color": "#fbec00",
+        "padding-block-start": 108,
+        "padding-block-end": 108,
+        "padding_block_mobile": 48
+      }
     }
   },
   "order": [
     "ascent_hero",
     "ascent_ticker_1",
     "ascent_bestsellers",
-    "ascent_ticker_2"
+    "ascent_ticker_2",
+    "ascent_about"
   ]
 }
