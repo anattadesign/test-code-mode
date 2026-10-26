@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "knowledge_tab": "Topic tab",
+    "ascent_knowledge": "Ascent knowledge center",
     "goal_card": "Goal card",
     "ascent_goals": "Ascent shop by goal",
     "badge": "Badge",
@@ -191,6 +193,16 @@
     "disclosures": "Toelichtingen"
   },
   "settings": {
+    "article_tag": "Article tag",
+    "panel_color": "Card panel color",
+    "card_cta": "Card button",
+    "featured_cta": "Featured card button",
+    "featured_badge": "Featured badge",
+    "search_placeholder": "Search placeholder",
+    "empty_text": "Empty topic text",
+    "tabs_label": "Tabs accessible label",
+    "show_sample_articles": "Show sample articles when the blog is empty",
+    "articles_limit": "Articles to load",
     "sub_label": "Sub-label",
     "sample_image": "Sample image",
     "padding_block": "Vertical padding",
@@ -1271,6 +1283,9 @@
     "disclosures": "Toelichtingen"
   },
   "info": {
+    "article_tag": "Shows articles with this tag. Leave empty to show all articles.",
+    "featured_cta": "Links to the selected blog.",
+    "show_sample_articles": "Sample cards always show in the theme editor while the blog is empty.",
     "goal_card_link": "Cards without a link show the disabled state.",
     "sample_image_fallback": "Used when no image is selected.",
     "calculator_link": "The button shows a disabled state until a link is set.",
