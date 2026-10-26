@@ -1,0 +1,215 @@
+{%- doc -%}
+  Knowledge Center card (WAK-33). Glass panel over a full-bleed image; featured and standard variants
+  are switched client-side by toggling `kc-card--featured`.
+
+  @param {string} title - Article title
+  @param {string} [url] - Article URL (blank for sample cards)
+  @param {string} [excerpt] - Short excerpt
+  @param {string} [tags] - Comma separated, handleized tags
+  @param {string} image_html - Rendered image markup
+  @param {boolean} [featured] - Render as the featured card
+  @param {string} [first_tag] - Handle of the initially active tab (cards without it start hidden)
+  @param {string} [blog_url] - Blog URL for the featured "Read the guide" link
+  @param {object} settings - Section settings
+{%- enddoc -%}
+{%- liquid
+  assign tag_array = tags | split: ','
+  assign hidden = false
+  if first_tag != blank
+    unless tag_array contains first_tag
+      assign hidden = true
+    endunless
+  endif
+-%}
+<article
+  class="kc-card{% if featured %} kc-card--featured{% endif %}"
+  data-tags="{{ tags | escape }}"
+  {% if hidden %}hidden{% endif %}
+>
+  <div class="kc-card__media">{{ image_html }}</div>
+  <div class="kc-card__panel">
+    {%- if settings.featured_badge != blank -%}
+      <span class="kc-card__badge label-sm">{{ settings.featured_badge }}</span>
+    {%- endif -%}
+    <h3 class="kc-card__title title-card">
+      {%- if url != blank -%}
+        <a class="kc-card__title-link" href="{{ url }}">{{ title }}</a>
+      {%- else -%}
+        {{ title }}
+      {%- endif -%}
+    </h3>
+    {%- if excerpt != blank -%}
+      <p class="kc-card__excerpt body-lg">{{ excerpt }}</p>
+    {%- endif -%}
+    {%- if settings.featured_cta != blank -%}
+      <a
+        class="kc-card__cta kc-card__cta--featured button-tertiary button--medium button--arrow"
+        {% if blog_url != blank %}href="{{ blog_url }}"{% else %}role="link" aria-disabled="true"{% endif %}
+      >
+        <span class="button__label">{{ settings.featured_cta }}</span>
+        <span class="button__arrow" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false"><path d="M6.843 4.736v1.053h6.626l-8.732 8.731.742.742 8.732-8.731v6.626h1.053V4.736z" fill="currentColor"/></svg>
+        </span>
+      </a>
+    {%- endif -%}
+    {%- if settings.card_cta != blank -%}
+      <a
+        class="kc-card__cta kc-card__cta--standard button-tertiary button--medium button--arrow"
+        {% if url != blank %}href="{{ url }}"{% else %}role="link" aria-disabled="true"{% endif %}
+      >
+        <span class="button__label">{{ settings.card_cta }}<span class="visually-hidden">: {{ title }}</span></span>
+        <span class="button__arrow" aria-hidden="true">
+          <svg viewBox="0 0 20 20" focusable="false"><path d="M6.843 4.736v1.053h6.626l-8.732 8.731.742.742 8.732-8.731v6.626h1.053V4.736z" fill="currentColor"/></svg>
+        </span>
+      </a>
+    {%- endif -%}
+  </div>
+</article>
+
+{% stylesheet %}
+  .kc-card {
+    position: relative;
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: var(--kc-card-height, 520px);
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    border-radius: 8px;
+    color: var(--kc-card-text, #fff);
+    scroll-snap-align: start;
+    isolation: isolate;
+  }
+
+  .kc-card[hidden] {
+    display: none;
+  }
+
+  .kc-card--featured {
+    aspect-ratio: 5 / 4;
+  }
+
+  .kc-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+  }
+
+  .kc-card__image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s var(--animation-easing, ease);
+  }
+
+  .kc-card:hover .kc-card__image {
+    transform: scale(1.03);
+  }
+
+  .kc-card__panel {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 24px 16px;
+    background-color: var(--kc-panel, rgb(0 0 0 / 0.27));
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .kc-card--featured .kc-card__panel {
+    padding: 28px 24px;
+  }
+
+  .kc-card .kc-card__badge {
+    display: none;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background-color: var(--kc-accent, #fbec00);
+    color: var(--kc-accent-text, #1a1a1a);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .kc-card--featured .kc-card__badge {
+    display: inline-block;
+  }
+
+  .kc-card .kc-card__title {
+    margin: 0;
+    color: inherit;
+    font-size: 1.625rem;
+    line-height: 1;
+    letter-spacing: 0;
+  }
+
+  .kc-card__title-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .kc-card__title-link:hover {
+    text-decoration: underline;
+  }
+
+  .kc-card .kc-card__excerpt {
+    display: -webkit-box;
+    margin: 0;
+    overflow: hidden;
+    color: inherit;
+    opacity: 0.97;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  .kc-card--featured .kc-card__excerpt {
+    -webkit-line-clamp: 2;
+  }
+
+  .kc-card .kc-card__cta {
+    --color: var(--kc-accent, #fbec00);
+  }
+
+  .kc-card--featured .kc-card__cta--standard,
+  .kc-card:not(.kc-card--featured) .kc-card__cta--featured {
+    display: none;
+  }
+
+  @media screen and (max-width: 749px) {
+    .kc-card {
+      aspect-ratio: 2 / 3;
+    }
+
+    .kc-card--featured {
+      aspect-ratio: 4 / 5;
+    }
+
+    .kc-card__panel {
+      padding: 20px 12px;
+    }
+
+    .kc-card--featured .kc-card__panel {
+      padding: 20px 16px;
+    }
+
+    .kc-card .kc-card__badge {
+      padding-block: 4px;
+    }
+
+    .kc-card .kc-card__title {
+      font-size: 1.375rem;
+    }
+
+    .kc-card .kc-card__excerpt {
+      font-size: 0.875rem;
+      line-height: 21px;
+    }
+
+    .kc-card .kc-card__cta {
+      --button-arrow-size: 1rem;
+
+      font-size: 0.875rem;
+    }
+  }
+{% endstylesheet %}

@@ -862,6 +862,48 @@
         "goal_mobility"
       ],
       "settings": {}
+    },
+    "ascent_knowledge": {
+      "type": "ascent-knowledge",
+      "blocks": {
+        "tab_protein": {
+          "type": "_knowledge-tab",
+          "settings": {
+            "label": "Protein",
+            "tag": "protein"
+          }
+        },
+        "tab_creatine": {
+          "type": "_knowledge-tab",
+          "settings": {
+            "label": "Creatine",
+            "tag": "creatine"
+          }
+        },
+        "tab_hydration": {
+          "type": "_knowledge-tab",
+          "settings": {
+            "label": "Hydration",
+            "tag": "hydration"
+          }
+        },
+        "tab_recovery": {
+          "type": "_knowledge-tab",
+          "settings": {
+            "label": "Recovery",
+            "tag": "recovery"
+          }
+        }
+      },
+      "block_order": [
+        "tab_protein",
+        "tab_creatine",
+        "tab_hydration",
+        "tab_recovery"
+      ],
+      "settings": {
+        "blog": "news"
+      }
     }
   },
   "order": [
@@ -873,6 +915,7 @@
     "ascent_reviews",
     "ascent_press",
     "ascent_membership",
-    "ascent_goals"
+    "ascent_goals",
+    "ascent_knowledge"
   ]
 }

@@ -1,0 +1,78 @@
+{%- comment -%}
+  Knowledge Center tab (WAK-33): filters the section's cards by article tag. Empty tag = all articles.
+{%- endcomment -%}
+<button
+  type="button"
+  class="kc-tab"
+  role="tab"
+  aria-selected="false"
+  tabindex="-1"
+  data-tag="{{ block.settings.tag | handleize }}"
+  {{ block.shopify_attributes }}
+>
+  {{- block.settings.label -}}
+</button>
+
+{% stylesheet %}
+  .kc-tab {
+    flex: none;
+    padding: 11px 23px;
+    border: 1px solid var(--kc-border, #d0d0d0);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--kc-text, #1a1a1a);
+    font-family: var(--font-body--family);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 22px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--animation-speed, 0.2s) ease, border-color var(--animation-speed, 0.2s) ease;
+  }
+
+  .kc-tab:hover {
+    border-color: var(--kc-text, #1a1a1a);
+  }
+
+  .kc-tab[aria-selected='true'],
+  [role='tablist']:not(:has([aria-selected='true'])) > .kc-tab:first-child {
+    border-color: var(--kc-accent, #fbec00);
+    background-color: var(--kc-accent, #fbec00);
+    color: var(--kc-accent-text, #1a1a1a);
+  }
+
+  .kc-tab:focus-visible {
+    outline: 2px solid var(--kc-text, #1a1a1a);
+    outline-offset: 2px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .kc-tab {
+      padding: 9px 15px;
+      font-size: 0.875rem;
+      line-height: 21px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.knowledge_tab",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "t:settings.label",
+      "default": "Protein"
+    },
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "t:settings.article_tag",
+      "info": "t:info.article_tag",
+      "default": "protein"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,652 @@
+{%- comment -%}
+  Ascent Knowledge Center editorial section (WAK-33).
+  - Blog picker; tab blocks (label + article tag) filter the cards client-side (assets/ascent-knowledge.js).
+  - First visible card of the active filter is the featured card (5:4 desktop / 4:5 mobile); the rest are standard (3:4 / 2:3).
+  - Search submits to /search?type=article; "Read the guide" links to the blog.
+  - Empty blog: sample cards (theme editor always; storefront when "show sample articles" is on).
+{%- endcomment -%}
+{%- liquid
+  assign ss = section.settings
+  assign blog = ss.blog
+  assign article_count = 0
+  if blog != blank
+    assign article_count = blog.articles_count
+  endif
+
+  assign show_samples = false
+  if article_count == 0
+    if request.design_mode or ss.show_sample_articles
+      assign show_samples = true
+    endif
+  endif
+
+  assign first_tag = ''
+  for block in section.blocks
+    if block.type == '_knowledge-tab'
+      assign first_tag = block.settings.tag | handleize
+      break
+    endif
+  endfor
+
+  assign blog_url = blank
+  if blog != blank
+    assign blog_url = blog.url
+  endif
+  assign rail_id = 'KnowledgeRail-' | append: section.id
+-%}
+
+<ascent-knowledge
+  class="ascent-knowledge"
+  style="
+    --kc-bg: {{ ss.background_color }};
+    --kc-text: {{ ss.text_color }};
+    --kc-muted: {{ ss.muted_color }};
+    --kc-border: {{ ss.border_color }};
+    --kc-accent: {{ ss.accent_color }};
+    --kc-accent-text: {{ ss.accent_text_color }};
+    --kc-card-text: {{ ss.card_text_color }};
+    --kc-panel: {{ ss.panel_color | color_modify: 'alpha', 0.27 }};
+    --kc-padding: {{ ss.padding_block }}px;
+    --kc-padding-mobile: {{ ss.padding_block_mobile }}px;
+  "
+>
+  <div class="ascent-knowledge__head">
+    <div class="ascent-knowledge__title">
+      {%- if ss.eyebrow != blank -%}
+        <p class="ascent-knowledge__eyebrow label-lg">{{ ss.eyebrow }}</p>
+      {%- endif -%}
+      {%- if ss.heading != blank -%}
+        <h2 class="ascent-knowledge__heading h2">{{ ss.heading }}</h2>
+      {%- endif -%}
+    </div>
+    {%- if ss.show_search -%}
+      <form class="ascent-knowledge__search" action="{{ routes.search_url }}" method="get" role="search">
+        <input type="hidden" name="type" value="article">
+        <input type="hidden" name="options[prefix]" value="last">
+        <label class="ascent-knowledge__search-field">
+          <svg class="ascent-knowledge__search-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false">
+            <circle cx="8.75" cy="8.75" r="5.25" fill="none" stroke="currentColor" stroke-width="1.25"/>
+            <path d="M12.6 12.6l4.2 4.2" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
+          </svg>
+          <span class="visually-hidden">{{ ss.search_placeholder }}</span>
+          <input
+            class="ascent-knowledge__search-input body-lg"
+            type="search"
+            name="q"
+            placeholder="{{ ss.search_placeholder | escape }}"
+            autocomplete="off"
+            required
+          >
+        </label>
+        <button type="submit" class="ascent-knowledge__search-button button button--medium">
+          {{- ss.search_button -}}
+        </button>
+      </form>
+    {%- endif -%}
+  </div>
+
+  {%- if section.blocks.size > 0 -%}
+    <div class="ascent-knowledge__tabs" role="tablist" aria-label="{{ ss.tabs_label | escape }}">
+      {% content_for 'blocks' %}
+    </div>
+  {%- endif -%}
+
+  <div class="ascent-knowledge__rail" id="{{ rail_id }}" role="tabpanel" tabindex="-1" data-rail>
+    {%- if show_samples -%}
+      {%- liquid
+        assign s_titles = 'What is Native Whey?|The recovery trigger|The purest creatine|Tested every batch|Electrolytes, explained|Sleep is part of the plan' | split: '|'
+        assign s_text = 'Native whey is the least-processed whey protein available.|2.6g per serving crosses the threshold that tells your muscles to rebuild. Miss it and repair stalls.|German-made monohydrate under stricter quality control. 5g per serving, unflavoured.|Not a sample — every batch is screened by a third-party lab before it earns a label.|What you lose in sweat, and how much sodium, potassium and magnesium to put back.|Why seven hours does more for recovery than any shake you can buy.' | split: '|'
+        assign s_tags = 'protein|protein,recovery|protein,creatine|protein,creatine|hydration|recovery,hydration' | split: '|'
+        assign s_images = 'ascent-article-native-whey.jpg|ascent-article-recovery-trigger.jpg|ascent-article-purest-creatine.jpg|ascent-article-tested-every-batch.jpg|ascent-goal-manage-weight.jpg|ascent-goal-recover-faster.jpg' | split: '|'
+      -%}
+      {%- assign sample_featured_done = false -%}
+      {%- for title in s_titles -%}
+        {%- liquid
+          assign idx = forloop.index0
+          assign featured = false
+          assign tags = s_tags[idx] | split: ','
+          if first_tag == blank and forloop.first
+            assign featured = true
+          elsif first_tag != blank and tags contains first_tag
+            unless sample_featured_done
+              assign featured = true
+              assign sample_featured_done = true
+            endunless
+          endif
+        -%}
+        {%- capture image -%}
+          <img
+            class="kc-card__image"
+            src="{{ s_images[idx] | asset_url }}"
+            alt=""
+            width="780"
+            height="1040"
+            loading="lazy"
+          >
+        {%- endcapture -%}
+        {%- render 'ascent-knowledge-card',
+          title: title,
+          url: '',
+          excerpt: s_text[idx],
+          tags: s_tags[idx],
+          image_html: image,
+          featured: featured,
+          first_tag: first_tag,
+          blog_url: blog_url,
+          settings: ss
+        -%}
+      {%- endfor -%}
+    {%- elsif blog != blank -%}
+      {%- assign featured_done = false -%}
+      {%- for article in blog.articles limit: ss.articles_limit -%}
+        {%- liquid
+          capture tag_list
+            for t in article.tags
+              echo t | handleize
+              unless forloop.last
+                echo ','
+              endunless
+            endfor
+          endcapture
+          assign tag_array = tag_list | split: ','
+          assign featured = false
+          unless featured_done
+            if first_tag == blank or tag_array contains first_tag
+              assign featured = true
+              assign featured_done = true
+            endif
+          endunless
+          assign excerpt = article.excerpt | default: article.content | strip_html | truncatewords: 30
+        -%}
+        {%- capture image -%}
+          {%- if article.image -%}
+            {{
+              article.image
+              | image_url: width: 1300
+              | image_tag:
+                class: 'kc-card__image',
+                alt: '',
+                loading: 'lazy',
+                sizes: '(min-width: 750px) 650px, 320px',
+                widths: '320, 400, 650, 800, 1300'
+            }}
+          {%- else -%}
+            {{ 'blog-apparel-1' | placeholder_svg_tag: 'kc-card__image kc-card__image--placeholder' }}
+          {%- endif -%}
+        {%- endcapture -%}
+        {%- render 'ascent-knowledge-card',
+          title: article.title,
+          url: article.url,
+          excerpt: excerpt,
+          tags: tag_list,
+          image_html: image,
+          featured: featured,
+          first_tag: first_tag,
+          blog_url: blog_url,
+          settings: ss
+        -%}
+      {%- endfor -%}
+    {%- endif -%}
+    <p class="ascent-knowledge__empty body-lg" data-empty hidden>{{ ss.empty_text }}</p>
+  </div>
+
+  <div class="ascent-knowledge__nav" data-nav hidden>
+    <button type="button" class="ascent-knowledge__arrow" data-prev aria-controls="{{ rail_id }}" aria-label="{{ 'accessibility.slideshow_previous' | t }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 12H4M10 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="ascent-knowledge__track" aria-hidden="true"><span class="ascent-knowledge__thumb" data-thumb></span></span>
+    <button type="button" class="ascent-knowledge__arrow" data-next aria-controls="{{ rail_id }}" aria-label="{{ 'accessibility.slideshow_next' | t }}">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 12h16M14 18l6-6-6-6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+</ascent-knowledge>
+
+<script src="{{ 'ascent-knowledge.js' | asset_url }}" type="module" fetchpriority="low"></script>
+
+{% stylesheet %}
+  .ascent-knowledge {
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+    padding: var(--kc-padding) var(--page-margin, 64px);
+    overflow: hidden;
+    background-color: var(--kc-bg);
+    color: var(--kc-text);
+  }
+
+  .ascent-knowledge__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 64px;
+  }
+
+  .ascent-knowledge__title {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 725px;
+  }
+
+  .ascent-knowledge .ascent-knowledge__eyebrow {
+    margin: 0;
+    color: var(--kc-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-knowledge .ascent-knowledge__heading {
+    margin: 0;
+    color: var(--kc-text);
+  }
+
+  .ascent-knowledge__search {
+    display: flex;
+    flex: 0 1 460px;
+    align-items: center;
+    min-width: 0;
+    border: 1px solid var(--kc-border);
+    border-radius: 999px;
+  }
+
+  .ascent-knowledge__search:focus-within {
+    border-color: var(--kc-text);
+  }
+
+  .ascent-knowledge__search-field {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding-inline: 20px;
+    color: var(--kc-muted);
+  }
+
+  .ascent-knowledge__search-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+  }
+
+  .ascent-knowledge .ascent-knowledge__search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--kc-text);
+    outline: none;
+    box-shadow: none;
+  }
+
+  .ascent-knowledge__search-input::placeholder {
+    color: var(--kc-muted);
+    opacity: 1;
+  }
+
+  .ascent-knowledge__search-input::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .ascent-knowledge__search-button {
+    flex: none;
+    margin: -1px;
+  }
+
+  .ascent-knowledge__tabs {
+    display: flex;
+    gap: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .ascent-knowledge__tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ascent-knowledge__rail {
+    --kc-card-height: 520px;
+
+    display: flex;
+    gap: 24px;
+    margin-inline-end: calc(-1 * var(--page-margin, 64px));
+    padding-inline-end: var(--page-margin, 64px);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    outline: none;
+  }
+
+  .ascent-knowledge__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ascent-knowledge .ascent-knowledge__empty {
+    margin: 0;
+    color: var(--kc-muted);
+  }
+
+  .ascent-knowledge__empty[hidden] {
+    display: none;
+  }
+
+  .ascent-knowledge__nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .ascent-knowledge__nav[hidden] {
+    display: none;
+  }
+
+  .ascent-knowledge__arrow {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--kc-text);
+    cursor: pointer;
+  }
+
+  .ascent-knowledge__arrow:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  .ascent-knowledge__arrow svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ascent-knowledge__track {
+    position: relative;
+    flex: 1;
+    height: 4px;
+    border-radius: 999px;
+    background-color: rgb(140 140 140 / 0.2);
+  }
+
+  .ascent-knowledge__thumb {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--kc-thumb-width, 26%);
+    height: 100%;
+    border-radius: inherit;
+    background-color: var(--kc-text);
+    transform: translateX(var(--kc-thumb-x, 0));
+    transition: transform 0.15s linear;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-knowledge {
+      gap: 20px;
+      padding: var(--kc-padding-mobile) 0;
+    }
+
+    .ascent-knowledge__head {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 20px;
+      padding-inline: 20px;
+    }
+
+    .ascent-knowledge__title {
+      gap: 16px;
+    }
+
+    .ascent-knowledge .ascent-knowledge__eyebrow {
+      font-size: var(--font-label-sm--size);
+      line-height: 17px;
+    }
+
+    .ascent-knowledge .ascent-knowledge__heading {
+      font-size: 2rem;
+      line-height: 30px;
+    }
+
+    .ascent-knowledge__search {
+      flex: none;
+    }
+
+    .ascent-knowledge__search-field {
+      gap: 4px;
+      padding-inline: 16px 20px;
+    }
+
+    .ascent-knowledge .ascent-knowledge__search-input {
+      font-size: 0.875rem;
+      line-height: 21px;
+    }
+
+    .ascent-knowledge__search-button.button--medium {
+      --button-height: 2.5rem;
+      --button-padding-inline: 1rem;
+
+      font-size: 0.875rem;
+    }
+
+    .ascent-knowledge__tabs {
+      gap: 8px;
+      padding-inline: 20px;
+    }
+
+    .ascent-knowledge__rail {
+      --kc-card-height: 400px;
+
+      gap: 12px;
+      margin-inline-end: 0;
+      padding-inline: 20px;
+      scroll-padding-inline: 20px;
+    }
+
+    .ascent-knowledge__nav {
+      padding-inline: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_knowledge",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [{ "type": "_knowledge-tab" }],
+  "max_blocks": 10,
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "t:settings.blog"
+    },
+    {
+      "type": "range",
+      "id": "articles_limit",
+      "label": "t:settings.articles_limit",
+      "min": 2,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sample_articles",
+      "label": "t:settings.show_sample_articles",
+      "info": "t:info.show_sample_articles",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "t:content.text"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "t:settings.eyebrow",
+      "default": "Knowledge center"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "The Science Behind Your Fuel."
+    },
+    {
+      "type": "text",
+      "id": "tabs_label",
+      "label": "t:settings.tabs_label",
+      "default": "Article topics"
+    },
+    {
+      "type": "text",
+      "id": "empty_text",
+      "label": "t:settings.empty_text",
+      "default": "No articles in this topic yet."
+    },
+    {
+      "type": "header",
+      "content": "t:content.search"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "t:settings.show_search",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "t:settings.search_placeholder",
+      "default": "Search ingredients, guides, myths…"
+    },
+    {
+      "type": "text",
+      "id": "search_button",
+      "label": "t:settings.button_label",
+      "default": "Search"
+    },
+    {
+      "type": "header",
+      "content": "t:content.cards"
+    },
+    {
+      "type": "text",
+      "id": "featured_badge",
+      "label": "t:settings.featured_badge",
+      "default": "Featured"
+    },
+    {
+      "type": "text",
+      "id": "featured_cta",
+      "label": "t:settings.featured_cta",
+      "info": "t:info.featured_cta",
+      "default": "Read the guide"
+    },
+    {
+      "type": "text",
+      "id": "card_cta",
+      "label": "t:settings.card_cta",
+      "default": "Read more"
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "t:settings.muted_text_color",
+      "default": "#696969"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "t:settings.border_color",
+      "default": "#d0d0d0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "t:settings.accent_color",
+      "default": "#fbec00"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "t:settings.accent_text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "t:settings.card_text_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "panel_color",
+      "label": "t:settings.panel_color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_block",
+      "label": "t:settings.padding_block",
+      "min": 0,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_knowledge",
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "tab_protein": { "type": "_knowledge-tab", "settings": { "label": "Protein", "tag": "protein" } },
+        "tab_creatine": { "type": "_knowledge-tab", "settings": { "label": "Creatine", "tag": "creatine" } },
+        "tab_hydration": { "type": "_knowledge-tab", "settings": { "label": "Hydration", "tag": "hydration" } },
+        "tab_recovery": { "type": "_knowledge-tab", "settings": { "label": "Recovery", "tag": "recovery" } }
+      },
+      "block_order": ["tab_protein", "tab_creatine", "tab_hydration", "tab_recovery"]
+    }
+  ]
+}
+{% endschema %}
