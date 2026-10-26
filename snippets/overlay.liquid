@@ -1,7 +1,8 @@
 {%- doc -%}
   Renders a full-bleed overlay.
 
-  @param {object} settings - Block or section settings, expecting `overlay_color`, `overlay_style`, and `gradient_direction`.
+  @param {object} settings - Block or section settings, expecting `overlay_color`, `overlay_style`, and `gradient_direction`;
+    optional `gradient_extent` and mobile overrides (`overlay_mobile_custom`, `overlay_color_mobile`, `gradient_direction_mobile`, `gradient_extent_mobile`).
   @param {string} [layer] - The z-index layer for the overlay, defaults to `var(--layer-flat)`.
 
   @example
@@ -15,6 +16,13 @@
     --overlay-color: {{ settings.overlay_color | default: 'rgb(0 0 0 / var(--opacity-25))' }};
     --overlay-color--end: {{ settings.overlay_color | color_modify: 'alpha', 0 | default: 'rgb(0 0 0 / 0)' }};
     --overlay-direction: {{ settings.gradient_direction | default: 'to top' }};
+    --overlay-extent: {{ settings.gradient_extent | default: 100 }}%;
+    {%- if settings.overlay_mobile_custom %}
+      --overlay-color-mobile: {{ settings.overlay_color_mobile | default: settings.overlay_color }};
+      --overlay-color-mobile--end: {{ settings.overlay_color_mobile | default: settings.overlay_color | color_modify: 'alpha', 0 }};
+      --overlay-direction-mobile: {{ settings.gradient_direction_mobile | default: 'to top' }};
+      --overlay-extent-mobile: {{ settings.gradient_extent_mobile | default: 100 }}%;
+    {%- endif %}
     {%- if settings.border_radius %} --overlay-border-radius: {{ settings.border_radius | default: '0' }}px;{% endif -%}
   "
 ></div>
@@ -33,6 +41,20 @@
   }
 
   .overlay--gradient {
-    background: linear-gradient(var(--overlay-direction), var(--overlay-color), var(--overlay-color--end));
+    background: linear-gradient(
+      var(--overlay-direction),
+      var(--overlay-color),
+      var(--overlay-color--end) var(--overlay-extent, 100%)
+    );
+  }
+
+  @media screen and (max-width: 749px) {
+    .overlay--gradient {
+      background: linear-gradient(
+        var(--overlay-direction-mobile, var(--overlay-direction)),
+        var(--overlay-color-mobile, var(--overlay-color)),
+        var(--overlay-color-mobile--end, var(--overlay-color--end)) var(--overlay-extent-mobile, var(--overlay-extent, 100%))
+      );
+    }
   }
 {% endstylesheet %}
