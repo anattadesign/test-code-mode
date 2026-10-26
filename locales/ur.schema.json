@@ -215,6 +215,7 @@
     "work_quickly_to_ship": "<p>ہم جلد از جلد آپ کا آرڈر شپ کرنے کے لیے تیزی سے کام کریں گے۔ آپ کا آرڈر شپ ہونے کے بعد، آپ کو مزید معلومات کے ساتھ ایک ای میل موصول ہوگی۔ آپ کے مقام کے لحاظ سے ترسیل کے اوقات مختلف ہو سکتے ہیں۔</p>"
   },
   "info": {
+    "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "actions_display_style": "موبائل پر ہمیشہ آئیکن استعمال ہوتے ہیں",
     "applies_on_image_only": "صرف تصاویر پر لاگو ہوتا ہے",
     "aspect_ratio_adjusted": "کچھ لے آؤٹ میں ایڈجسٹ کیا گیا",
@@ -406,6 +407,20 @@
     "comparison_slider": "موازنہ کرنے والا سلائیڈر"
   },
   "options": {
+    "fluid": "Fluid",
+    "wordmark": "Wordmark",
+    "display_xl": "Display",
+    "h1_light": "H1 light",
+    "h2_light": "H2 light",
+    "subtitle": "Subheading",
+    "title_card": "Card title",
+    "body_lg": "Body large",
+    "body_md": "Body medium",
+    "body_sm": "Body small",
+    "label_lg": "Label large",
+    "label_sm": "Label small",
+    "button_label": "Button label",
+    "nav_link": "Nav link",
     "above_carousel": "کیرول کے اوپر",
     "accent": "ایکسنٹ",
     "all": "سبھی",

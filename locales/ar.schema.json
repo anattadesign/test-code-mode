@@ -215,6 +215,7 @@
     "work_quickly_to_ship": "<p>سنعمل بسرعة لشحن طلبك في أقرب وقت ممكن. بمجرد شحن طلبك، ستتلقى رسالة بريد إلكتروني تحتوي على مزيد من المعلومات. تختلف أوقات التوصيل حسب موقعك.</p>"
   },
   "info": {
+    "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "actions_display_style": "تُستخدم الأيقونات دائماً على الهاتف المحمول",
     "applies_on_image_only": "ينطبق على الصور فقط",
     "aspect_ratio_adjusted": "معدل في بعض التخطيطات",
@@ -406,6 +407,20 @@
     "comparison_slider": "شريط تمرير المقارنة"
   },
   "options": {
+    "fluid": "Fluid",
+    "wordmark": "Wordmark",
+    "display_xl": "Display",
+    "h1_light": "H1 light",
+    "h2_light": "H2 light",
+    "subtitle": "Subheading",
+    "title_card": "Card title",
+    "body_lg": "Body large",
+    "body_md": "Body medium",
+    "body_sm": "Body small",
+    "label_lg": "Label large",
+    "label_sm": "Label small",
+    "button_label": "Button label",
+    "nav_link": "Nav link",
     "above_carousel": "أعلى العرض الدائري",
     "accent": "تمييز",
     "all": "الكل",

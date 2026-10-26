@@ -762,11 +762,190 @@ h6,
   }
 }
 
-:first-child:is(.h1, .h2, .h3, .h4, .h5, .h6) {
+/*
+  Ascent type presets. Tokens live in snippets/theme-styles-variables.liquid (--font-<preset>--*),
+  so the same names also work for blocks that read the tokens directly (accordion, review).
+*/
+.wordmark,
+.text-block.wordmark > *,
+.text-block.wordmark :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-wordmark--family);
+  font-style: var(--font-wordmark--style);
+  font-weight: var(--font-wordmark--weight);
+  font-size: var(--font-wordmark--size);
+  line-height: var(--font-wordmark--line-height);
+  letter-spacing: var(--font-wordmark--letter-spacing);
+  text-transform: var(--font-wordmark--case);
+}
+
+.display-xl,
+.text-block.display-xl > *,
+.text-block.display-xl :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-display-xl--family);
+  font-style: var(--font-display-xl--style);
+  font-weight: var(--font-display-xl--weight);
+  font-size: var(--font-display-xl--size);
+  line-height: var(--font-display-xl--line-height);
+  letter-spacing: var(--font-display-xl--letter-spacing);
+  text-transform: var(--font-display-xl--case);
+}
+
+.h1-light,
+.text-block.h1-light > *,
+.text-block.h1-light :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-h1-light--family);
+  font-style: var(--font-h1-light--style);
+  font-weight: var(--font-h1-light--weight);
+  font-size: var(--font-h1-light--size);
+  line-height: var(--font-h1-light--line-height);
+  letter-spacing: var(--font-h1-light--letter-spacing);
+  text-transform: var(--font-h1-light--case);
+}
+
+.h2-light,
+.text-block.h2-light > *,
+.text-block.h2-light :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-h2-light--family);
+  font-style: var(--font-h2-light--style);
+  font-weight: var(--font-h2-light--weight);
+  font-size: var(--font-h2-light--size);
+  line-height: var(--font-h2-light--line-height);
+  letter-spacing: var(--font-h2-light--letter-spacing);
+  text-transform: var(--font-h2-light--case);
+}
+
+.subtitle,
+.text-block.subtitle > *,
+.text-block.subtitle :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-subtitle--family);
+  font-style: var(--font-subtitle--style);
+  font-weight: var(--font-subtitle--weight);
+  font-size: var(--font-subtitle--size);
+  line-height: var(--font-subtitle--line-height);
+  letter-spacing: var(--font-subtitle--letter-spacing);
+  text-transform: var(--font-subtitle--case);
+}
+
+.title-card,
+.text-block.title-card > *,
+.text-block.title-card :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-title-card--family);
+  font-style: var(--font-title-card--style);
+  font-weight: var(--font-title-card--weight);
+  font-size: var(--font-title-card--size);
+  line-height: var(--font-title-card--line-height);
+  letter-spacing: var(--font-title-card--letter-spacing);
+  text-transform: var(--font-title-card--case);
+}
+
+.body-lg,
+.text-block.body-lg > *,
+.text-block.body-lg :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body-lg--family);
+  font-style: var(--font-body-lg--style);
+  font-weight: var(--font-body-lg--weight);
+  font-size: var(--font-body-lg--size);
+  line-height: var(--font-body-lg--line-height);
+  letter-spacing: var(--font-body-lg--letter-spacing);
+  text-transform: var(--font-body-lg--case);
+}
+
+.body-md,
+.text-block.body-md > *,
+.text-block.body-md :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body-md--family);
+  font-style: var(--font-body-md--style);
+  font-weight: var(--font-body-md--weight);
+  font-size: var(--font-body-md--size);
+  line-height: var(--font-body-md--line-height);
+  letter-spacing: var(--font-body-md--letter-spacing);
+  text-transform: var(--font-body-md--case);
+}
+
+.body-sm,
+.text-block.body-sm > *,
+.text-block.body-sm :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-body-sm--family);
+  font-style: var(--font-body-sm--style);
+  font-weight: var(--font-body-sm--weight);
+  font-size: var(--font-body-sm--size);
+  line-height: var(--font-body-sm--line-height);
+  letter-spacing: var(--font-body-sm--letter-spacing);
+  text-transform: var(--font-body-sm--case);
+}
+
+.label-lg,
+.text-block.label-lg > *,
+.text-block.label-lg :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-label-lg--family);
+  font-style: var(--font-label-lg--style);
+  font-weight: var(--font-label-lg--weight);
+  font-size: var(--font-label-lg--size);
+  line-height: var(--font-label-lg--line-height);
+  letter-spacing: var(--font-label-lg--letter-spacing);
+  text-transform: var(--font-label-lg--case);
+}
+
+.label-sm,
+.text-block.label-sm > *,
+.text-block.label-sm :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-label-sm--family);
+  font-style: var(--font-label-sm--style);
+  font-weight: var(--font-label-sm--weight);
+  font-size: var(--font-label-sm--size);
+  line-height: var(--font-label-sm--line-height);
+  letter-spacing: var(--font-label-sm--letter-spacing);
+  text-transform: var(--font-label-sm--case);
+}
+
+.button-label,
+.text-block.button-label > *,
+.text-block.button-label :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-button-label--family);
+  font-style: var(--font-button-label--style);
+  font-weight: var(--font-button-label--weight);
+  font-size: var(--font-button-label--size);
+  line-height: var(--font-button-label--line-height);
+  letter-spacing: var(--font-button-label--letter-spacing);
+  text-transform: var(--font-button-label--case);
+}
+
+.nav-link,
+.text-block.nav-link > *,
+.text-block.nav-link :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--font-nav-link--family);
+  font-style: var(--font-nav-link--style);
+  font-weight: var(--font-nav-link--weight);
+  font-size: var(--font-nav-link--size);
+  line-height: var(--font-nav-link--line-height);
+  letter-spacing: var(--font-nav-link--letter-spacing);
+  text-transform: var(--font-nav-link--case);
+}
+
+:is(
+    .wordmark,
+    .display-xl,
+    .h1-light,
+    .h2-light,
+    .subtitle,
+    .title-card,
+    .body-lg,
+    .body-md,
+    .body-sm,
+    .label-lg,
+    .label-sm,
+    .button-label,
+    .nav-link
+  ) {
+  color: var(--color);
+  overflow-wrap: break-word;
+}
+
+:first-child:is(.h1, .h2, .h3, .h4, .h5, .h6, .wordmark, .display-xl, .h1-light, .h2-light, .title-card) {
   margin-block-start: 0;
 }
 
-:last-child:is(.h1, .h2, .h3, .h4, .h5, .h6) {
+:last-child:is(.h1, .h2, .h3, .h4, .h5, .h6, .wordmark, .display-xl, .h1-light, .h2-light, .title-card) {
   margin-block-end: 0;
 }
 

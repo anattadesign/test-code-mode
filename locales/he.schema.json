@@ -215,6 +215,7 @@
     "work_quickly_to_ship": "<p>נעבוד מהר כדי לשלוח את ההזמנה שלך בהקדם האפשרי. לאחר שההזמנה שלך תישלח, תקבל דוא&quot;ל עם מידע נוסף. זמני האספקה משתנים בהתאם למיקומך.</p>"
   },
   "info": {
+    "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "actions_display_style": "תמיד נעשה שימוש בסמלים בנייד",
     "applies_on_image_only": "חל על תמונות בלבד",
     "aspect_ratio_adjusted": "מותאם בחלק מהפריסות",
@@ -406,6 +407,20 @@
     "comparison_slider": "מחוון השוואה"
   },
   "options": {
+    "fluid": "Fluid",
+    "wordmark": "Wordmark",
+    "display_xl": "Display",
+    "h1_light": "H1 light",
+    "h2_light": "H2 light",
+    "subtitle": "Subheading",
+    "title_card": "Card title",
+    "body_lg": "Body large",
+    "body_md": "Body medium",
+    "body_sm": "Body small",
+    "label_lg": "Label large",
+    "label_sm": "Label small",
+    "button_label": "Button label",
+    "nav_link": "Nav link",
     "above_carousel": "מעל הקרוסלה",
     "accent": "הדגשה",
     "all": "הכול",

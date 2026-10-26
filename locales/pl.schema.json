@@ -587,6 +587,20 @@
     "customer_account_menu": "Menu konta klienta"
   },
   "options": {
+    "fluid": "Fluid",
+    "wordmark": "Wordmark",
+    "display_xl": "Display",
+    "h1_light": "H1 light",
+    "h2_light": "H2 light",
+    "subtitle": "Subheading",
+    "title_card": "Card title",
+    "body_lg": "Body large",
+    "body_md": "Body medium",
+    "body_sm": "Body small",
+    "label_lg": "Label large",
+    "label_sm": "Label small",
+    "button_label": "Button label",
+    "nav_link": "Nav link",
     "apple": "Apple",
     "arrow": "Strzałka",
     "banana": "Banan",
@@ -1092,6 +1106,7 @@
     "disclosures": "Informacje prawne"
   },
   "info": {
+    "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "video_alt_text": "Opisz wideo dla użytkowników technologii wspomagających",
     "video_autoplay": "Domyślnie filmy będą wyciszone",
     "video_external": "Użyj adresu URL z YouTube lub Vimeo",

@@ -587,6 +587,20 @@
     "customer_account_menu": "お客様アカウントメニュー"
   },
   "options": {
+    "fluid": "Fluid",
+    "wordmark": "Wordmark",
+    "display_xl": "Display",
+    "h1_light": "H1 light",
+    "h2_light": "H2 light",
+    "subtitle": "Subheading",
+    "title_card": "Card title",
+    "body_lg": "Body large",
+    "body_md": "Body medium",
+    "body_sm": "Body small",
+    "label_lg": "Label large",
+    "label_sm": "Label small",
+    "button_label": "Button label",
+    "nav_link": "Nav link",
     "apple": "Apple",
     "arrow": "矢印",
     "auto": "自動",
@@ -1092,6 +1106,7 @@
     "disclosures": "開示情報"
   },
   "info": {
+    "size_mobile": "Below 750px. Fluid scales the desktop size with the screen width.",
     "video_alt_text": "支援技術のユーザーのために動画の説明を記述します",
     "video_autoplay": "動画はデフォルトでミュートになります",
     "video_external": "YouTubeまたはVimeoのURLを使用します",

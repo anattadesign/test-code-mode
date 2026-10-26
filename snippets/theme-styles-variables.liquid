@@ -121,6 +121,22 @@
       echo accent_font_bold_italic | font_face: font_display: 'swap'
       assign rendered_fonts = rendered_fonts | append: accent_font_bold_italic_face_id
     endunless
+
+    comment
+      Extra heading weights used by the Ascent presets: light (H1/H2 light), medium (nav link), black (wordmark).
+      font_modify returns nil when the family lacks the weight, so the browser falls back to the nearest loaded face.
+    endcomment
+    assign heading_extra_weights = '300,500,900' | split: ','
+    for heading_extra_weight in heading_extra_weights
+      assign heading_extra_font = tertiary_font | font_modify: 'weight', heading_extra_weight
+      if heading_extra_font
+        assign heading_extra_face_id = '[family]-[weight]-[style]|' | replace: '[family]', heading_extra_font.family | replace: '[weight]', heading_extra_font.weight | replace: '[style]', heading_extra_font.style
+        unless rendered_fonts contains heading_extra_face_id
+          echo heading_extra_font | font_face: font_display: 'swap'
+          assign rendered_fonts = rendered_fonts | append: heading_extra_face_id
+        endunless
+      endif
+    endfor
   %}
 
   :root {
@@ -273,7 +289,19 @@
         assign font_size_string = '[font_size_value]' | replace: '[font_size_value]', font_size_value
         assign index = font_size_values | find_index: font_size_string
 
-        if font_size_value >= fluid_size_cutoff
+        comment
+          A fixed mobile size (type_size_hN_mobile) switches the preset to two exact steps:
+          the desktop size from 750px up and the mobile size below it. "fluid" keeps the clamp.
+        endcomment
+        assign mobile_size_setting = 'type_size_[font_size]_mobile' | replace: '[font_size]', font_size
+        assign mobile_size_value = settings[mobile_size_setting]
+
+        if mobile_size_value != blank and mobile_size_value != 'fluid'
+          assign fixed_size_rem = font_size_value | divided_by: 16.0
+          assign mobile_size_rem = mobile_size_value | times: 1 | divided_by: 16.0
+          echo '--font-size--[font_size]: [fixed_size_rem]rem;' | replace: '[font_size]', font_size | replace: '[fixed_size_rem]', fixed_size_rem
+          assign mobile_font_sizes = mobile_size_rem | prepend: ': ' | prepend: font_size | prepend: '--font-size--' | append: 'rem;' | prepend: mobile_font_sizes
+        elsif font_size_value >= fluid_size_cutoff
 
           comment
             Calculate the minimum size for each font size
@@ -336,16 +364,147 @@
           assign preset_letter_spacing = 'type_letter_spacing_[preset_name]' | replace: '[preset_name]', preset_name
 
           echo '--font-[preset_name]--weight: var([preset_weight]);' | replace: '[preset_name]', preset_name | replace: '[preset_weight]', preset_weight
-          echo '--font-[preset_name]--letter-spacing: var(--letter-spacing--[preset_letter_spacing]);' | replace: '[preset_name]', preset_name | replace: '[preset_letter_spacing]', settings[preset_letter_spacing]
+          comment
+            Letter spacing and line height accept a theme token (e.g. heading-tight) or an exact value (e.g. -0.025em).
+          endcomment
+          assign letter_spacing_value = settings[preset_letter_spacing]
+          if letter_spacing_value contains 'tight' or letter_spacing_value contains 'normal' or letter_spacing_value contains 'loose'
+            echo '--font-[preset_name]--letter-spacing: var(--letter-spacing--[preset_letter_spacing]);' | replace: '[preset_name]', preset_name | replace: '[preset_letter_spacing]', letter_spacing_value
+          else
+            echo '--font-[preset_name]--letter-spacing: [preset_letter_spacing];' | replace: '[preset_name]', preset_name | replace: '[preset_letter_spacing]', letter_spacing_value
+          endif
         endif
 
         echo '--font-[preset_name]--size: var([preset_size]);' | replace: '[preset_name]', preset_name | replace: '[preset_size]', preset_size
         echo '--font-[preset_name]--family: var([preset_font]);' | replace: '[preset_name]', preset_name | replace: '[preset_font]', preset_font
         echo '--font-[preset_name]--style: var([preset_style]);' | replace: '[preset_name]', preset_name | replace: '[preset_style]', preset_style
         echo '--font-[preset_name]--case: [preset_case];' | replace: '[preset_name]', preset_name | replace: '[preset_case]', settings[preset_case]
-        echo '--font-[preset_name]--line-height: var(--line-height--[preset_line_height]);' | replace: '[preset_name]', preset_name | replace: '[preset_line_height]', settings[preset_line_height]
+        assign line_height_value = settings[preset_line_height]
+        if line_height_value contains 'tight' or line_height_value contains 'normal' or line_height_value contains 'loose'
+          echo '--font-[preset_name]--line-height: var(--line-height--[preset_line_height]);' | replace: '[preset_name]', preset_name | replace: '[preset_line_height]', line_height_value
+        else
+          echo '--font-[preset_name]--line-height: [preset_line_height];' | replace: '[preset_name]', preset_name | replace: '[preset_line_height]', line_height_value
+        endif
       endfor
+
+      if mobile_font_sizes != blank
+        echo '@media screen and (max-width: 749px) {' | append: mobile_font_sizes | append: '}'
+      endif
     %}
+
+    /*
+      Ascent type presets (Figma: AP Design System, Typescale 2004:12092 desktop / 2004:12745 mobile).
+      Families come from the theme font settings: heading (Display), body (Proxima role), accent (mono labels).
+      Weights 300/500/900 of the heading font are loaded in the font-face block above.
+    */
+    --font-wordmark--family: var(--font-heading--family);
+    --font-wordmark--style: var(--font-heading--style);
+    --font-wordmark--weight: 900;
+    --font-wordmark--size: 11.875rem;
+    --font-wordmark--line-height: 0.8;
+    --font-wordmark--letter-spacing: -0.04em;
+    --font-wordmark--case: none;
+
+    --font-display-xl--family: var(--font-heading--family);
+    --font-display-xl--style: var(--font-heading--style);
+    --font-display-xl--weight: 700;
+    --font-display-xl--size: 6.5rem;
+    --font-display-xl--line-height: 0.92;
+    --font-display-xl--letter-spacing: -0.03em;
+    --font-display-xl--case: none;
+
+    --font-h1-light--family: var(--font-h1--family);
+    --font-h1-light--style: var(--font-h1--style);
+    --font-h1-light--weight: 300;
+    --font-h1-light--size: var(--font-h1--size);
+    --font-h1-light--line-height: var(--font-h1--line-height);
+    --font-h1-light--letter-spacing: var(--font-h1--letter-spacing);
+    --font-h1-light--case: var(--font-h1--case);
+
+    --font-h2-light--family: var(--font-h2--family);
+    --font-h2-light--style: var(--font-h2--style);
+    --font-h2-light--weight: 300;
+    --font-h2-light--size: var(--font-h2--size);
+    --font-h2-light--line-height: var(--font-h2--line-height);
+    --font-h2-light--letter-spacing: var(--font-h2--letter-spacing);
+    --font-h2-light--case: var(--font-h2--case);
+
+    --font-subtitle--family: var(--font-body--family);
+    --font-subtitle--style: var(--font-body--style);
+    --font-subtitle--weight: var(--font-body--weight);
+    --font-subtitle--size: 1.25rem;
+    --font-subtitle--line-height: 1.3;
+    --font-subtitle--letter-spacing: 0em;
+    --font-subtitle--case: none;
+
+    --font-title-card--family: var(--font-heading--family);
+    --font-title-card--style: var(--font-heading--style);
+    --font-title-card--weight: 700;
+    --font-title-card--size: 1.25rem;
+    --font-title-card--line-height: 1.2;
+    --font-title-card--letter-spacing: -0.015em;
+    --font-title-card--case: none;
+
+    --font-body-lg--family: var(--font-body--family);
+    --font-body-lg--style: var(--font-body--style);
+    --font-body-lg--weight: var(--font-body--weight);
+    --font-body-lg--size: 1rem;
+    --font-body-lg--line-height: 1.4;
+    --font-body-lg--letter-spacing: 0em;
+    --font-body-lg--case: none;
+
+    --font-body-md--family: var(--font-body--family);
+    --font-body-md--style: var(--font-body--style);
+    --font-body-md--weight: var(--font-body--weight);
+    --font-body-md--size: 0.875rem;
+    --font-body-md--line-height: 1.5;
+    --font-body-md--letter-spacing: 0em;
+    --font-body-md--case: none;
+
+    --font-body-sm--family: var(--font-body--family);
+    --font-body-sm--style: var(--font-body--style);
+    --font-body-sm--weight: var(--font-body--weight);
+    --font-body-sm--size: 0.75rem;
+    --font-body-sm--line-height: 1.5;
+    --font-body-sm--letter-spacing: 0em;
+    --font-body-sm--case: none;
+
+    --font-label-lg--family: var(--font-accent--family);
+    --font-label-lg--style: var(--font-accent--style);
+    --font-label-lg--weight: var(--font-accent--weight);
+    --font-label-lg--size: 0.875rem;
+    --font-label-lg--line-height: 1.45;
+    --font-label-lg--letter-spacing: 0.1em;
+    --font-label-lg--case: none;
+
+    --font-label-sm--family: var(--font-accent--family);
+    --font-label-sm--style: var(--font-accent--style);
+    --font-label-sm--weight: var(--font-accent--weight);
+    --font-label-sm--size: 0.75rem;
+    --font-label-sm--line-height: 1.45;
+    --font-label-sm--letter-spacing: 0.1em;
+    --font-label-sm--case: none;
+
+    --font-button-label--family: var(--font-accent--family);
+    --font-button-label--style: var(--font-accent--style);
+    --font-button-label--weight: 700;
+    --font-button-label--size: 1rem;
+    --font-button-label--line-height: 1.2;
+    --font-button-label--letter-spacing: 0.1em;
+    --font-button-label--case: none;
+
+    --font-nav-link--family: var(--font-heading--family);
+    --font-nav-link--style: var(--font-heading--style);
+    --font-nav-link--weight: 500;
+    --font-nav-link--size: 1rem;
+    --font-nav-link--line-height: 1;
+    --font-nav-link--letter-spacing: 0em;
+    --font-nav-link--case: none;
+
+    @media screen and (max-width: 749px) {
+      --font-wordmark--size: 6.5rem;
+      --font-display-xl--size: 3rem;
+    }
 
     /* Hardcoded font sizes */
     --font-size--3xs: 0.625rem;
