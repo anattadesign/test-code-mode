@@ -697,6 +697,77 @@
         "padding-block-end": 80,
         "padding_block_mobile": 48
       }
+    },
+    "ascent_press": {
+      "type": "ascent-press",
+      "name": "Ascent as seen in",
+      "blocks": {
+        "logo_self": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "SELF",
+            "sample": "self"
+          }
+        },
+        "logo_outside": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "Outside",
+            "sample": "outside"
+          }
+        },
+        "logo_womens_health": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "Women’s Health",
+            "sample": "women-s-health"
+          }
+        },
+        "logo_mens_health": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "Men’s Health",
+            "sample": "men-s-health"
+          }
+        },
+        "logo_forbes": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "Forbes",
+            "sample": "forbes"
+          }
+        },
+        "logo_shape": {
+          "type": "_press-logo",
+          "settings": {
+            "name": "Shape",
+            "sample": "shape"
+          }
+        }
+      },
+      "block_order": [
+        "logo_self",
+        "logo_outside",
+        "logo_womens_health",
+        "logo_mens_health",
+        "logo_forbes",
+        "logo_shape"
+      ],
+      "settings": {
+        "heading": "Don’t take our whey for it",
+        "logo_width": 120,
+        "logo_height": 28,
+        "logo_gap": 64,
+        "logo_gap_mobile": 28,
+        "columns_mobile": "2",
+        "logo_opacity": 100,
+        "background_color": "#ffffff",
+        "heading_color": "#696969",
+        "logo_color": "#1a1a1a",
+        "padding-block-start": 56,
+        "padding-block-end": 56,
+        "padding_block_mobile": 48
+      }
     }
   },
   "order": [
@@ -705,6 +776,7 @@
     "ascent_bestsellers",
     "ascent_ticker_2",
     "ascent_about",
-    "ascent_reviews"
+    "ascent_reviews",
+    "ascent_press"
   ]
 }

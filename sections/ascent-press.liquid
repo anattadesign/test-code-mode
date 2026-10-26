@@ -1,0 +1,236 @@
+{%- comment -%}
+  Ascent "As seen in" press logo band (WAK-30): eyebrow heading + logo blocks.
+  Desktop: one centred row. Mobile: centred wrapping grid (2 per row by default).
+{%- endcomment -%}
+
+{%- liquid
+  assign ss = section.settings
+-%}
+
+<div
+  class="ascent-press section section--page-width spacing-style"
+  style="
+    {% render 'spacing-style', settings: ss %}
+    --ascent-press-padding-mobile: {{ ss.padding_block_mobile }}px;
+    --ascent-press-gap: {{ ss.logo_gap }}px;
+    --ascent-press-gap-mobile: {{ ss.logo_gap_mobile }}px;
+    --ascent-press-columns-mobile: {{ ss.columns_mobile }};
+    --press-logo-width-desktop: {{ ss.logo_width }}px;
+    --press-logo-height-desktop: {{ ss.logo_height }}px;
+    --press-logo-width-mobile: {{ ss.logo_width | times: 0.85 | round }}px;
+    --press-logo-height-mobile: {{ ss.logo_height | times: 0.82 | round }}px;
+    --press-logo-opacity: {{ ss.logo_opacity | divided_by: 100.0 }};
+    background-color: {{ ss.background_color }};
+    color: {{ ss.logo_color }};
+  "
+>
+  {%- if ss.heading != blank -%}
+    <h2 class="ascent-press__heading label-lg" style="color: {{ ss.heading_color }};">{{ ss.heading }}</h2>
+  {%- endif -%}
+  <div class="ascent-press__logos">
+    {% content_for 'blocks' %}
+  </div>
+</div>
+
+{% stylesheet %}
+  .ascent-press {
+    display: grid;
+    row-gap: 24px;
+    justify-items: center;
+    text-align: center;
+  }
+
+  .ascent-press__heading {
+    margin: 0;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .ascent-press__logos {
+    --press-logo-width: var(--press-logo-width-desktop);
+    --press-logo-height: var(--press-logo-height-desktop);
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--ascent-press-gap);
+    padding-block: 8px;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ascent-press.spacing-style {
+      padding-block: var(--ascent-press-padding-mobile);
+    }
+
+    .ascent-press__heading.label-lg {
+      font-size: var(--font-label-sm--size);
+    }
+
+    .ascent-press__logos {
+      --press-logo-width: var(--press-logo-width-mobile);
+      --press-logo-height: var(--press-logo-height-mobile);
+
+      display: grid;
+      grid-template-columns: repeat(var(--ascent-press-columns-mobile), var(--press-logo-width));
+      gap: var(--ascent-press-gap-mobile);
+      padding-block: 0;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ascent_press",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header", "footer"]
+  },
+  "blocks": [{ "type": "_press-logo" }],
+  "max_blocks": 12,
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "t:settings.heading",
+      "default": "Don’t take our whey for it"
+    },
+    {
+      "type": "header",
+      "content": "t:content.logos"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "t:settings.logo_width",
+      "min": 60,
+      "max": 240,
+      "step": 2,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "logo_height",
+      "label": "t:settings.logo_height",
+      "min": 16,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "logo_gap",
+      "label": "t:settings.gap",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "logo_gap_mobile",
+      "label": "t:settings.gap_mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "t:settings.mobile_columns",
+      "options": [
+        { "value": "2", "label": "t:options.two_number" },
+        { "value": "3", "label": "t:options.three_number" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "logo_opacity",
+      "label": "t:settings.logo_opacity",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "t:content.colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "t:settings.background_color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "t:settings.text_color",
+      "default": "#696969"
+    },
+    {
+      "type": "color",
+      "id": "logo_color",
+      "label": "t:settings.logo_text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_block_mobile",
+      "label": "t:settings.padding_block_mobile",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "t:names.ascent_press",
+      "category": "t:categories.storytelling",
+      "blocks": {
+        "logo_self": { "type": "_press-logo", "settings": { "name": "SELF", "sample": "self" } },
+        "logo_outside": { "type": "_press-logo", "settings": { "name": "Outside", "sample": "outside" } },
+        "logo_womens_health": { "type": "_press-logo", "settings": { "name": "Women’s Health", "sample": "women-s-health" } },
+        "logo_mens_health": { "type": "_press-logo", "settings": { "name": "Men’s Health", "sample": "men-s-health" } },
+        "logo_forbes": { "type": "_press-logo", "settings": { "name": "Forbes", "sample": "forbes" } },
+        "logo_shape": { "type": "_press-logo", "settings": { "name": "Shape", "sample": "shape" } }
+      },
+      "block_order": ["logo_self", "logo_outside", "logo_womens_health", "logo_mens_health", "logo_forbes", "logo_shape"]
+    }
+  ]
+}
+{% endschema %}

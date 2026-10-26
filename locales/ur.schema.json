@@ -30,6 +30,7 @@
     "text": "ٹیکسٹ"
   },
   "content": {
+    "logos": "Logos",
     "cards": "Cards",
     "product_card_button_info": "Links to the product.",
     "product_metafield_info": "Shows custom.badge, custom.tag or custom.subtitle (or the product description). Hidden when empty.",
@@ -220,6 +221,7 @@
     "work_quickly_to_ship": "<p>ہم جلد از جلد آپ کا آرڈر شپ کرنے کے لیے تیزی سے کام کریں گے۔ آپ کا آرڈر شپ ہونے کے بعد، آپ کو مزید معلومات کے ساتھ ایک ای میل موصول ہوگی۔ آپ کے مقام کے لحاظ سے ترسیل کے اوقات مختلف ہو سکتے ہیں۔</p>"
   },
   "info": {
+    "sample_logo": "Used when no logo image is uploaded.",
     "testimonial_handle": "Optional, e.g. @coach.charles",
     "reviews_arrows": "Arrows appear on hover and keyboard focus; cards can also be dragged or swiped.",
     "panel_number_auto": "Leave blank to number panels automatically (01, 02…)",
@@ -261,6 +263,8 @@
     "media_type_info": "خصوصیات آپ کے مینو کے لنک سے پُر کی گئی ہیں"
   },
   "names": {
+    "press_logo": "Press logo",
+    "ascent_press": "Ascent as seen in",
     "testimonial": "Testimonial",
     "ascent_reviews": "Ascent reviews rail",
     "ascent_panels": "Ascent why panels",
@@ -436,6 +440,7 @@
     "comparison_slider": "موازنہ کرنے والا سلائیڈر"
   },
   "options": {
+    "three_number": "3",
     "quote_accent": "Quote (accent)",
     "quote_dark": "Quote (dark)",
     "product_description": "Product description",
@@ -759,6 +764,12 @@
     "below_media": "میڈیا کے نیچے"
   },
   "settings": {
+    "sample_logo": "Sample logo",
+    "publication_name": "Publication name",
+    "logo_text_color": "Logo text color",
+    "logo_opacity": "Logo opacity",
+    "logo_height": "Logo height",
+    "logo_width": "Logo width",
     "handle": "Handle",
     "verified_label": "Verified label",
     "verified_buyer": "Show verified buyer",
