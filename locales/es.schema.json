@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "community_media": "Community media",
+    "ascent_community": "Ascent community carousel",
     "knowledge_tab": "Topic tab",
     "ascent_knowledge": "Ascent knowledge center",
     "goal_card": "Goal card",
@@ -193,6 +195,8 @@
     "disclosures": "Divulgaciones"
   },
   "settings": {
+    "orientation": "Orientation",
+    "pill_background": "Pill background",
     "article_tag": "Article tag",
     "panel_color": "Card panel color",
     "card_cta": "Card button",
@@ -717,6 +721,14 @@
     "customer_account_menu": "Menú de la cuenta de cliente"
   },
   "options": {
+    "sample_prep": "Meal prep",
+    "sample_runner": "Runner",
+    "sample_kitchen": "Kitchen",
+    "sample_lifter": "Lifter",
+    "sample_chef": "Chef",
+    "sample_boxer": "Boxer",
+    "landscape_4_3": "Landscape 4:3",
+    "portrait_3_4": "Portrait 3:4",
     "support_mobility": "Support mobility",
     "manage_weight": "Manage weight",
     "recover_faster": "Recover faster",
@@ -1283,6 +1295,8 @@
     "disclosures": "Divulgaciones"
   },
   "info": {
+    "community_image": "Used as the video poster when the media type is video.",
+    "community_link": "Optional link for the hashtag, e.g. your Instagram tag page.",
     "article_tag": "Shows articles with this tag. Leave empty to show all articles.",
     "featured_cta": "Links to the selected blog.",
     "show_sample_articles": "Sample cards always show in the theme editor while the blog is empty.",

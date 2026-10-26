@@ -904,6 +904,68 @@
       "settings": {
         "blog": "news"
       }
+    },
+    "ascent_community": {
+      "type": "ascent-community",
+      "blocks": {
+        "media_boxer": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "portrait",
+            "sample": "boxer",
+            "alt": "Boxer taping hands"
+          }
+        },
+        "media_chef": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "landscape",
+            "sample": "chef",
+            "alt": "Chef during morning prep"
+          }
+        },
+        "media_lifter": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "portrait",
+            "sample": "lifter",
+            "alt": "Lifter mid-set"
+          }
+        },
+        "media_kitchen": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "landscape",
+            "sample": "kitchen",
+            "alt": "Preparing a shake in the kitchen"
+          }
+        },
+        "media_runner": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "portrait",
+            "sample": "runner",
+            "alt": "Trail runner with a shaker"
+          }
+        },
+        "media_prep": {
+          "type": "_community-media",
+          "settings": {
+            "orientation": "landscape",
+            "sample": "prep",
+            "alt": "Morning meal prep"
+          }
+        }
+      },
+      "block_order": [
+        "media_boxer",
+        "media_chef",
+        "media_lifter",
+        "media_kitchen",
+        "media_runner",
+        "media_prep"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -916,6 +978,7 @@
     "ascent_press",
     "ascent_membership",
     "ascent_goals",
-    "ascent_knowledge"
+    "ascent_knowledge",
+    "ascent_community"
   ]
 }

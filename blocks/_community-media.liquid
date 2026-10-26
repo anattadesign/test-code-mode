@@ -1,0 +1,162 @@
+{%- comment -%}
+  #WhatMovesYou community tile (WAK-34): image or video, portrait 3:4 or landscape 4:3.
+  Videos play muted/looped/inline when visible (assets/ascent-community.js) and stay on the poster with reduced motion.
+{%- endcomment -%}
+{%- liquid
+  assign bs = block.settings
+  assign alt = bs.alt | escape
+  if bs.image != blank and bs.alt == blank
+    assign alt = bs.image.alt | escape
+  endif
+-%}
+<figure
+  class="community-media community-media--{{ bs.orientation }}"
+  {% if bs.media_type == 'video' and alt != blank %}role="img" aria-label="{{ alt }}"{% endif %}
+  {{ block.shopify_attributes }}
+>
+  {%- capture poster -%}
+    {%- if bs.image != blank -%}
+      {{ bs.image | image_url: width: 1200 }}
+    {%- elsif bs.sample != 'none' -%}
+      {{ 'ascent-community-' | append: bs.sample | append: '.jpg' | asset_url }}
+    {%- endif -%}
+  {%- endcapture -%}
+  {%- assign poster = poster | strip -%}
+
+  {%- if bs.media_type == 'video' and bs.video != blank -%}
+    {%- if poster == blank and bs.video.preview_image -%}
+      {%- assign poster = bs.video.preview_image | image_url: width: 1200 -%}
+    {%- endif -%}
+    {{
+      bs.video
+      | video_tag:
+        class: 'community-media__media community-media__video',
+        muted: true,
+        loop: true,
+        playsinline: true,
+        preload: 'none',
+        poster: poster
+    }}
+  {%- elsif bs.image != blank -%}
+    {{
+      bs.image
+      | image_url: width: 1200
+      | image_tag:
+        class: 'community-media__media',
+        alt: alt,
+        loading: 'lazy',
+        sizes: '(min-width: 750px) 560px, 373px',
+        widths: '300, 420, 630, 840, 1120'
+    }}
+  {%- elsif bs.sample != 'none' -%}
+    {%- liquid
+      if bs.orientation == 'portrait'
+        assign w = 630
+      else
+        assign w = 1120
+      endif
+    -%}
+    <img
+      class="community-media__media"
+      src="{{ poster }}"
+      alt="{{ alt }}"
+      width="{{ w }}"
+      height="840"
+      loading="lazy"
+    >
+  {%- else -%}
+    {{ 'lifestyle-2' | placeholder_svg_tag: 'community-media__media community-media__placeholder' }}
+  {%- endif -%}
+</figure>
+
+{% stylesheet %}
+  .community-media {
+    position: relative;
+    flex: 0 0 auto;
+    height: var(--community-height, 420px);
+    aspect-ratio: 3 / 4;
+    margin: 0;
+    overflow: hidden;
+    background-color: rgb(255 255 255 / 0.04);
+    scroll-snap-align: start;
+  }
+
+  .community-media--landscape {
+    aspect-ratio: 4 / 3;
+  }
+
+  .community-media__media {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .community-media__placeholder {
+    fill: rgb(255 255 255 / 0.3);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.community_media",
+  "tag": null,
+  "settings": [
+    {
+      "type": "select",
+      "id": "media_type",
+      "label": "t:settings.media_type",
+      "options": [
+        { "value": "image", "label": "t:options.image" },
+        { "value": "video", "label": "t:options.video" }
+      ],
+      "default": "image"
+    },
+    {
+      "type": "select",
+      "id": "orientation",
+      "label": "t:settings.orientation",
+      "options": [
+        { "value": "portrait", "label": "t:options.portrait_3_4" },
+        { "value": "landscape", "label": "t:options.landscape_4_3" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.image",
+      "info": "t:info.community_image"
+    },
+    {
+      "type": "video",
+      "id": "video",
+      "label": "t:settings.video",
+      "visible_if": "{{ block.settings.media_type == 'video' }}"
+    },
+    {
+      "type": "select",
+      "id": "sample",
+      "label": "t:settings.sample_image",
+      "info": "t:info.sample_image_fallback",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "boxer", "label": "t:options.sample_boxer" },
+        { "value": "chef", "label": "t:options.sample_chef" },
+        { "value": "lifter", "label": "t:options.sample_lifter" },
+        { "value": "kitchen", "label": "t:options.sample_kitchen" },
+        { "value": "runner", "label": "t:options.sample_runner" },
+        { "value": "prep", "label": "t:options.sample_prep" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "alt",
+      "label": "t:settings.alt_text"
+    }
+  ]
+}
+{% endschema %}
