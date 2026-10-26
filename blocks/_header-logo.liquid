@@ -42,6 +42,11 @@
   "
   {{ block.shopify_attributes }}
 >
+  {% if block_settings.logo_type == 'ascent_svg' %}
+    <span class="header-logo__svg-container" style="--header-logo-svg-color: {{ block_settings.logo_svg_color }};">
+      {%- render 'ascent-logo' -%}
+    </span>
+  {% else %}
   {% liquid
     assign logo_width = settings.logo_height | times: settings.logo.aspect_ratio | ceil
     assign logo_width_mobile = settings.logo_height_mobile | times: settings.logo.aspect_ratio | ceil
@@ -81,6 +86,7 @@
         style: inverse_logo_style
       %}
     </span>
+  {% endif %}
   {% endif %}
 </a>
 
@@ -122,6 +128,21 @@
     }
   }
 
+  .header-logo__svg-container {
+    display: flex;
+    color: var(--header-logo-svg-color, currentcolor);
+  }
+
+  .header-logo__svg {
+    display: block;
+    width: auto;
+    height: 1.5rem;
+
+    @media screen and (min-width: 750px) {
+      height: 2rem;
+    }
+  }
+
   .header-logo__image {
     object-fit: contain;
     height: var(--header-logo-image-height-mobile);
@@ -151,6 +172,29 @@
     {
       "type": "paragraph",
       "content": "t:content.edit_logo_in_theme_settings"
+    },
+    {
+      "type": "select",
+      "id": "logo_type",
+      "label": "t:settings.logo_type",
+      "options": [
+        {
+          "value": "theme",
+          "label": "t:options.logo_theme_settings"
+        },
+        {
+          "value": "ascent_svg",
+          "label": "t:options.logo_ascent_svg"
+        }
+      ],
+      "default": "theme"
+    },
+    {
+      "type": "color",
+      "id": "logo_svg_color",
+      "label": "t:settings.logo_svg_color",
+      "default": "#FBEC00",
+      "visible_if": "{{ block.settings.logo_type == 'ascent_svg' }}"
     },
     {
       "type": "header",

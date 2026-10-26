@@ -39,22 +39,12 @@
 {% endcapture %}
 
 {% capture account_icon %}
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="15"
-    height="17"
-    viewBox="0 0 15 17"
-    fill="none"
+  <span
     slot="signed-out-avatar"
-    class="account-button__icon"
+    class="account-button__icon svg-wrapper"
   >
-    <path
-      stroke="currentColor"
-      stroke-linejoin="round"
-      stroke-width="var(--icon-stroke-width)"
-      d="M10.375 3.813a3.063 3.063 0 1 1-6.125 0 3.063 3.063 0 0 1 6.125 0ZM7.313 9.5c-3.667 0-6.24 2.691-6.563 6.125h13.125C13.552 12.191 10.979 9.5 7.312 9.5Z"
-    />
-  </svg>
+    {{- 'icon-account.svg' | inline_asset_content -}}
+  </span>
 {% endcapture %}
 
 <header-actions
@@ -63,6 +53,18 @@
   {% endif %}
   {{- block.shopify_attributes -}}
 >
+  {% if section.settings.rewards_link != blank %}
+    <a
+      href="{{ section.settings.rewards_link }}"
+      class="header-actions__action header-actions__rewards"
+      aria-label="{{ 'content.rewards' | t }}"
+    >
+      <span class="svg-wrapper" aria-hidden="true">
+        {{- 'icon-star.svg' | inline_asset_content -}}
+      </span>
+    </a>
+  {% endif %}
+
   {% if shop.customer_accounts_enabled %}
     {% liquid
       assign account_actions_style = ''

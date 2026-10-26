@@ -1,6 +1,18 @@
 
 
-{% if section.blocks.size > 1 %}
+{% comment %}
+  Section contract.
+  Announcement bar above the header. Layout "slideshow" rotates one message at a time (Horizon default);
+  "inline" shows every message in one row with a separator and loops as a marquee when it overflows (Ascent).
+  @example
+  <!-- header-group.json: layout "inline", separator "///", two _announcement blocks -->
+{% endcomment %}
+{% assign is_inline = false %}
+{% if section.settings.layout == 'inline' %}
+  {% assign is_inline = true %}
+{% endif %}
+
+{% if section.blocks.size > 1 and is_inline == false %}
   <script
     src="{{ 'announcement-bar.js' | asset_url }}"
     type="module"
@@ -15,34 +27,163 @@
   class="announcement-bar spacing-style section section--{{ section.settings.section_width }} color-custom-{{ section.id }}"
   style="{% render 'spacing-padding', settings: section.settings %}; --border-bottom-width: {{ section.settings.divider_width }}px;{% if section.settings.divider_color != blank %} --color-border: {{ section.settings.divider_color }};{% endif %}"
 >
-  {% liquid
-    assign autoplay = false
-    assign show_arrows = false
-    if section.blocks.size > 1
-      assign autoplay = true
-      assign show_arrows = true
-    endif
-  %}
+  {% capture announcement_blocks %}{% content_for 'blocks' %}{% endcapture %}
 
-  <announcement-bar-component
-    class="announcement-bar__slider"
-    {% if autoplay == true %}
-      autoplay="{{ section.settings.speed }}" aria-live="polite"
-    {% endif %}
-  >
-    {% if show_arrows %}
-      {% render 'slideshow-arrows', icon_style: 'chevron' %}
-    {% endif %}
-
-    <div class="announcement-bar__slides">
-      {% content_for 'blocks' %}
+  {% if is_inline %}
+    <div
+      class="announcement-bar__inline"
+      style="
+        --announcement-separator: '{{ section.settings.separator | default: '///' | remove: "'" | remove: '"' | remove: '\' | escape }}';
+        {% if section.settings.separator_color != blank %}--announcement-separator-color: {{ section.settings.separator_color }};{% endif %}
+      "
+    >
+      <div class="announcement-bar__track">
+        <div class="announcement-bar__group">{{ announcement_blocks }}</div>
+        {%- comment -%} Duplicate for a seamless mobile loop; hidden from assistive tech {%- endcomment -%}
+        <div class="announcement-bar__group announcement-bar__group--clone" aria-hidden="true" inert>
+          {{- announcement_blocks -}}
+        </div>
+      </div>
     </div>
-  </announcement-bar-component>
+  {% else %}
+    {% liquid
+      assign autoplay = false
+      assign show_arrows = false
+      if section.blocks.size > 1
+        assign autoplay = true
+        assign show_arrows = true
+      endif
+    %}
+
+    <announcement-bar-component
+      class="announcement-bar__slider"
+      {% if autoplay == true %}
+        autoplay="{{ section.settings.speed }}" aria-live="polite"
+      {% endif %}
+    >
+      {% if show_arrows %}
+        {% render 'slideshow-arrows', icon_style: 'chevron' %}
+      {% endif %}
+
+      <div class="announcement-bar__slides">
+        {{ announcement_blocks }}
+      </div>
+    </announcement-bar-component>
+  {% endif %}
 </aside>
 
 {% stylesheet %}
   .announcement-bar {
     border-block-end: var(--border-bottom-width) solid var(--color-border);
+  }
+
+  /* Inline layout (Ascent): every message in one row, separated, looping when it overflows */
+  .announcement-bar__inline {
+    --announcement-gap: 0.5rem;
+    --announcement-duration: 24s;
+
+    overflow: hidden;
+    min-width: 0;
+
+    @media screen and (max-width: 749px) {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .announcement-bar__track {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .announcement-bar__group {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--announcement-gap);
+  }
+
+  .announcement-bar__group--clone {
+    display: none;
+  }
+
+  .announcement-bar__inline .announcement-bar__slide {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--announcement-gap);
+    position: relative;
+    width: auto;
+    white-space: nowrap;
+  }
+
+  .announcement-bar__inline .announcement-bar__text {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  /* Separator between messages (Figma "///": accent mono 10px, 500, accent color) */
+  .announcement-bar__inline .announcement-bar__slide + .announcement-bar__slide::before {
+    content: var(--announcement-separator);
+    font-family: var(--font-accent--family);
+    font-size: 0.625rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    line-height: 1.4;
+    text-transform: none;
+    color: var(--announcement-separator-color, var(--color-primary-button-background));
+  }
+
+  @media screen and (max-width: 749px) {
+    .announcement-bar__track {
+      justify-content: flex-start;
+      width: max-content;
+      animation: announcement-marquee var(--announcement-duration) linear infinite;
+    }
+
+    .announcement-bar__group {
+      padding-inline-end: var(--announcement-gap);
+    }
+
+    .announcement-bar__group--clone {
+      display: flex;
+    }
+
+    /* Separator also between the end of one loop and the start of the next */
+    .announcement-bar__group > .announcement-bar__slide:first-child::before {
+      content: var(--announcement-separator);
+      font-family: var(--font-accent--family);
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      line-height: 1.4;
+      color: var(--announcement-separator-color, var(--color-primary-button-background));
+    }
+
+    .announcement-bar__inline:hover .announcement-bar__track,
+    .announcement-bar__inline:focus-within .announcement-bar__track {
+      animation-play-state: paused;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .announcement-bar__inline {
+      overflow-x: auto;
+    }
+
+    .announcement-bar__track {
+      animation: none;
+    }
+
+    .announcement-bar__group--clone {
+      display: none;
+    }
+  }
+
+  @keyframes announcement-marquee {
+    to {
+      transform: translateX(-50%);
+    }
   }
 
   .announcement-bar__slider {
@@ -134,9 +275,42 @@
     }
   ],
   "enabled_on": {
-    "groups": ["header"]
+    "groups": [
+      "header"
+    ]
   },
   "settings": [
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "t:settings.layout",
+      "options": [
+        {
+          "value": "slideshow",
+          "label": "t:options.announcement_slideshow"
+        },
+        {
+          "value": "inline",
+          "label": "t:options.announcement_inline"
+        }
+      ],
+      "default": "slideshow",
+      "info": "t:info.announcement_inline"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "t:settings.announcement_separator",
+      "default": "///",
+      "visible_if": "{{ section.settings.layout == 'inline' }}"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "t:settings.announcement_separator_color",
+      "alpha": true,
+      "visible_if": "{{ section.settings.layout == 'inline' }}"
+    },
     {
       "type": "range",
       "id": "speed",
@@ -144,7 +318,8 @@
       "min": 2,
       "max": 10,
       "default": 5,
-      "unit": "sec"
+      "unit": "sec",
+      "visible_if": "{{ section.settings.layout == 'slideshow' }}"
     },
     {
       "type": "header",
@@ -222,7 +397,9 @@
           "type": "_announcement"
         }
       },
-      "block_order": ["announcement_1"]
+      "block_order": [
+        "announcement_1"
+      ]
     }
   ]
 }

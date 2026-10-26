@@ -123,10 +123,10 @@
     endunless
 
     comment
-      Extra heading weights used by the Ascent presets: light (H1/H2 light), medium (nav link), black (wordmark).
+      Extra heading weights used by the Ascent presets: light (H1/H2 light), semibold (nav link / header menu), black (wordmark).
       font_modify returns nil when the family lacks the weight, so the browser falls back to the nearest loaded face.
     endcomment
-    assign heading_extra_weights = '300,500,900' | split: ','
+    assign heading_extra_weights = '300,600,900' | split: ','
     for heading_extra_weight in heading_extra_weights
       assign heading_extra_font = tertiary_font | font_modify: 'weight', heading_extra_weight
       if heading_extra_font
@@ -228,14 +228,17 @@
     --letter-spacing--display-tight: -0.03em;
     --letter-spacing--display-normal: 0em;
     --letter-spacing--display-loose: 0.03em;
+    --letter-spacing--display-wide: 0.1em;
 
     --letter-spacing--heading-tight: -0.03em;
     --letter-spacing--heading-normal: 0em;
     --letter-spacing--heading-loose: 0.03em;
+    --letter-spacing--heading-wide: 0.1em;
 
     --letter-spacing--body-tight: -0.03em;
     --letter-spacing--body-normal: 0em;
     --letter-spacing--body-loose: 0.03em;
+    --letter-spacing--body-wide: 0.1em;
 
     /* Line height / Leading */
     --line-height: 1;
@@ -395,7 +398,7 @@
     /*
       Ascent type presets (Figma: AP Design System, Typescale 2004:12092 desktop / 2004:12745 mobile).
       Families come from the theme font settings: heading (Display), body (Proxima role), accent (mono labels).
-      Weights 300/500/900 of the heading font are loaded in the font-face block above.
+      Weights 300/600/900 of the heading font are loaded in the font-face block above.
     */
     --font-wordmark--family: var(--font-heading--family);
     --font-wordmark--style: var(--font-heading--style);
@@ -495,7 +498,7 @@
 
     --font-nav-link--family: var(--font-heading--family);
     --font-nav-link--style: var(--font-heading--style);
-    --font-nav-link--weight: 500;
+    --font-nav-link--weight: 600;
     --font-nav-link--size: 1rem;
     --font-nav-link--line-height: 1;
     --font-nav-link--letter-spacing: 0em;

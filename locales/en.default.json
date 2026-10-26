@@ -163,6 +163,7 @@
     }
   },
   "content": {
+    "rewards": "Rewards",
     "cancel": "Cancel",
     "discount": "Discount",
     "account_title": "Account",
