@@ -1,0 +1,44 @@
+{%- doc -%}
+  Renders an Ascent line-art USP icon (from the AP design system) as inline SVG using currentColor.
+
+  @param {string} icon - One of: no_artificial_flavours, certified, lab_tested, gluten_free, clean_build, leucine
+  @param {string} [class] - Extra classes for the svg element
+
+  @example
+  {% render 'ascent-usp-icon', icon: 'certified', class: 'ticker-item__svg' %}
+{%- enddoc -%}
+{%- case icon -%}
+  {%- when 'no_artificial_flavours' -%}
+    <svg class="{{ class }}" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M18.9376 13H20.086M20.086 13H23.914M20.086 13V19.2637L14.7268 29.0073C14.5586 29.3254 14.4818 29.6771 14.5036 30.0295C14.5255 30.3819 14.6452 30.7235 14.8517 31.0224C15.0581 31.3213 15.3446 31.5677 15.6842 31.7387C16.0239 31.9097 16.4057 31.9996 16.794 32H27.206C27.5943 31.9996 27.9761 31.9097 28.3158 31.7387C28.6554 31.5677 28.9419 31.3213 29.1483 31.0224C29.3548 30.7235 29.4745 30.3819 29.4964 30.0295C29.5182 29.6771 29.4414 29.3254 29.2732 29.0073L23.914 19.2637V13M23.914 13H25.0624"/>
+      <path d="M38.5 22C38.5 30.8366 31.1127 38 22 38C12.8873 38 5.5 30.8366 5.5 22C5.5 13.1634 12.8873 6 22 6C31.1127 6 38.5 13.1634 38.5 22Z"/>
+      <path d="M10.5 11L33.5 33" stroke-width="1.6"/>
+    </svg>
+  {%- when 'certified' -%}
+    <svg class="{{ class }}" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M22 5L36 9.63636V22C36 29.7273 29.7778 35.9091 22 39C14.2222 35.9091 8 29.7273 8 22V9.63636L22 5Z"/>
+      <path d="M16 21.5L20.5 26L28 17"/>
+    </svg>
+  {%- when 'lab_tested' -%}
+    <svg class="{{ class }}" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M16.9221 9H18.4936M18.4936 9H24.7793M18.4936 9V16.8571L11.4221 31C11.1413 31.4857 10.9956 32.0376 11.0001 32.5986C11.0046 33.1596 11.1592 33.7092 11.4479 34.1903C11.7365 34.6713 12.1487 35.0664 12.6415 35.3344C13.1344 35.6024 13.69 35.7335 14.2507 35.7143H29.0221C29.5828 35.7335 30.1384 35.6024 30.6313 35.3344C31.1242 35.0664 31.5363 34.6713 31.825 34.1903C32.1136 33.7092 32.2682 33.1596 32.2727 32.5986C32.2773 32.0376 32.1315 31.4857 31.8507 31L24.7793 16.8571V9M24.7793 9H26.3507"/>
+      <path d="M15 25L28 25"/>
+    </svg>
+  {%- when 'gluten_free' -%}
+    <svg class="{{ class }}" viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M22 9.42859V15.7143M22 15.7143V25.1429M22 15.7143C18.8571 12.5714 14.1428 12.5714 14.1428 12.5714C14.1428 12.5714 14.1428 17.2857 17.2857 20.4286M22 15.7143C25.1428 12.5714 29.8571 12.5714 29.8571 12.5714C29.8571 12.5714 29.8571 17.2857 26.7143 20.4286M22 25.1429V34.5714M22 25.1429C18.8571 22 14.1428 22 14.1428 22C14.1428 22 14.1428 26.7143 17.2857 29.8572M22 25.1429C25.1428 22 29.8571 22 29.8571 22C29.8571 22 29.8571 26.7143 26.7143 29.8572"/>
+      <path d="M8 7.85712L36.2857 36.1428"/>
+    </svg>
+  {%- when 'clean_build' -%}
+    <svg class="{{ class }}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M16 3.2L18.8 9.2L24.8 10.4L20.4 14.8L21.6 20.8L16 17.6L10.4 20.8L11.6 14.8L7.2 10.4L13.2 9.2L16 3.2Z"/>
+      <path d="M10.4 27.2H21.6"/>
+    </svg>
+  {%- when 'leucine' -%}
+    <svg class="{{ class }}" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <circle cx="16" cy="8" r="2.857"/>
+      <circle cx="8" cy="21.715" r="2.857"/>
+      <circle cx="24" cy="21.715" r="2.857"/>
+      <path d="M16 10.858L8 18.858M16 10.858L24 18.858M10.858 21.713H21.144"/>
+    </svg>
+{%- endcase -%}

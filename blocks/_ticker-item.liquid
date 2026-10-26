@@ -1,0 +1,185 @@
+{%- liquid
+  assign bs = block.settings
+-%}
+<div
+  class="ticker-item ticker-item--divider-{{ bs.divider }}"
+  style="--ticker-circle: {{ bs.circle_color | default: 'transparent' }}; --ticker-icon-color: {{ bs.icon_color }}; --ticker-text-color: {{ bs.text_color }}; --ticker-divider-color: {{ bs.divider_color }};"
+  {{ block.shopify_attributes }}
+>
+  <span class="ticker-item__inner">
+    {%- if bs.image != blank or bs.icon != 'none' -%}
+      <span class="ticker-item__icon{% if bs.show_circle %} ticker-item__icon--circle{% endif %}">
+        {%- if bs.image != blank -%}
+          {{
+            bs.image
+            | image_url: width: 108
+            | image_tag: width: 44, height: 44, loading: 'lazy', alt: bs.image.alt, class: 'ticker-item__svg'
+          }}
+        {%- else -%}
+          {% render 'ascent-usp-icon', icon: bs.icon, class: 'ticker-item__svg' %}
+        {%- endif -%}
+      </span>
+    {%- endif -%}
+    {%- if bs.text != blank -%}
+      <span class="ticker-item__text label-lg">{{ bs.text }}</span>
+    {%- endif -%}
+  </span>
+  {%- if bs.divider != 'none' -%}
+    <span class="ticker-item__divider" aria-hidden="true"></span>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .ticker-item {
+    display: flex;
+    align-items: center;
+    gap: var(--marquee-gap, 24px);
+    flex-shrink: 0;
+  }
+
+  .ticker-item__inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ticker-item__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    color: var(--ticker-icon-color, currentColor);
+  }
+
+  .ticker-item__icon--circle {
+    background: var(--ticker-circle);
+    border-radius: 100px;
+  }
+
+  .ticker-item__svg {
+    display: block;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+  }
+
+  .ticker-item__text.label-lg {
+    color: var(--ticker-text-color, currentColor);
+    font-weight: 700;
+    line-height: 20px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .ticker-item__divider {
+    display: block;
+    width: 1px;
+    height: 40px;
+    flex-shrink: 0;
+    background: var(--ticker-divider-color, #d0d0d0);
+  }
+
+  .ticker-item--divider-desktop .ticker-item__divider {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .ticker-item__inner {
+      gap: 8px;
+    }
+
+    .ticker-item__icon {
+      width: 54px;
+      height: 54px;
+    }
+
+    .ticker-item__svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .ticker-item--divider-desktop .ticker-item__divider {
+      display: block;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "t:names.ticker_item",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "text",
+      "label": "t:settings.text",
+      "default": "3RD PARTY TESTED"
+    },
+    {
+      "type": "select",
+      "id": "icon",
+      "label": "t:settings.icon",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "no_artificial_flavours", "label": "t:options.no_artificial_flavours" },
+        { "value": "certified", "label": "t:options.certified" },
+        { "value": "lab_tested", "label": "t:options.lab_tested" },
+        { "value": "gluten_free", "label": "t:options.gluten_free" },
+        { "value": "clean_build", "label": "t:options.clean_build" },
+        { "value": "leucine", "label": "t:options.leucine" }
+      ],
+      "default": "lab_tested"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "t:settings.image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_circle",
+      "label": "t:settings.icon_background",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "circle_color",
+      "label": "t:settings.background_color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.show_circle }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "t:settings.icon_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "t:settings.text_color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "select",
+      "id": "divider",
+      "label": "t:settings.divider",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "desktop", "label": "t:options.desktop_only" },
+        { "value": "always", "label": "t:options.always" }
+      ],
+      "default": "desktop"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "t:settings.divider_color",
+      "default": "#d0d0d0",
+      "visible_if": "{{ block.settings.divider != 'none' }}"
+    }
+  ]
+}
+{% endschema %}

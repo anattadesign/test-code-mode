@@ -17,10 +17,14 @@
   class="section-background{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
 ></div>
 <marquee-component
-  class="section spacing-style gap-style{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
+  class="section spacing-style gap-style{% if section.settings.custom_mobile_gap %} marquee--custom-mobile-gap{% endif %}{% if section.settings.background_color != blank %} color-custom-{{ section.id }}{% endif %}"
   style="
     {%- render 'spacing-style', settings: section.settings %};
-    {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
+    {%- if section.settings.custom_mobile_gap -%}
+      --marquee-gap-desktop: {{ gap_between_elements }}px; --marquee-gap-mobile: {{ section.settings.gap_mobile }}px;
+    {%- else -%}
+      {% render 'gap-style', value: gap_between_elements, name: 'marquee-gap' %}
+    {%- endif %}
     --marquee-direction: {{ section.settings.movement_direction }};
   "
   data-speed-factor="25"
@@ -84,6 +88,16 @@
     align-content: center;
   }
 
+  .marquee--custom-mobile-gap {
+    --marquee-gap: var(--marquee-gap-desktop);
+  }
+
+  @media screen and (max-width: 749px) {
+    .marquee--custom-mobile-gap {
+      --marquee-gap: var(--marquee-gap-mobile);
+    }
+  }
+
   @media (prefers-reduced-motion: no-preference) {
     marquee-component:not([data-disabled]) .marquee__wrapper {
       animation: marquee-motion var(--marquee-speed) linear infinite var(--marquee-direction);
@@ -101,7 +115,10 @@
 {
   "name": "t:names.marquee",
   "disabled_on": {
-    "groups": ["header", "footer"]
+    "groups": [
+      "header",
+      "footer"
+    ]
   },
   "blocks": [
     {
@@ -115,6 +132,9 @@
     },
     {
       "type": "_divider"
+    },
+    {
+      "type": "_ticker-item"
     }
   ],
   "settings": [
@@ -173,6 +193,23 @@
       "step": 1,
       "unit": "px",
       "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_mobile_gap",
+      "label": "t:settings.custom_mobile_gap",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "t:settings.gap_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 32,
+      "visible_if": "{{ section.settings.custom_mobile_gap }}"
     }
   ],
   "presets": [
@@ -195,7 +232,58 @@
           }
         }
       },
-      "block_order": ["text"]
+      "block_order": [
+        "text"
+      ]
+    },
+    {
+      "name": "t:names.ascent_ticker",
+      "category": "t:categories.text",
+      "settings": {
+        "movement_direction": "normal",
+        "background_color": "#ffffff",
+        "padding-block-start": 12,
+        "padding-block-end": 12,
+        "gap_between_elements": 24,
+        "custom_mobile_gap": true,
+        "gap_mobile": 32
+      },
+      "blocks": {
+        "ticker_item_1": {
+          "type": "_ticker-item",
+          "settings": {
+            "text": "ZERO ARTIFICIAL FLAVOURS",
+            "icon": "no_artificial_flavours"
+          }
+        },
+        "ticker_item_2": {
+          "type": "_ticker-item",
+          "settings": {
+            "text": "INFORMED SPORTS CERTIFIED",
+            "icon": "certified"
+          }
+        },
+        "ticker_item_3": {
+          "type": "_ticker-item",
+          "settings": {
+            "text": "3RD PARTY TESTED",
+            "icon": "lab_tested"
+          }
+        },
+        "ticker_item_4": {
+          "type": "_ticker-item",
+          "settings": {
+            "text": "GLUTEN FREE",
+            "icon": "gluten_free"
+          }
+        }
+      },
+      "block_order": [
+        "ticker_item_1",
+        "ticker_item_2",
+        "ticker_item_3",
+        "ticker_item_4"
+      ]
     }
   ]
 }
