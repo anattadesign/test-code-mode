@@ -9,6 +9,8 @@
  */
 {
   "names": {
+    "ticker_item": "Ticker item",
+    "ascent_ticker": "Ascent ticker",
     "ascent_hero": "Ascent hero",
     "rating_badge": "Rating badge",
     "404": "404",
@@ -173,6 +175,9 @@
     "disclosures": "การเปิดเผยข้อมูล"
   },
   "settings": {
+    "gap_mobile": "Mobile gap",
+    "custom_mobile_gap": "Custom mobile gap",
+    "icon_color": "Icon color",
     "rating": "Rating",
     "rating_badge_rule": "Show divider",
     "rating_badge_rule_color": "Divider color",
@@ -613,6 +618,12 @@
     "customer_account_menu": "เมนูบัญชีผู้ใช้ของลูกค้า"
   },
   "options": {
+    "leucine": "Leucine",
+    "clean_build": "Clean build",
+    "lab_tested": "Lab tested",
+    "certified": "Certified",
+    "no_artificial_flavours": "No artificial flavours",
+    "desktop_only": "Desktop only",
     "placeholder_ascent_photo": "Ascent sample photo",
     "footer_ascent": "Ascent (brand, columns, wordmark)",
     "header_floating": "Floating (glass pill)",
