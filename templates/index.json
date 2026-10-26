@@ -815,6 +815,53 @@
       "settings": {
         "product": "customisable-bundle"
       }
+    },
+    "ascent_goals": {
+      "type": "ascent-goals",
+      "blocks": {
+        "goal_strength": {
+          "type": "_goal-card",
+          "settings": {
+            "sample": "build-strength",
+            "title": "Build",
+            "subtitle": "Strength",
+            "link": "/collections/all"
+          }
+        },
+        "goal_recover": {
+          "type": "_goal-card",
+          "settings": {
+            "sample": "recover-faster",
+            "title": "Recover",
+            "subtitle": "Faster",
+            "link": "shopify://collections/health-nutrician"
+          }
+        },
+        "goal_weight": {
+          "type": "_goal-card",
+          "settings": {
+            "sample": "manage-weight",
+            "title": "Manage",
+            "subtitle": "Weight",
+            "link": "shopify://collections/weight-management"
+          }
+        },
+        "goal_mobility": {
+          "type": "_goal-card",
+          "settings": {
+            "sample": "support-mobility",
+            "title": "Support",
+            "subtitle": "Mobility"
+          }
+        }
+      },
+      "block_order": [
+        "goal_strength",
+        "goal_recover",
+        "goal_weight",
+        "goal_mobility"
+      ],
+      "settings": {}
     }
   },
   "order": [
@@ -825,6 +872,7 @@
     "ascent_about",
     "ascent_reviews",
     "ascent_press",
-    "ascent_membership"
+    "ascent_membership",
+    "ascent_goals"
   ]
 }
