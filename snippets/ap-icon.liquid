@@ -1,7 +1,7 @@
 {%- doc -%}
   Renders an Ascent icon as inline SVG. Icons inherit currentColor.
 
-  @param {string} name - Icon name: logo, mark, usp-flavours, usp-certified, usp-tested, usp-gluten, arrow-left, arrow-right, arrow-up-right, play, calculator, north-star, search-arrow, verified, check
+  @param {string} name - Icon name: logo, mark, usp-flavours, usp-certified, usp-tested, usp-gluten, arrow-left, arrow-right, arrow-up-right, play, calculator, north-star, search-arrow, verified, check, tick, close, close-small, filters, chevron-down, chevron-left, chevron-right
   @param {string} [class] - Extra CSS class
 
   @example
@@ -39,4 +39,18 @@
 <svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="7" r="5.83" fill="currentColor"/><path d="M4.375 7.23333L6.125 8.98333L9.625 5.25" stroke="var(--ap-icon-contrast, #1a1a1a)" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/></svg>
 {%- when 'check' -%}
 <svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 6.5L4.5 9L10 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- when 'tick' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="10" height="10" viewBox="0 0 10 10" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 5.2L4 7L8 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- when 'close' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 5.5L18.5 18.5M18.5 5.5L5.5 18.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+{%- when 'close-small' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3.5 3.5L10.5 10.5M10.5 3.5L3.5 10.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+{%- when 'filters' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 4.5H13.5M4.5 8H11.5M6.5 11.5H9.5" stroke="currentColor" stroke-width="1.33" stroke-linecap="round"/></svg>
+{%- when 'chevron-down' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- when 'chevron-left' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 3.5L5.5 8L10 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+{%- when 'chevron-right' -%}
+<svg class="{{ cls | strip }}" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 3.5L10.5 8L6 12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 {%- endcase -%}

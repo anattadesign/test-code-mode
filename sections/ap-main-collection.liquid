@@ -1,0 +1,1165 @@
+{% comment %}
+  Section contract.
+  Ascent collection grid (PLP): storefront filters in a sidebar on desktop and a
+  bottom-sheet drawer on mobile, sorting, product count, active filter pills, Ascent
+  product cards, optional promo banner tiles, pagination and the collection
+  description underneath. Filters, sorting and pill removal re-render the section in
+  place (assets/ap-collection.js) and fall back to plain form submits and links.
+  @example
+  <!-- Collection template, below the Ascent collection banner -->
+{% endcomment %}
+{% render 'ap-base' %}
+<script src="{{ 'ap-collection.js' | asset_url }}" type="module" defer></script>
+
+{%- liquid
+  assign s = section.settings
+  assign form_id = 'ApFilterForm-' | append: section.id
+  assign drawer_id = 'ApFilters-' | append: section.id
+  assign sort_id = 'ApSort-' | append: section.id
+  assign sort_by = collection.sort_by | default: collection.default_sort_by
+
+  assign active_count = 0
+  for filter in collection.filters
+    if filter.type == 'price_range'
+      if filter.min_value.value != blank or filter.max_value.value != blank
+        assign active_count = active_count | plus: 1
+      endif
+    else
+      assign active_count = active_count | plus: filter.active_values.size
+    endif
+  endfor
+
+  assign clear_url = collection.url
+  if collection.sort_by != blank
+    assign clear_url = collection.url | append: '?sort_by=' | append: collection.sort_by
+  endif
+
+  assign card_sizes = '(min-width: 990px) 298px, (min-width: 750px) 30vw, 145px'
+-%}
+
+{%- capture active_pills -%}
+  {%- for filter in collection.filters -%}
+    {%- if filter.type == 'price_range' -%}
+      {%- if filter.min_value.value != blank or filter.max_value.value != blank -%}
+        {%- liquid
+          assign min_label = filter.min_value.value | default: 0 | money
+          assign max_label = filter.max_value.value | default: filter.range_max | money
+          assign pill_label = min_label | append: ' – ' | append: max_label
+        -%}
+        <a href="{{ filter.url_to_remove }}" class="ap-plp__pill" data-plp-link>
+          {{- pill_label -}}
+          {%- render 'ap-icon', name: 'close-small' -%}
+          <span class="ap-visually-hidden">{{ 'actions.remove_filter' | t: filter: pill_label }}</span>
+        </a>
+      {%- endif -%}
+    {%- else -%}
+      {%- for value in filter.active_values -%}
+        <a href="{{ value.url_to_remove }}" class="ap-plp__pill" data-plp-link>
+          {{- value.label | escape -}}
+          {%- render 'ap-icon', name: 'close-small' -%}
+          <span class="ap-visually-hidden">{{ 'actions.remove_filter' | t: filter: value.label }}</span>
+        </a>
+      {%- endfor -%}
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- capture clear_all_link -%}
+  <a href="{{ clear_url }}" class="ap-plp__clear" data-plp-link>{{ 'actions.clear_all' | t }}</a>
+{%- endcapture -%}
+
+{%- paginate collection.products by s.products_per_page -%}
+  <ap-collection class="ap-section ap-plp" data-section-id="{{ section.id }}">
+    <p class="ap-visually-hidden" aria-live="polite" data-plp-status></p>
+
+    <div class="ap-plp__root" data-plp-root>
+      <div class="ap-plp__layout">
+        {%- if s.enable_filtering and collection.filters.size > 0 -%}
+          <dialog class="ap-plp__filters" id="{{ drawer_id }}" aria-labelledby="{{ drawer_id }}-title">
+            <form
+              id="{{ form_id }}"
+              class="ap-plp__form"
+              action="{{ collection.url }}"
+              method="get"
+              data-plp-form
+            >
+              <div class="ap-plp__drawer-head">
+                <h2 class="ap-plp__drawer-title" id="{{ drawer_id }}-title">{{ 'accessibility.filters' | t }}</h2>
+                <button type="button" class="ap-plp__icon-btn" data-plp-close>
+                  {%- render 'ap-icon', name: 'close' -%}
+                  <span class="ap-visually-hidden">{{ 'actions.close' | t }}</span>
+                </button>
+              </div>
+
+              <div class="ap-plp__drawer-body">
+                <div class="ap-plp__filters-head">
+                  <div class="ap-plp__filters-title-row">
+                    <p class="ap-plp__filters-title" aria-hidden="true">{{ 'accessibility.filters' | t }}</p>
+                    {%- if active_count > 0 -%}{{ clear_all_link }}{%- endif -%}
+                  </div>
+                  {%- if active_count > 0 -%}
+                    <div class="ap-plp__pills" aria-label="{{ 'accessibility.active_filters' | t }}" role="group">
+                      {{ active_pills }}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- for filter in collection.filters -%}
+                  <fieldset class="ap-plp__group">
+                    <legend class="ap-plp__group-title">{{ filter.label | escape }}</legend>
+                    {%- if filter.type == 'price_range' -%}
+                      <div class="ap-plp__price">
+                        <label class="ap-plp__price-field">
+                          <span class="ap-visually-hidden">{{ 'accessibility.price_filter_low' | t }}</span>
+                          <span aria-hidden="true">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.min_value.param_name }}"
+                            value="{{ filter.min_value.value | money_without_currency | remove: ',' }}"
+                            placeholder="0"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                          >
+                        </label>
+                        <span aria-hidden="true">–</span>
+                        <label class="ap-plp__price-field">
+                          <span class="ap-visually-hidden">{{ 'accessibility.price_filter_high' | t }}</span>
+                          <span aria-hidden="true">{{ cart.currency.symbol }}</span>
+                          <input
+                            type="number"
+                            inputmode="decimal"
+                            name="{{ filter.max_value.param_name }}"
+                            value="{{ filter.max_value.value | money_without_currency | remove: ',' }}"
+                            placeholder="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                            min="0"
+                            max="{{ filter.range_max | money_without_currency | remove: ',' }}"
+                          >
+                        </label>
+                      </div>
+                    {%- else -%}
+                      <ul class="ap-plp__options" role="list">
+                        {%- for value in filter.values -%}
+                          {%- assign input_id = 'ApFilter-' | append: section.id | append: '-' | append: filter.param_name | append: '-' | append: forloop.index | handleize -%}
+                          <li>
+                            <label class="ap-plp__option{% if value.count == 0 and value.active == false %} ap-plp__option--disabled{% endif %}" for="{{ input_id }}">
+                              <input
+                                type="checkbox"
+                                class="ap-plp__checkbox"
+                                id="{{ input_id }}"
+                                name="{{ value.param_name }}"
+                                value="{{ value.value }}"
+                                {% if value.active %}
+                                  checked
+                                {% endif %}
+                                {% if value.count == 0 and value.active == false %}
+                                  disabled
+                                {% endif %}
+                              >
+                              <span class="ap-plp__check" aria-hidden="true">
+                                {%- render 'ap-icon', name: 'tick' -%}
+                              </span>
+                              <span class="ap-plp__option-label">{{ value.label | escape }}</span>
+                              <span class="ap-plp__option-count">{{ value.count }}</span>
+                            </label>
+                          </li>
+                        {%- endfor -%}
+                      </ul>
+                    {%- endif -%}
+                  </fieldset>
+                {%- endfor -%}
+              </div>
+
+              <div class="ap-plp__drawer-foot">
+                {{ clear_all_link }}
+                <button type="submit" class="ap-btn ap-btn--primary ap-plp__apply" data-plp-apply>
+                  {{- 'actions.apply_filters' | t -}}
+                </button>
+              </div>
+            </form>
+          </dialog>
+        {%- elsif s.enable_sorting -%}
+          <form id="{{ form_id }}" action="{{ collection.url }}" method="get" data-plp-form hidden></form>
+        {%- endif -%}
+
+        <div class="ap-plp__results">
+          <div class="ap-plp__bar">
+            {%- if s.enable_filtering and collection.filters.size > 0 -%}
+              <button
+                type="button"
+                class="ap-plp__pill-btn ap-plp__filter-btn"
+                aria-haspopup="dialog"
+                aria-controls="{{ drawer_id }}"
+                data-plp-open
+              >
+                {%- render 'ap-icon', name: 'filters' -%}
+                <span>{{ 'accessibility.filters' | t }}</span>
+                {%- if active_count > 0 -%}
+                  <span class="ap-plp__filter-count">({{ active_count }})</span>
+                  <span class="ap-visually-hidden">{{ 'accessibility.filter_count' | t: count: active_count }}</span>
+                {%- endif -%}
+              </button>
+            {%- endif -%}
+
+            <p class="ap-plp__count" data-plp-count>
+              {{- 'content.search_results_resource_products_count' | t: count: collection.products_count -}}
+            </p>
+
+            {%- if s.enable_sorting -%}
+              {%- liquid
+                assign sort_label = ''
+                for option in collection.sort_options
+                  if option.value == sort_by
+                    assign sort_label = option.name
+                  endif
+                endfor
+              -%}
+              <div class="ap-plp__pill-btn ap-plp__sort">
+                <label for="{{ sort_id }}">{{ 'actions.sort' | t }}:</label>
+                <span class="ap-plp__sort-value" aria-hidden="true" data-plp-sort-label>{{ sort_label | escape }}</span>
+                <select
+                  id="{{ sort_id }}"
+                  name="sort_by"
+                  form="{{ form_id }}"
+                  data-plp-sort
+                  data-default="{{ collection.default_sort_by }}"
+                >
+                  {%- for option in collection.sort_options -%}
+                    <option value="{{ option.value }}" {% if option.value == sort_by %}selected{% endif %}>
+                      {{- option.name | escape -}}
+                    </option>
+                  {%- endfor -%}
+                </select>
+                {%- render 'ap-icon', name: 'chevron-down' -%}
+              </div>
+            {%- endif -%}
+
+            {%- if active_count > 0 -%}
+              <div class="ap-plp__pills ap-plp__pills--bar" role="group" aria-label="{{ 'accessibility.active_filters' | t }}">
+                {{ active_pills }}
+                {{ clear_all_link }}
+              </div>
+            {%- endif -%}
+          </div>
+
+          {%- if collection.products.size > 0 -%}
+            <ul
+              class="ap-plp__grid{% if s.feature_first_mobile and paginate.current_page == 1 %} ap-plp__grid--featured{% endif %}"
+              role="list"
+              style="--ap-plp-cols: {{ s.columns_desktop }};"
+              data-plp-grid
+            >
+              {%- liquid
+                assign show_promos = false
+                if paginate.current_page == 1 and section.blocks.size > 0
+                  assign show_promos = true
+                endif
+              -%}
+              {%- if show_promos -%}
+                {%- for block in section.blocks -%}
+                  {%- if block.settings.position_desktop == 0 -%}
+                    {% render 'ap-plp-promo', block: block, sizes: card_sizes %}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+
+              {%- for product in collection.products -%}
+                <li class="ap-plp__item" style="--ap-plp-o: {{ forloop.index }};">
+                  {% render 'ap-product-card',
+                    product: product,
+                    button_label: s.button_label,
+                    rating: s.rating_fallback,
+                    rating_count: s.rating_count_fallback,
+                    sizes: card_sizes
+                  %}
+                </li>
+
+                {%- if show_promos -%}
+                  {%- for block in section.blocks -%}
+                    {%- liquid
+                      assign promo_here = false
+                      if block.settings.position_desktop == forloop.parentloop.index
+                        assign promo_here = true
+                      elsif forloop.parentloop.last and block.settings.position_desktop > forloop.parentloop.index
+                        assign promo_here = true
+                      endif
+                    -%}
+                    {%- if promo_here -%}
+                      {% render 'ap-plp-promo', block: block, sizes: card_sizes %}
+                    {%- endif -%}
+                  {%- endfor -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- else -%}
+            <div class="ap-plp__empty">
+              <p class="ap-h4">{{ 'content.no_products_found' | t }}</p>
+              {%- if active_count > 0 -%}
+                <a href="{{ clear_url }}" class="ap-btn ap-btn--primary" data-plp-link>{{ 'actions.clear_all' | t }}</a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if paginate.pages > 1 -%}
+            <nav class="ap-plp__pagination" aria-label="{{ 'content.pagination.nav_label' | t }}">
+              <ul role="list">
+                {%- if paginate.previous -%}
+                  <li>
+                    <a href="{{ paginate.previous.url }}" class="ap-plp__page ap-plp__page--arrow">
+                      {%- render 'ap-icon', name: 'chevron-left' -%}
+                      <span class="ap-visually-hidden">{{ 'content.pagination.previous' | t }}</span>
+                    </a>
+                  </li>
+                {%- endif -%}
+                {%- for part in paginate.parts -%}
+                  <li>
+                    {%- if part.is_link -%}
+                      <a href="{{ part.url }}" class="ap-plp__page">
+                        <span class="ap-visually-hidden">{{ 'content.pagination.page' | t: page: part.title }}</span>
+                        <span aria-hidden="true">{{ part.title }}</span>
+                      </a>
+                    {%- elsif part.title == paginate.current_page -%}
+                      <span class="ap-plp__page ap-plp__page--current" aria-current="page">
+                        <span class="ap-visually-hidden">{{ 'content.pagination.page' | t: page: part.title }}</span>
+                        <span aria-hidden="true">{{ part.title }}</span>
+                      </span>
+                    {%- else -%}
+                      <span class="ap-plp__page ap-plp__page--gap">{{ part.title }}</span>
+                    {%- endif -%}
+                  </li>
+                {%- endfor -%}
+                {%- if paginate.next -%}
+                  <li>
+                    <a href="{{ paginate.next.url }}" class="ap-plp__page ap-plp__page--arrow">
+                      {%- render 'ap-icon', name: 'chevron-right' -%}
+                      <span class="ap-visually-hidden">{{ 'content.pagination.next' | t }}</span>
+                    </a>
+                  </li>
+                {%- endif -%}
+              </ul>
+            </nav>
+          {%- endif -%}
+        </div>
+      </div>
+
+      {%- if s.show_description and collection.description != blank -%}
+        <div class="ap-plp__description">{{ collection.description }}</div>
+      {%- endif -%}
+    </div>
+  </ap-collection>
+{%- endpaginate -%}
+
+{% stylesheet %}
+  html .ap-plp {
+    overflow: visible;
+    background: var(--ap-white);
+  }
+
+  html .ap-plp__layout {
+    display: flex;
+    flex-direction: column;
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 20px var(--ap-gutter) 40px;
+  }
+
+  html .ap-plp__results {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 0;
+  }
+
+  /* Results bar */
+  html .ap-plp__bar {
+    display: grid;
+    grid-template-columns: auto minmax(0, max-content);
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px 12px;
+  }
+
+  html .ap-plp__count,
+  html .ap-plp__pills--bar {
+    grid-column: 1 / -1;
+  }
+
+  html .ap-plp__count {
+    order: 3;
+    margin: 0;
+    font-size: 14px;
+    line-height: 21px;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-plp__pills--bar {
+    order: 4;
+    margin-block-start: -12px;
+  }
+
+  html .ap-plp__pill-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 41px;
+    padding: 11px 16px;
+    border: 1px solid var(--ap-grey-100);
+    border-radius: 32px;
+    background: var(--ap-white);
+    color: var(--ap-ink);
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  html .ap-plp__pill-btn:focus-visible,
+  html .ap-plp__sort:focus-within {
+    outline: 2px solid var(--ap-ink);
+    outline-offset: 2px;
+  }
+
+  html .ap-plp__sort {
+    order: 2;
+    grid-column: -2;
+    gap: 6px;
+    min-width: 0;
+    padding-inline: 14px 12px;
+  }
+
+  html .ap-plp__sort-value {
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* The native select covers the pill so it stays the real, accessible control. */
+  html .ap-plp__sort select {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0 0 0 64px;
+    border: 0;
+    border-radius: inherit;
+    background: transparent;
+    color: transparent;
+    font: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    opacity: 0;
+  }
+
+  html .ap-plp__sort select option {
+    color: var(--ap-ink);
+  }
+
+  html .ap-plp__sort .ap-icon {
+    flex: none;
+    pointer-events: none;
+  }
+
+  html .ap-plp__filter-count {
+    margin-inline-start: -4px;
+  }
+
+  /* Active pills */
+  html .ap-plp__pills {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  html .ap-plp__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 1px 8px;
+    border: 1px solid var(--ap-ink);
+    border-radius: 16px;
+    background: var(--ap-off-white);
+    color: var(--ap-ink);
+    font-size: 14px;
+    line-height: 21px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  html .ap-plp__pill:hover {
+    background: var(--ap-grey-100);
+  }
+
+  html .ap-plp__clear {
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ap-grey-500);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  html .ap-plp__clear:hover {
+    color: var(--ap-ink);
+    text-decoration: underline;
+  }
+
+  /* Filters: shared */
+  html .ap-plp__filters {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    color: var(--ap-ink);
+  }
+
+  html .ap-plp__form {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  html .ap-plp__group {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  html .ap-plp__group-title {
+    float: left;
+    width: 100%;
+    margin-block-end: 10px;
+    padding: 0;
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-plp__options {
+    clear: both;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  html .ap-plp__option {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-block: 8px;
+    font-size: 16px;
+    line-height: 22px;
+    cursor: pointer;
+  }
+
+  html .ap-plp__option--disabled {
+    opacity: 0.45;
+    cursor: default;
+  }
+
+  html .ap-plp__checkbox {
+    position: absolute;
+    inset-inline-start: 0;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    opacity: 0;
+    cursor: inherit;
+  }
+
+  html .ap-plp__check {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border: 1.5px solid var(--ap-grey-300);
+    border-radius: 3px;
+    background: var(--ap-white);
+    color: var(--ap-yellow);
+    transition: background-color 0.15s, border-color 0.15s;
+  }
+
+  html .ap-plp__check .ap-icon {
+    opacity: 0;
+  }
+
+  html .ap-plp__checkbox:checked + .ap-plp__check {
+    border-color: var(--ap-ink);
+    background: var(--ap-ink);
+  }
+
+  html .ap-plp__checkbox:checked + .ap-plp__check .ap-icon {
+    opacity: 1;
+  }
+
+  html .ap-plp__checkbox:focus-visible + .ap-plp__check {
+    outline: 2px solid var(--ap-ink);
+    outline-offset: 2px;
+  }
+
+  html .ap-plp__option:not(.ap-plp__option--disabled):hover .ap-plp__check {
+    border-color: var(--ap-ink);
+  }
+
+  html .ap-plp__option-label {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  html .ap-plp__option-count {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-plp__price {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    clear: both;
+  }
+
+  html .ap-plp__price-field {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 8px 12px;
+    border: 1px solid var(--ap-grey-300);
+    border-radius: 999px;
+    background: var(--ap-white);
+  }
+
+  html .ap-plp__price-field input {
+    width: 100%;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    outline: none;
+  }
+
+  html .ap-plp__price-field:focus-within {
+    border-color: var(--ap-ink);
+  }
+
+  html .ap-plp__icon-btn {
+    display: inline-grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  /* Filters: mobile bottom sheet */
+  @media screen and (max-width: 989px) {
+    html .ap-plp__filters:not([open]) {
+      display: none;
+    }
+
+    html .ap-plp__filters[open] {
+      position: fixed;
+      inset: auto 0 0;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      max-width: none;
+      height: min(663px, 85dvh);
+      max-height: none;
+      border-radius: 16px 16px 0 0;
+      background: var(--ap-off-white);
+      font-family: var(--ap-font-body);
+      animation: ap-plp-sheet 0.3s var(--ap-ease);
+    }
+
+    html .ap-plp__filters::backdrop {
+      background: rgb(26 26 26 / 0.6);
+    }
+
+    html:has(.ap-plp__filters[open]) {
+      overflow: hidden;
+    }
+
+    html .ap-plp__drawer-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex: none;
+      padding: 20px 20px 16px;
+      border-block-end: 1px solid var(--ap-grey-100);
+    }
+
+    html .ap-plp__drawer-title {
+      margin: 0;
+      font-family: var(--ap-font-body);
+      font-weight: 700;
+      font-size: 20px;
+      line-height: 26px;
+    }
+
+    html .ap-plp__drawer-body {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      gap: 24px;
+      min-height: 0;
+      padding: 24px 20px 64px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    html .ap-plp__filters-head {
+      display: none;
+    }
+
+    html .ap-plp__drawer-foot {
+      display: flex;
+      flex: none;
+      align-items: center;
+      gap: 32px;
+      padding: 20px;
+      border-block-start: 1px solid var(--ap-grey-100);
+    }
+
+    html .ap-plp__apply {
+      flex: 1;
+      min-height: 40px;
+      padding-inline: 16px;
+      font-size: 14px;
+      line-height: 17px;
+    }
+
+    html .ap-plp__apply:disabled {
+      background: var(--ap-grey-100);
+      color: var(--ap-grey-500);
+      transform: none;
+      cursor: default;
+    }
+
+    @keyframes ap-plp-sheet {
+      from {
+        transform: translateY(100%);
+      }
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html .ap-plp__filters[open] {
+      animation: none;
+    }
+  }
+
+  /* Grid */
+  html .ap-plp__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 12px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  html .ap-plp__grid > * {
+    order: calc(var(--ap-plp-o, 0) * 2);
+    min-width: 0;
+  }
+
+  html .ap-plp__item {
+    display: flex;
+  }
+
+  html .ap-plp__item > .ap-card {
+    flex: 1;
+    width: 100%;
+  }
+
+  html .ap-plp__grid .ap-card__content {
+    flex: 1;
+  }
+
+  html .ap-plp__grid .ap-card__info {
+    flex: 1;
+  }
+
+  html .ap-plp__grid .ap-card__badges {
+    justify-content: center;
+  }
+
+  html .ap-plp__grid .ap-card__media {
+    width: 100%;
+  }
+
+  html .ap-plp__grid--featured > .ap-plp__item:first-child,
+  html .ap-plp__grid--featured > .ap-plp-promo + .ap-plp__item:nth-child(2) {
+    grid-column: 1 / -1;
+  }
+
+  html .ap-plp__grid--featured > .ap-plp__item:first-child .ap-card__media {
+    width: 224px;
+  }
+
+  html .ap-plp__empty {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding-block: 48px;
+  }
+
+  /* Pagination */
+  html .ap-plp__pagination ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  html .ap-plp__page {
+    display: inline-grid;
+    place-items: center;
+    min-width: 40px;
+    height: 40px;
+    padding-inline: 8px;
+    border: 1px solid var(--ap-grey-100);
+    border-radius: 999px;
+    color: var(--ap-ink);
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  html a.ap-plp__page:hover {
+    border-color: var(--ap-ink);
+  }
+
+  html .ap-plp__page--current {
+    border-color: var(--ap-ink);
+    background: var(--ap-ink);
+    color: var(--ap-yellow);
+  }
+
+  html .ap-plp__page--gap {
+    border-color: transparent;
+  }
+
+  /* Description */
+  html .ap-plp__description {
+    max-width: 996px;
+    margin-inline: auto;
+    padding: 10px 16px 40px;
+    font-size: 16px;
+    line-height: 22px;
+    text-align: center;
+  }
+
+  html .ap-plp__description > :first-child {
+    margin-block-start: 0;
+  }
+
+  html .ap-plp__description > :last-child {
+    margin-block-end: 0;
+  }
+
+  html [data-plp-root][aria-busy='true'] .ap-plp__grid {
+    opacity: 0.5;
+    transition: opacity 0.2s;
+  }
+
+  @media screen and (max-width: 989px) {
+    html .ap-plp__grid--featured > .ap-plp__item:first-child .ap-card {
+      padding-inline: 12px;
+    }
+  }
+
+  @media screen and (min-width: 750px) {
+    html .ap-plp__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    html .ap-plp__grid--featured > .ap-plp__item:first-child,
+    html .ap-plp__grid--featured > .ap-plp-promo + .ap-plp__item:nth-child(2) {
+      grid-column: auto;
+    }
+
+    html .ap-plp__grid--featured > .ap-plp__item:first-child .ap-card__media {
+      width: 100%;
+    }
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-plp__layout {
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 40px;
+      padding: 24px 56px 64px;
+    }
+
+    html .ap-plp__filters {
+      position: sticky;
+      inset-block-start: 24px;
+      display: block;
+      flex: none;
+      width: 240px;
+      max-height: none;
+      background: transparent;
+    }
+
+    html .ap-plp__drawer-head,
+    html .ap-plp__drawer-foot {
+      display: none;
+    }
+
+    html ap-collection:not(:defined) .ap-plp__drawer-foot {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding-block-start: 24px;
+    }
+
+    html .ap-plp__drawer-body {
+      display: flex;
+      flex-direction: column;
+    }
+
+    html .ap-plp__filters-head {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      padding-block-end: 24px;
+    }
+
+    html .ap-plp__filters-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    html .ap-plp__filters-title {
+      margin: 0;
+      font-family: var(--ap-font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 20px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    html .ap-plp__group {
+      padding-block: 24px;
+      border-block-start: 1px solid var(--ap-grey-100);
+    }
+
+    html .ap-plp__group:last-child {
+      border-block-end: 1px solid var(--ap-grey-100);
+    }
+
+    html .ap-plp__group-title {
+      margin-block-end: 4px;
+    }
+
+    html .ap-plp__options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-block: 8px 4px;
+    }
+
+    html .ap-plp__option {
+      gap: 10px;
+      padding-block: 0;
+    }
+
+    html .ap-plp__check,
+    html .ap-plp__checkbox {
+      width: 16px;
+      height: 16px;
+    }
+
+    html .ap-plp__filter-btn,
+    html .ap-plp__pills--bar {
+      display: none;
+    }
+
+    html .ap-plp__bar {
+      grid-template-columns: minmax(0, 1fr) auto;
+      padding-block-end: 4px;
+    }
+
+    html .ap-plp__count {
+      order: 0;
+      grid-column: 1;
+    }
+
+    html .ap-plp__sort {
+      border-color: var(--ap-grey-300);
+      padding-inline: 18px 16px;
+    }
+
+    html .ap-plp__grid {
+      grid-template-columns: repeat(var(--ap-plp-cols, 3), minmax(0, 1fr));
+    }
+
+    html .ap-plp__description {
+      padding-block: 10px 64px;
+    }
+  }
+
+  /* Promo tile */
+  html .ap-plp-promo {
+    order: calc(var(--ap-plp-promo-m, 0) * 2 + 1);
+    grid-column: 1 / -1;
+    list-style: none;
+  }
+
+  html .ap-plp-promo__link {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: 350 / 203;
+    border-radius: 16px;
+    background: var(--ap-off-white);
+  }
+
+  html .ap-plp-promo__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s var(--ap-ease);
+  }
+
+  html .ap-plp-promo__link:hover .ap-plp-promo__img {
+    transform: scale(1.02);
+  }
+
+  html .ap-plp-promo__link:focus-visible {
+    outline: 2px solid var(--ap-ink);
+    outline-offset: 3px;
+  }
+
+  html .ap-plp-promo__img--desktop {
+    display: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    html .ap-plp-promo {
+      order: calc(var(--ap-plp-promo-d, 0) * 2 + 1);
+      grid-column: auto;
+    }
+
+    html .ap-plp-promo__link {
+      height: 100%;
+      min-height: 360px;
+      aspect-ratio: auto;
+      border-radius: 24px;
+    }
+
+    html .ap-plp-promo__img {
+      position: absolute;
+      inset: 0;
+    }
+
+    html .ap-plp-promo__img--desktop {
+      display: block;
+    }
+
+    html .ap-plp-promo__img--mobile {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent collection grid",
+  "class": "ap-plp-section",
+  "settings": [
+    { "type": "range", "id": "products_per_page", "label": "Products per page", "min": 8, "max": 48, "step": 4, "default": 24 },
+    {
+      "type": "select",
+      "id": "columns_desktop",
+      "label": "Desktop columns",
+      "options": [
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    { "type": "checkbox", "id": "feature_first_mobile", "label": "Show the first product full width on mobile", "default": true },
+    { "type": "text", "id": "button_label", "label": "Card button label", "default": "Shop now" },
+    { "type": "header", "content": "Filtering and sorting" },
+    { "type": "checkbox", "id": "enable_filtering", "label": "Enable filtering", "default": true, "info": "Choose filters in Search & Discovery." },
+    { "type": "checkbox", "id": "enable_sorting", "label": "Enable sorting", "default": true },
+    { "type": "header", "content": "Rating fallback", "info": "Shown when a product has no reviews.rating metafield. Leave empty to hide." },
+    { "type": "text", "id": "rating_fallback", "label": "Rating" },
+    { "type": "text", "id": "rating_count_fallback", "label": "Review count" },
+    { "type": "header", "content": "Description" },
+    { "type": "checkbox", "id": "show_description", "label": "Show collection description below the grid", "default": true }
+  ],
+  "blocks": [
+    {
+      "type": "promo",
+      "name": "Promo banner",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Desktop image", "info": "Portrait, about 676 × 1116 px." },
+        { "type": "image_picker", "id": "image_mobile", "label": "Mobile image", "info": "Landscape, about 700 × 406 px." },
+        { "type": "text", "id": "alt", "label": "Image description", "default": "Ascent offer" },
+        { "type": "url", "id": "link", "label": "Link" },
+        {
+          "type": "range",
+          "id": "position_desktop",
+          "label": "Desktop: show after product",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "range",
+          "id": "position_mobile",
+          "label": "Mobile: show after product",
+          "min": 0,
+          "max": 24,
+          "step": 1,
+          "default": 3
+        }
+      ]
+    }
+  ],
+  "max_blocks": 3,
+  "enabled_on": { "templates": ["collection"] },
+  "presets": [
+    {
+      "name": "Ascent collection grid",
+      "blocks": [{ "type": "promo" }]
+    }
+  ]
+}
+{% endschema %}

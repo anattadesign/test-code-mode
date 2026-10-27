@@ -1,0 +1,53 @@
+{%- doc -%}
+  Promo banner tile inside the Ascent collection grid. Shows the block's desktop and
+  mobile images (or the bundled design banners), optionally linked. Its grid position
+  comes from the block's desktop and mobile "show after product" settings through CSS
+  `order`; styles live in sections/ap-main-collection.liquid.
+
+  @param {object} block - The section's `promo` block
+  @param {string} [sizes] - Sizes attribute for the desktop image
+
+  @example
+  {% render 'ap-plp-promo', block: block %}
+{%- enddoc -%}
+{%- liquid
+  assign b = block.settings
+  assign mobile_image = b.image_mobile | default: b.image
+  assign tag = 'div'
+  if b.link != blank
+    assign tag = 'a'
+  endif
+-%}
+<li
+  class="ap-plp-promo"
+  style="--ap-plp-promo-d: {{ b.position_desktop }}; --ap-plp-promo-m: {{ b.position_mobile }};"
+  {{ block.shopify_attributes }}
+>
+  <{{ tag }}
+    class="ap-plp-promo__link"
+    {% if b.link != blank %}
+      href="{{ b.link }}"
+    {% endif %}
+  >
+    {% render 'ap-image',
+      image: b.image,
+      fallback: 'ap-plp-promo-desktop.webp',
+      fallback_width: 676,
+      fallback_height: 1116,
+      alt: b.alt,
+      class: 'ap-plp-promo__img ap-plp-promo__img--desktop',
+      sizes: sizes,
+      widths: '400, 680, 1000'
+    %}
+    {% render 'ap-image',
+      image: mobile_image,
+      fallback: 'ap-plp-promo-mobile.webp',
+      fallback_width: 700,
+      fallback_height: 406,
+      alt: b.alt,
+      class: 'ap-plp-promo__img ap-plp-promo__img--mobile',
+      sizes: '100vw',
+      widths: '375, 550, 750, 1100'
+    %}
+  </{{ tag }}>
+</li>

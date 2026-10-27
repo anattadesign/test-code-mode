@@ -65,7 +65,8 @@
     "view_disclosure_information_for_product": "View disclosure information for {{ product_title }}",
     "view_pricing_info": "View pricing information",
     "price_filter_low": "Low price",
-    "price_filter_high": "High price"
+    "price_filter_high": "High price",
+    "breadcrumbs": "Breadcrumb"
   },
   "actions": {
     // Quick add button on product cards, shortened version of add to cart
@@ -120,7 +121,11 @@
     "sign_up": "Sign up",
     "submit": "Submit",
     "view_store_information": "View store information",
-    "sort": "Sort"
+    "sort": "Sort",
+    // Button in the collection filter drawer that applies the selected filters
+    "apply_filters": "Apply filters",
+    // Removes one active collection filter, e.g. "Remove filter: Creatine"
+    "remove_filter": "Remove filter: {{ filter }}"
   },
   "blocks": {
     "contact_form": {
@@ -214,6 +219,8 @@
     "language": "Language",
     "localization_region_and_language": "Region and language",
     "no_products_found": "No products found.",
+    "breadcrumb_home": "Home",
+    "breadcrumb_collections": "Collections",
     "no_results_found": "No results found",
     "page_placeholder_title": "Page title",
     "page_placeholder_content": "Select a page to display its content.",

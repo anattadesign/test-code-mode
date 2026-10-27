@@ -8,215 +8,195 @@
  * ------------------------------------------------------------
  */{
   "sections": {
-    "section": {
-      "type": "section",
+    "ap_collection_banner": {
+      "type": "ap-collection-banner",
+      "settings": {
+        "show_banner": true,
+        "use_design_fallback": true,
+        "image_position": "50% 60%",
+        "image_position_mobile": "96% 0%",
+        "show_breadcrumbs": true,
+        "fallback_title": "All Products"
+      }
+    },
+    "ap_main_collection": {
+      "type": "ap-main-collection",
       "blocks": {
-        "text_tqQTNE": {
-          "type": "text",
-          "name": "t:names.title",
+        "promo_1": {
+          "type": "promo",
           "settings": {
-            "text": "<h1>{{ closest.collection.title }}</h1>",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "h2",
-            "font": "var(--font-body--family)",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
-        },
-        "text_twGGkJ": {
-          "type": "text",
-          "name": "t:names.description",
-          "settings": {
-            "text": "{{ closest.collection.description }}",
-            "width": "fit-content",
-            "max_width": "normal",
-            "alignment": "left",
-            "type_preset": "rte",
-            "font": "var(--font-body--family)",
-            "line_height": "normal",
-            "letter_spacing": "normal",
-            "case": "none",
-            "wrap": "pretty",
-            "background": false,
-            "background_color": "#00000026",
-            "corner_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {}
+            "alt": "Ascent offer",
+            "link": "shopify://collections/all",
+            "position_desktop": 5,
+            "position_mobile": 3
+          }
         }
       },
       "block_order": [
-        "text_tqQTNE",
-        "text_twGGkJ"
+        "promo_1"
       ],
-      "name": "t:names.heading",
       "settings": {
-        "content_direction": "column",
-        "vertical_on_mobile": true,
-        "horizontal_alignment": "flex-start",
-        "vertical_alignment": "center",
-        "align_baseline": false,
-        "horizontal_alignment_flex_direction_column": "flex-start",
-        "vertical_alignment_flex_direction_column": "center",
-        "gap": 12,
-        "section_width": "page-width",
-        "section_height_custom": 50,
-        "background_media": "none",
-        "background_color": "{{ settings.color_palette.background }}",
-        "video_position": "cover",
-        "background_image_position": "cover",
-        "border": "none",
-        "border_width": 1,
-        "border_opacity": 100,
-        "border_radius": 0,
-        "toggle_overlay": false,
-        "overlay_color": "#00000026",
-        "overlay_style": "solid",
-        "gradient_direction": "to top",
-        "padding-block-start": 48,
-        "padding-block-end": 48
+        "products_per_page": 24,
+        "columns_desktop": "3",
+        "feature_first_mobile": true,
+        "button_label": "Shop now",
+        "enable_filtering": true,
+        "enable_sorting": true,
+        "rating_fallback": "",
+        "rating_count_fallback": "",
+        "show_description": true
       }
     },
-    "main": {
-      "type": "main-collection",
+    "ap_reviews": {
+      "type": "ap-reviews",
       "blocks": {
-        "filters": {
-          "type": "filters",
-          "static": true,
+        "review_1": {
+          "type": "photo",
           "settings": {
-            "enable_filtering": true,
-            "filter_style": "horizontal",
-            "filter_width": "centered",
-            "text_label_case": "default",
-            "show_swatch_label": false,
-            "show_filter_label": false,
-            "enable_sorting": true,
-            "enable_grid_density": true,
-            "padding-block-start": 8,
-            "padding-block-end": 8,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0,
-            "facets_margin_bottom": 8,
-            "facets_margin_right": 20
-          },
-          "blocks": {}
+            "fallback": "ap-review-1.webp",
+            "caption": "@coach.charles"
+          }
         },
-        "product-card": {
-          "type": "_product-card",
-          "static": true,
+        "review_2": {
+          "type": "quote",
           "settings": {
-            "product_card_gap": 4,
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0,
-            "padding-block-start": 0,
-            "padding-block-end": 0,
-            "padding-inline-start": 0,
-            "padding-inline-end": 0
-          },
-          "blocks": {
-            "card-gallery": {
-              "type": "_product-card-gallery",
-              "settings": {
-                "image_ratio": "adapt",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "product_title_4nY4eT": {
-              "type": "product-title",
-              "name": "t:names.product_title",
-              "settings": {
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "left",
-                "type_preset": "rte",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "background": false,
-                "background_color": "#00000026",
-                "corner_radius": 0,
-                "padding-block-start": 4,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "price_EzJzMm": {
-              "type": "price",
-              "settings": {
-                "show_sale_price_first": true,
-                "show_installments": false,
-                "show_tax_info": false,
-                "type_preset": "h6",
-                "width": "100%",
-                "alignment": "left",
-                "font": "var(--font-body--family)",
-                "font_size": "1rem",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "card-gallery",
-            "product_title_4nY4eT",
-            "price_EzJzMm"
-          ]
+            "style": "dark",
+            "stars": "★★★★★",
+            "quote": "Mixes clean, no chalk",
+            "name": "Marcus D.",
+            "verified_label": "Verified buyer"
+          }
+        },
+        "review_3": {
+          "type": "video",
+          "settings": {
+            "caption": "@coach.charles"
+          }
+        },
+        "review_4": {
+          "type": "quote",
+          "settings": {
+            "style": "yellow",
+            "stars": "★★★★★",
+            "quote": "Recovery days feel completely different",
+            "name": "Marcus D.",
+            "verified_label": "Verified buyer"
+          }
+        },
+        "review_5": {
+          "type": "photo",
+          "settings": {
+            "fallback": "ap-review-2.webp",
+            "caption": "@coach.charles"
+          }
+        },
+        "review_6": {
+          "type": "quote",
+          "settings": {
+            "style": "dark",
+            "stars": "★★★★★",
+            "quote": "The only one I re-order without thinking",
+            "name": "Priya S.",
+            "verified_label": "Verified buyer"
+          }
+        },
+        "review_7": {
+          "type": "photo",
+          "settings": {
+            "fallback": "ap-review-3.webp",
+            "caption": "@coach.charles"
+          }
+        },
+        "review_8": {
+          "type": "quote",
+          "settings": {
+            "style": "yellow",
+            "stars": "★★★★★",
+            "quote": "Third-party tested, every batch",
+            "name": "Marcus D.",
+            "verified_label": "Verified buyer"
+          }
         }
       },
+      "block_order": [
+        "review_1",
+        "review_2",
+        "review_3",
+        "review_4",
+        "review_5",
+        "review_6",
+        "review_7",
+        "review_8"
+      ],
       "settings": {
-        "layout_type": "grid",
-        "product_card_size": "medium",
-        "mobile_product_card_size": "small",
-        "product_grid_width": "centered",
-        "full_width_on_mobile": true,
-        "columns_gap_horizontal": 16,
-        "columns_gap_vertical": 24,
-        "padding-inline-start": 0,
-        "padding-inline-end": 0,
-        "background_color": "{{ settings.color_palette.background }}",
-        "padding-block-start": 0,
-        "padding-block-end": 32
+        "eyebrow": "Reviews",
+        "heading": "What Our Customers Are Saying.",
+        "background": "#ffffff"
+      }
+    },
+    "ap_why": {
+      "type": "ap-why-ascent",
+      "blocks": {
+        "reason_1": {
+          "type": "reason",
+          "settings": {
+            "title": "Minimal ingredients, minimal processing",
+            "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked."
+          }
+        },
+        "reason_2": {
+          "type": "reason",
+          "settings": {
+            "title": "Rigorous third-party testing",
+            "text": "Informed Sport Certified. An outside lab checks every batch before it ships."
+          }
+        },
+        "reason_3": {
+          "type": "reason",
+          "settings": {
+            "title": "Tastes just like real milk",
+            "text": "There's nothing artificial masking it, so it tastes like exactly what it's made from."
+          }
+        },
+        "reason_4": {
+          "type": "reason",
+          "settings": {
+            "title": "Gentle on your stomach",
+            "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean."
+          }
+        }
+      },
+      "block_order": [
+        "reason_1",
+        "reason_2",
+        "reason_3",
+        "reason_4"
+      ],
+      "settings": {
+        "overlay_opacity": 65,
+        "show_product_image": true,
+        "eyebrow": "Why Ascent",
+        "heading": "The cleanest protein we know how to make.",
+        "button_label": "Shop protein",
+        "button_link": "shopify://collections/all"
+      }
+    },
+    "ap_cta": {
+      "type": "ap-cta-band",
+      "settings": {
+        "eyebrow": "Whatever first place looks like for you",
+        "heading": "Now go build something.",
+        "button_label": "Start with protein",
+        "button_link": "shopify://collections/all",
+        "background": "#1a1a1a"
       }
     }
   },
   "order": [
-    "section",
-    "main"
+    "ap_collection_banner",
+    "ap_main_collection",
+    "ap_reviews",
+    "ap_why",
+    "ap_cta"
   ]
 }

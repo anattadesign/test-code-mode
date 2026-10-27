@@ -1,0 +1,219 @@
+{% comment %}
+  Section contract.
+  Ascent collection page head: breadcrumb trail and the collection title, either on a
+  full-width banner image (collection image, a picked image, or the bundled design
+  image) or on a plain white band when the banner is turned off.
+  @example
+  <!-- Collection template, above the Ascent collection grid -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+{%- liquid
+  assign s = section.settings
+  assign banner_image = s.image | default: collection.image
+  assign show_banner = false
+  if s.show_banner
+    if banner_image != blank or s.use_design_fallback
+      assign show_banner = true
+    endif
+  endif
+  assign mobile_image = s.image_mobile | default: banner_image
+  assign title = collection.title | default: s.fallback_title
+-%}
+<div
+  class="ap-section ap-plp-head{% if show_banner %} ap-plp-head--banner{% endif %}"
+  style="--ap-plp-head-pos: {{ s.image_position }}; --ap-plp-head-pos-mobile: {{ s.image_position_mobile }};"
+>
+  {%- if show_banner -%}
+    <div class="ap-plp-head__media" aria-hidden="true">
+      {%- if s.image_mobile != blank and mobile_image != banner_image -%}
+        {%- liquid
+          if banner_image != blank
+            assign desktop_src = banner_image | image_url: width: 2400
+          else
+            assign desktop_src = 'ap-plp-banner.webp' | asset_url
+          endif
+        -%}
+        <picture>
+          <source media="(min-width: 990px)" srcset="{{ desktop_src }}">
+          {% render 'ap-image',
+            image: mobile_image,
+            alt: '',
+            class: 'ap-plp-head__img',
+            sizes: '100vw',
+            eager: true
+          %}
+        </picture>
+      {%- else -%}
+        {% render 'ap-image',
+          image: banner_image,
+          fallback: 'ap-plp-banner.webp',
+          fallback_width: 1983,
+          fallback_height: 793,
+          alt: '',
+          class: 'ap-plp-head__img',
+          sizes: '100vw',
+          eager: true
+        %}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ap-container ap-plp-head__inner">
+    {%- if s.show_breadcrumbs -%}
+      <nav class="ap-plp-head__crumbs" aria-label="{{ 'accessibility.breadcrumbs' | t }}">
+        <ol>
+          <li><a href="{{ routes.root_url }}">{{ 'content.breadcrumb_home' | t }}</a></li>
+          <li><a href="{{ routes.collections_url }}">{{ 'content.breadcrumb_collections' | t }}</a></li>
+          <li aria-current="page">{{ title | escape }}</li>
+        </ol>
+      </nav>
+    {%- endif -%}
+    <h1 class="ap-h2 ap-plp-head__title">{{ title | escape }}</h1>
+  </div>
+</div>
+
+{% stylesheet %}
+  html .ap-plp-head {
+    display: flex;
+    align-items: center;
+    background: var(--ap-white);
+  }
+
+  html .ap-plp-head__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  html .ap-plp-head__img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--ap-plp-head-pos-mobile, 96% 0%);
+  }
+
+  html .ap-plp-head__inner {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-block: 28px;
+  }
+
+  html .ap-plp-head--banner {
+    min-height: 195px;
+    align-items: flex-start;
+  }
+
+  html .ap-plp-head--banner .ap-plp-head__inner {
+    padding-block: 50px 36px;
+  }
+
+  html .ap-plp-head__crumbs ol {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--ap-font-mono);
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-plp-head--banner .ap-plp-head__crumbs ol {
+    color: var(--ap-ink);
+  }
+
+  html .ap-plp-head__crumbs li + li::before {
+    content: '/';
+    padding-inline: 0.5em;
+  }
+
+  html .ap-plp-head__crumbs a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  html .ap-plp-head__crumbs a:hover {
+    text-decoration: underline;
+  }
+
+  html .ap-plp-head__title {
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-plp-head__img {
+      object-position: var(--ap-plp-head-pos, 50% 60%);
+    }
+
+    html .ap-plp-head__inner {
+      gap: 16px;
+      padding-block: 48px;
+    }
+
+    html .ap-plp-head--banner {
+      min-height: 240px;
+      align-items: center;
+    }
+
+    html .ap-plp-head--banner .ap-plp-head__inner {
+      padding-block: 48px;
+    }
+
+    html .ap-plp-head__crumbs li + li::before {
+      padding-inline: 1em;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent collection banner",
+  "class": "ap-plp-head-section",
+  "settings": [
+    { "type": "checkbox", "id": "show_banner", "label": "Show banner image", "default": true, "info": "Turn off for a plain white page head." },
+    { "type": "image_picker", "id": "image", "label": "Image", "info": "Defaults to the collection image.", "visible_if": "{{ section.settings.show_banner }}" },
+    { "type": "image_picker", "id": "image_mobile", "label": "Mobile image", "visible_if": "{{ section.settings.show_banner }}" },
+    {
+      "type": "checkbox",
+      "id": "use_design_fallback",
+      "label": "Use the Ascent design image when no image is set",
+      "default": true,
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Desktop image focus",
+      "options": [
+        { "value": "50% 0%", "label": "Top" },
+        { "value": "50% 60%", "label": "Centre" },
+        { "value": "50% 100%", "label": "Bottom" }
+      ],
+      "default": "50% 60%",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    {
+      "type": "select",
+      "id": "image_position_mobile",
+      "label": "Mobile image focus",
+      "options": [
+        { "value": "0% 0%", "label": "Left" },
+        { "value": "50% 0%", "label": "Centre" },
+        { "value": "96% 0%", "label": "Right" }
+      ],
+      "default": "96% 0%",
+      "visible_if": "{{ section.settings.show_banner }}"
+    },
+    { "type": "checkbox", "id": "show_breadcrumbs", "label": "Show breadcrumbs", "default": true },
+    { "type": "text", "id": "fallback_title", "label": "Title outside a collection", "default": "All Products" }
+  ],
+  "enabled_on": { "templates": ["collection"] },
+  "presets": [{ "name": "Ascent collection banner" }]
+}
+{% endschema %}

@@ -1,7 +1,10 @@
 {%- doc -%}
   Ascent product card: tag, rating, title, spec line, flavour swatches, price and a
   shop button, with optional badges over the image. Reads rating from the
-  `reviews.rating` / `reviews.rating_count` metafields when present.
+  `reviews.rating` / `reviews.rating_count` metafields when present. When the caller
+  passes no tag, spec or badges, they come from the product's `ascent.card_tag`,
+  `ascent.card_spec` and `ascent.card_badges` (list) metafields, so collection grids
+  can show merchandising per product. Owns the card stylesheet.
 
   @param {product} product - Product to show
   @param {string} [style] - 'light' or 'dark'
@@ -14,6 +17,8 @@
   @param {string} [rating] - Fallback rating value, e.g. '4.7'
   @param {string} [rating_count] - Fallback review count, e.g. '128'
   @param {string} [button_label] - Button text
+  @param {string} [class] - Extra classes for the card wrapper
+  @param {string} [sizes] - Image sizes attribute
   @param {string} [attributes] - Editor attributes for the wrapper
 
   @example
@@ -21,6 +26,19 @@
 {%- enddoc -%}
 {%- liquid
   assign card_style = style | default: 'light'
+  assign image_sizes = sizes | default: '(min-width: 990px) 298px, 224px'
+
+  assign card_tag = tag | default: product.metafields.ascent.card_tag.value
+  assign card_spec = spec | default: product.metafields.ascent.card_spec.value
+  assign card_badge_1 = badge_1
+  assign card_badge_2 = badge_2
+  if badge_1 == blank and badge_2 == blank
+    assign card_badges = product.metafields.ascent.card_badges.value
+    if card_badges != blank
+      assign card_badge_1 = card_badges[0]
+      assign card_badge_2 = card_badges[1]
+    endif
+  endif
 
   assign rating_value = product.metafields.reviews.rating.value.rating | default: rating
   assign rating_total = product.metafields.reviews.rating_count.value | default: rating_count
@@ -37,14 +55,14 @@
     assign swatch_option = product.options_with_values.first
   endif
 -%}
-<article class="ap-card ap-card--{{ card_style }}" {{ attributes }}>
-  {%- if badge_1 != blank or badge_2 != blank -%}
+<article class="ap-card ap-card--{{ card_style }}{% if class != blank %} {{ class }}{% endif %}" {{ attributes }}>
+  {%- if card_badge_1 != blank or card_badge_2 != blank -%}
     <div class="ap-card__badges">
-      {%- if badge_1 != blank -%}
-        <span class="ap-badge ap-badge--{{ badge_1_style | default: 'yellow' }}">{{ badge_1 | escape }}</span>
+      {%- if card_badge_1 != blank -%}
+        <span class="ap-badge ap-badge--{{ badge_1_style | default: 'yellow' }}">{{ card_badge_1 | escape }}</span>
       {%- endif -%}
-      {%- if badge_2 != blank -%}
-        <span class="ap-badge ap-badge--{{ badge_2_style | default: 'dark' }}">{{ badge_2 | escape }}</span>
+      {%- if card_badge_2 != blank -%}
+        <span class="ap-badge ap-badge--{{ badge_2_style | default: 'dark' }}">{{ card_badge_2 | escape }}</span>
       {%- endif -%}
     </div>
   {%- endif -%}
@@ -54,7 +72,7 @@
       {{
         product.featured_image
         | image_url: width: 600
-        | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: '(min-width: 990px) 298px, 224px', alt: '', class: 'ap-card__img'
+        | image_tag: loading: 'lazy', widths: '300, 450, 600', sizes: image_sizes, alt: '', class: 'ap-card__img'
       }}
     {%- else -%}
       {{ 'product-1' | placeholder_svg_tag: 'ap-card__img ap-card__placeholder' }}
@@ -63,8 +81,8 @@
 
   <div class="ap-card__content">
     <div class="ap-card__info">
-      {%- if tag != blank -%}
-        <span class="ap-card__tag">{{ tag | escape }}</span>
+      {%- if card_tag != blank -%}
+        <span class="ap-card__tag">{{ card_tag | escape }}</span>
       {%- endif -%}
 
       {%- if rating_value != blank -%}
@@ -82,8 +100,8 @@
         <a href="{{ product.url | default: '#' }}">{{ product.title | default: 'Product title' | escape }}</a>
       </h3>
 
-      {%- if spec != blank -%}
-        <p class="ap-card__spec">{{ spec | escape }}</p>
+      {%- if card_spec != blank -%}
+        <p class="ap-card__spec">{{ card_spec | escape }}</p>
       {%- endif -%}
 
       {%- if swatch_option and swatch_option.values.size > 1 -%}
@@ -111,7 +129,14 @@
 
       <p class="ap-card__price">
         {%- if product != blank -%}
-          <span class="ap-card__price-now">{{ product.price | money }}</span>
+          <span class="ap-card__price-now">
+            {%- if product.price_varies -%}
+              {%- assign price_min = product.price_min | money -%}
+              {{ 'content.price_from' | t: price: price_min }}
+            {%- else -%}
+              {{ product.price | money }}
+            {%- endif -%}
+          </span>
           {%- if product.compare_at_price > product.price -%}
             <s class="ap-card__price-was">{{ product.compare_at_price | money }}</s>
           {%- endif -%}
@@ -127,3 +152,228 @@
     </a>
   </div>
 </article>
+
+{% stylesheet %}
+  html .ap-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 12px;
+    border-radius: 24px;
+    background: var(--ap-off-white);
+    color: var(--ap-ink);
+    text-align: center;
+  }
+
+  html .ap-card--dark {
+    background: var(--ap-ink);
+    color: var(--ap-white);
+  }
+
+  html .ap-card__badges {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    z-index: 1;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px;
+  }
+
+  html .ap-card__badges:has(> :only-child) {
+    justify-content: center;
+  }
+
+  html .ap-card__media {
+    display: block;
+    width: 224px;
+    aspect-ratio: 1;
+    margin-inline: auto;
+  }
+
+  html .ap-card__img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: transform 0.4s var(--ap-ease);
+  }
+
+  html .ap-card:hover .ap-card__img {
+    transform: scale(1.04);
+  }
+
+  html .ap-card__placeholder {
+    fill: currentColor;
+    opacity: 0.25;
+  }
+
+  html .ap-card__content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  html .ap-card__info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+
+  html .ap-card__tag {
+    padding: 0 8px;
+    border-radius: 24px;
+    background: var(--ap-ink);
+    color: var(--ap-yellow);
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  html .ap-card--dark .ap-card__tag {
+    background: transparent;
+    box-shadow: inset 0 0 0 1px var(--ap-yellow);
+  }
+
+  html .ap-card__rating {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+  }
+
+  html .ap-card__star {
+    font-family: var(--ap-font-display);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+  }
+
+  html .ap-card--dark .ap-card__star {
+    color: var(--ap-yellow);
+  }
+
+  html .ap-card__rating-value,
+  html .ap-card__flavour-label {
+    font-family: var(--ap-font-mono);
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  html .ap-card__flavour-label {
+    font-weight: 700;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-card--dark .ap-card__rating-value,
+  html .ap-card--dark .ap-card__flavour-label {
+    font-weight: 700;
+    color: var(--ap-grey-100);
+  }
+
+  html .ap-card__title {
+    width: 100%;
+  }
+
+  html .ap-card__title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  html .ap-card__spec {
+    margin: 0;
+    font-size: 12px;
+    line-height: 18px;
+  }
+
+  html .ap-card__flavours {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  html .ap-card__swatches {
+    display: flex;
+  }
+
+  html .ap-card__swatch {
+    width: 20px;
+    height: 20px;
+    margin-inline-start: -4px;
+    border-radius: 50%;
+    border: 0.5px solid var(--ap-grey-300);
+    background: var(--ap-white) center / cover no-repeat;
+  }
+
+  html .ap-card__swatch:first-child {
+    margin-inline-start: 0;
+  }
+
+  html .ap-card__price {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin: 0;
+  }
+
+  html .ap-card__price-now {
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 21px;
+  }
+
+  html .ap-card__price-was {
+    font-size: 12px;
+    line-height: 18px;
+    color: var(--ap-grey-500);
+  }
+
+  html .ap-card--dark .ap-card__price-was {
+    color: var(--ap-grey-100);
+  }
+
+  html .ap-card__cta {
+    width: 100%;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-card {
+      padding: 24px 20px;
+    }
+
+    html .ap-card__badges {
+      padding: 12px 8px 8px;
+    }
+
+    html .ap-card__media {
+      width: 100%;
+    }
+
+    html .ap-card__spec {
+      font-size: 14px;
+      line-height: 21px;
+    }
+
+    html .ap-card__swatch {
+      width: 24px;
+      height: 24px;
+      margin-inline-start: -5px;
+    }
+
+    html .ap-card__price-now {
+      font-size: 16px;
+      line-height: 22px;
+    }
+
+    html .ap-card__price-was {
+      font-size: 14px;
+      line-height: 21px;
+    }
+  }
+{% endstylesheet %}
