@@ -1,0 +1,119 @@
+{% comment %}
+  Section contract.
+  Continuous marquee of two-tone brand statements separated by the Ascent mark.
+  @example
+  <!-- Add Statement blocks; the second line renders in the muted colour -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+{%- capture items -%}
+  {%- for block in section.blocks -%}
+    <span class="ap-statement__item" {{ block.shopify_attributes }}>
+      <span class="ap-statement__strong">{{ block.settings.primary | escape }}</span>
+      {%- if block.settings.secondary != blank %} <span class="ap-statement__soft">{{ block.settings.secondary | escape }}</span>{%- endif -%}
+    </span>
+    {%- render 'ap-icon', name: 'mark', class: 'ap-statement__mark' -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="ap-section ap-statement"
+    style="--ap-statement-bg: {{ section.settings.background }}; --ap-statement-soft: {{ section.settings.secondary_color }};"
+  >
+    <div class="ap-marquee" style="--ap-marquee-duration: {{ section.settings.speed }}s;">
+      <div class="ap-marquee__track">{{ items }}</div>
+      <div class="ap-marquee__track" aria-hidden="true">{{ items }}</div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  html .ap-statement {
+    background: var(--ap-statement-bg);
+    padding-block: 24px;
+  }
+
+  html .ap-statement .ap-marquee__track {
+    --ap-marquee-gap: 24px;
+  }
+
+  html .ap-statement__item {
+    display: inline-flex;
+    gap: 0.46em;
+    font-family: var(--ap-font-display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  html .ap-statement__strong {
+    color: var(--ap-ink);
+  }
+
+  html .ap-statement__soft {
+    color: var(--ap-statement-soft);
+  }
+
+  html .ap-statement__mark {
+    flex: none;
+    width: 18px;
+    height: 23px;
+    color: var(--ap-yellow);
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-statement {
+      padding-block: 32px;
+    }
+
+    html .ap-statement .ap-marquee__track {
+      --ap-marquee-gap: 40px;
+    }
+
+    html .ap-statement__item {
+      font-size: 40px;
+      gap: 0.3em;
+    }
+
+    html .ap-statement__mark {
+      width: 24px;
+      height: 31px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent statements",
+  "class": "ap-statement-section",
+  "settings": [
+    { "type": "range", "id": "speed", "label": "Scroll duration", "min": 10, "max": 90, "step": 5, "unit": "s", "default": 40 },
+    { "type": "color", "id": "background", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "secondary_color", "label": "Second line colour", "default": "#a9a9a9" }
+  ],
+  "blocks": [
+    {
+      "type": "statement",
+      "name": "Statement",
+      "settings": [
+        { "type": "text", "id": "primary", "label": "First part", "default": "Native whey." },
+        { "type": "text", "id": "secondary", "label": "Second part", "default": "Not cheese whey." }
+      ]
+    }
+  ],
+  "max_blocks": 8,
+  "presets": [
+    {
+      "name": "Ascent statements",
+      "blocks": [
+        { "type": "statement", "settings": { "primary": "Native whey.", "secondary": "Not cheese whey." } },
+        { "type": "statement", "settings": { "primary": "We don't buy our protein.", "secondary": "We make it." } },
+        { "type": "statement", "settings": { "primary": "Born in the mountains.", "secondary": "Bred to help you climb them." } }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

@@ -1,0 +1,206 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
+{
+  "sections": {
+    "ap_hero": {
+      "type": "ap-hero",
+      "settings": {
+        "heading": "Cleanest fuel for\nwhat moves you!",
+        "primary_label": "Shop protein",
+        "primary_link": "shopify://collections/all",
+        "secondary_label": "See the science",
+        "secondary_link": "",
+        "rating_stars": "★★★★★",
+        "rating_label": "6,000+ five star reviews",
+        "scrim_opacity": 100,
+        "height_desktop": 720,
+        "height_mobile": 680
+      }
+    },
+    "ap_usp": {
+      "type": "ap-usp-bar",
+      "blocks": {
+        "usp_1": { "type": "promise", "settings": { "icon": "usp-flavours", "text": "Zero artificial flavours" } },
+        "usp_2": { "type": "promise", "settings": { "icon": "usp-certified", "text": "Informed Sports certified" } },
+        "usp_3": { "type": "promise", "settings": { "icon": "usp-tested", "text": "3rd party tested" } },
+        "usp_4": { "type": "promise", "settings": { "icon": "usp-gluten", "text": "Gluten free" } }
+      },
+      "block_order": ["usp_1", "usp_2", "usp_3", "usp_4"],
+      "settings": { "background": "#ffffff", "speed": 24 }
+    },
+    "ap_bestsellers": {
+      "type": "ap-bestsellers",
+      "blocks": {
+        "product_1": { "type": "product", "settings": { "product": "gemstone", "card_style": "dark", "tag": "Recover", "spec": "5g creatine · 100% creapure", "badge_1": "#1 Bestseller", "badge_1_style": "yellow", "badge_2": "", "badge_2_style": "dark", "rating": "4.7", "rating_count": "128" } },
+        "product_2": { "type": "product", "settings": { "product": "leather-anchor", "card_style": "light", "tag": "Hydrate", "spec": "5g creatine · 100% creapure", "badge_1": "New", "badge_1_style": "outline", "badge_2": "5M+ units sold", "badge_2_style": "dark", "rating": "4.7", "rating_count": "128" } },
+        "product_3": { "type": "product", "settings": { "product": "silver-threader-necklace", "card_style": "light", "tag": "Hydrate", "spec": "5g creatine · 100% creapure", "badge_1": "Informed Sport Certified", "badge_1_style": "outline", "badge_2": "5M+ units sold", "badge_2_style": "dark", "rating": "4.7", "rating_count": "128" } },
+        "product_4": { "type": "product", "settings": { "product": "pretty-gold-necklace", "card_style": "light", "tag": "Hydrate", "spec": "5g creatine · 100% creapure", "badge_1": "Limited time flavours", "badge_1_style": "outline", "badge_2": "5M+ units sold", "badge_2_style": "dark", "rating": "4.7", "rating_count": "128" } },
+        "product_5": { "type": "product", "settings": { "product": "moon-charm-bracelet", "card_style": "light", "tag": "Hydrate", "spec": "5g creatine · 100% creapure", "badge_1": "", "badge_1_style": "yellow", "badge_2": "", "badge_2_style": "dark", "rating": "4.7", "rating_count": "128" } }
+      },
+      "block_order": ["product_1", "product_2", "product_3", "product_4", "product_5"],
+      "settings": {
+        "heading": "Work. Replenish. Recover.",
+        "text": "<p>Four formulations built on native whey and creatine®. Sourced, formulated, verified, no shortcuts, no compromises.</p>",
+        "button_label": "Shop now",
+        "background": "#ffffff",
+        "max_products": 6,
+        "first_dark": true
+      }
+    },
+    "ap_statements": {
+      "type": "ap-statement-ticker",
+      "blocks": {
+        "statement_1": { "type": "statement", "settings": { "primary": "Native whey.", "secondary": "Not cheese whey." } },
+        "statement_2": { "type": "statement", "settings": { "primary": "We don't buy our protein.", "secondary": "We make it." } },
+        "statement_3": { "type": "statement", "settings": { "primary": "Born in the mountains.", "secondary": "Bred to help you climb them." } }
+      },
+      "block_order": ["statement_1", "statement_2", "statement_3"],
+      "settings": { "speed": 40, "background": "#ffffff", "secondary_color": "#a9a9a9" }
+    },
+    "ap_why": {
+      "type": "ap-why-ascent",
+      "blocks": {
+        "reason_1": { "type": "reason", "settings": { "title": "Minimal ingredients, minimal processing", "text": "Five ingredients. Filtered cold from fresh milk, one pass, never cooked." } },
+        "reason_2": { "type": "reason", "settings": { "title": "Rigorous third-party testing", "text": "Informed Sport Certified. An outside lab checks every batch before it ships." } },
+        "reason_3": { "type": "reason", "settings": { "title": "Tastes just like real milk", "text": "There's nothing artificial masking it, so it tastes like exactly what it's made from." } },
+        "reason_4": { "type": "reason", "settings": { "title": "Gentle on your stomach", "text": "Most of the lactose is filtered out on the way. Sits light, mixes clean." } }
+      },
+      "block_order": ["reason_1", "reason_2", "reason_3", "reason_4"],
+      "settings": {
+        "overlay_opacity": 65,
+        "show_product_image": true,
+        "eyebrow": "Why Ascent",
+        "heading": "The cleanest protein we know how to make.",
+        "button_label": "Shop protein",
+        "button_link": "shopify://collections/all"
+      }
+    },
+    "ap_reviews": {
+      "type": "ap-reviews",
+      "blocks": {
+        "review_1": { "type": "photo", "settings": { "fallback": "ap-review-1.webp", "caption": "@coach.charles" } },
+        "review_2": { "type": "quote", "settings": { "style": "dark", "stars": "★★★★★", "quote": "Mixes clean, no chalk", "name": "Marcus D.", "verified_label": "Verified buyer" } },
+        "review_3": { "type": "video", "settings": { "caption": "@coach.charles" } },
+        "review_4": { "type": "quote", "settings": { "style": "yellow", "stars": "★★★★★", "quote": "Recovery days feel completely different", "name": "Marcus D.", "verified_label": "Verified buyer" } },
+        "review_5": { "type": "photo", "settings": { "fallback": "ap-review-2.webp", "caption": "@coach.charles" } },
+        "review_6": { "type": "quote", "settings": { "style": "dark", "stars": "★★★★★", "quote": "The only one I re-order without thinking", "name": "Priya S.", "verified_label": "Verified buyer" } },
+        "review_7": { "type": "photo", "settings": { "fallback": "ap-review-3.webp", "caption": "@coach.charles" } },
+        "review_8": { "type": "quote", "settings": { "style": "yellow", "stars": "★★★★★", "quote": "Third-party tested, every batch", "name": "Marcus D.", "verified_label": "Verified buyer" } }
+      },
+      "block_order": ["review_1", "review_2", "review_3", "review_4", "review_5", "review_6", "review_7", "review_8"],
+      "settings": { "eyebrow": "Reviews", "heading": "What Our Customers Are Saying.", "background": "#ffffff" }
+    },
+    "ap_press": {
+      "type": "ap-press",
+      "blocks": {
+        "logo_1": { "type": "logo", "settings": { "name": "SELF", "fallback": "ap-press-self.webp" } },
+        "logo_2": { "type": "logo", "settings": { "name": "Outside", "fallback": "ap-press-outside.webp" } },
+        "logo_3": { "type": "logo", "settings": { "name": "Women's Health", "fallback": "ap-press-womens-health.webp" } },
+        "logo_4": { "type": "logo", "settings": { "name": "Men's Health", "fallback": "ap-press-mens-health.webp" } },
+        "logo_5": { "type": "logo", "settings": { "name": "Forbes", "fallback": "ap-press-forbes.webp" } },
+        "logo_6": { "type": "logo", "settings": { "name": "Shape", "fallback": "ap-press-shape.webp" } }
+      },
+      "block_order": ["logo_1", "logo_2", "logo_3", "logo_4", "logo_5", "logo_6"],
+      "settings": { "heading": "Dont take our whey for it", "background": "#ffffff" }
+    },
+    "ap_bundle": {
+      "type": "ap-bundle",
+      "blocks": {
+        "benefit_1": { "type": "benefit", "settings": { "text": "15% off every bag of native whey" } },
+        "benefit_2": { "type": "benefit", "settings": { "text": "Free shipping, always" } },
+        "benefit_3": { "type": "benefit", "settings": { "text": "Skip, swap or cancel anytime" } }
+      },
+      "block_order": ["benefit_1", "benefit_2", "benefit_3"],
+      "settings": {
+        "product": "customisable-bundle",
+        "background": "#fbec00",
+        "eyebrow": "Bundle and save 20%",
+        "heading": "Save 20% when you bundle Creatine",
+        "text": "<p>Get your whey and creatine delivered together and save up to $15 every month.</p>",
+        "addon_title": "Get a free shaker with your stack",
+        "addon_text": "Our legendary shaker, free with every stack",
+        "subscribe_discount": 20,
+        "subscribe_chip": "Save 20%",
+        "subscribe_label": "Subscribe & Save 15%",
+        "once_label": "One Time Purchase",
+        "price_suffix": "/mo",
+        "savings_label": "[amount] savings",
+        "button_label": "Select your flavour"
+      }
+    },
+    "ap_goals": {
+      "type": "ap-goals",
+      "blocks": {
+        "goal_1": { "type": "goal", "settings": { "fallback": "ap-goal-strength.webp", "line_1": "Build", "line_2": "Strength", "link": "shopify://collections/all" } },
+        "goal_2": { "type": "goal", "settings": { "fallback": "ap-goal-recover.webp", "line_1": "Recover", "line_2": "Faster", "link": "shopify://collections/all" } },
+        "goal_3": { "type": "goal", "settings": { "fallback": "ap-goal-weight.webp", "line_1": "Manage", "line_2": "Weight", "link": "shopify://collections/weight-management" } },
+        "goal_4": { "type": "goal", "settings": { "fallback": "ap-goal-mobility.webp", "line_1": "Support", "line_2": "Mobility", "link": "shopify://collections/all" } }
+      },
+      "block_order": ["goal_1", "goal_2", "goal_3", "goal_4"],
+      "settings": {
+        "eyebrow": "Shop by goals",
+        "heading": "What Moves You?",
+        "background": "#1a1a1a",
+        "show_calculator": true,
+        "calc_eyebrow": "Protein calculator",
+        "calc_heading": "Find out how much protein you actually need.",
+        "calc_text": "Answer a few questions about your training and we’ll point you to a daily target and the goal to shop. Takes about a minute.",
+        "calc_button_label": "Calculate now"
+      }
+    },
+    "ap_knowledge": {
+      "type": "ap-knowledge",
+      "blocks": {
+        "topic_1": { "type": "topic", "settings": { "label": "Protein" } },
+        "topic_2": { "type": "topic", "settings": { "label": "Creatine" } },
+        "topic_3": { "type": "topic", "settings": { "label": "Hydration" } },
+        "topic_4": { "type": "topic", "settings": { "label": "Recovery" } },
+        "article_1": { "type": "article", "settings": { "fallback": "ap-article-1.webp", "size": "featured", "badge": "Featured", "title": "What is Native Whey?", "text": "Native whey is the least-processed whey protein available.", "link_label": "Read the guide", "topic": "protein" } },
+        "article_2": { "type": "article", "settings": { "fallback": "ap-article-2.webp", "size": "regular", "title": "The recovery trigger", "text": "2.6g per serving crosses the threshold that tells your muscles to rebuild. Miss it and repair stalls.", "link_label": "Read more", "topic": "protein, recovery" } },
+        "article_3": { "type": "article", "settings": { "fallback": "ap-article-3.webp", "size": "regular", "title": "The purest creatine", "text": "German-made monohydrate under stricter quality control. 5g per serving, unflavoured.", "link_label": "Read more", "topic": "protein, creatine" } },
+        "article_4": { "type": "article", "settings": { "fallback": "ap-article-4.webp", "size": "regular", "title": "Tested every batch", "text": "Not a sample — every batch is screened by a third-party lab before it earns a label.", "link_label": "Read more", "topic": "protein, hydration" } }
+      },
+      "block_order": ["topic_1", "topic_2", "topic_3", "topic_4", "article_1", "article_2", "article_3", "article_4"],
+      "settings": {
+        "eyebrow": "Knowledge center",
+        "heading": "The Science Behind Your Fuel.",
+        "background": "#ffffff",
+        "show_search": true,
+        "search_placeholder": "Search ingredients, guides, myths…",
+        "search_button": "Search",
+        "filter_first": true
+      }
+    },
+    "ap_community": {
+      "type": "ap-community",
+      "blocks": {
+        "photo_1": { "type": "photo", "settings": { "fallback": "ap-community-1.webp", "width": "narrow" } },
+        "photo_2": { "type": "photo", "settings": { "fallback": "ap-community-2.webp", "width": "wide" } },
+        "photo_3": { "type": "photo", "settings": { "fallback": "ap-goal-mobility.webp", "width": "narrow" } },
+        "photo_4": { "type": "photo", "settings": { "fallback": "ap-community-3.webp", "width": "wide" } },
+        "photo_5": { "type": "photo", "settings": { "fallback": "ap-community-4.webp", "width": "narrow" } },
+        "photo_6": { "type": "photo", "settings": { "fallback": "ap-community-5.webp", "width": "wide" } }
+      },
+      "block_order": ["photo_1", "photo_2", "photo_3", "photo_4", "photo_5", "photo_6"],
+      "settings": { "hashtag": "#WhatMovesYou", "speed": 60, "background": "#1a1a1a" }
+    },
+    "ap_cta": {
+      "type": "ap-cta-band",
+      "settings": {
+        "eyebrow": "Whatever first place looks like for you",
+        "heading": "Now go build something.",
+        "button_label": "Start with protein",
+        "button_link": "shopify://collections/all",
+        "background": "#1a1a1a"
+      }
+    }
+  },
+  "order": ["ap_hero", "ap_usp", "ap_bestsellers", "ap_statements", "ap_why", "ap_reviews", "ap_press", "ap_bundle", "ap_goals", "ap_knowledge", "ap_community", "ap_cta"]
+}

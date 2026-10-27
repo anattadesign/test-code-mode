@@ -1,0 +1,386 @@
+{% comment %}
+  Section contract.
+  Customer reviews rail mixing photo, quote and video cards.
+  @example
+  <!-- Add Photo, Quote and Video blocks in any order -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+{%- assign s = section.settings -%}
+<div class="ap-section ap-reviews ap-pad" style="--ap-reviews-bg: {{ s.background }};">
+  <div class="ap-container ap-reviews__head">
+    {%- if s.eyebrow != blank -%}
+      <p class="ap-eyebrow">{{ s.eyebrow | escape }}</p>
+    {%- endif -%}
+    {%- if s.heading != blank -%}
+      <h2 class="ap-h2">{{ s.heading | escape }}</h2>
+    {%- endif -%}
+  </div>
+
+  <ap-rail-scroller class="ap-reviews__scroller">
+    <div class="ap-rail ap-reviews__rail" data-rail>
+      {%- for block in section.blocks -%}
+        {%- assign b = block.settings -%}
+        {%- case block.type -%}
+          {%- when 'photo' -%}
+            <figure class="ap-review" {{ block.shopify_attributes }}>
+              <div class="ap-review__frame">
+                {% render 'ap-image',
+                  image: b.image,
+                  fallback: b.fallback,
+                  fallback_width: 700,
+                  fallback_height: 933,
+                  alt: b.caption,
+                  class: 'ap-img-cover',
+                  sizes: '(min-width: 990px) 300px, 280px',
+                  widths: '300, 450, 600'
+                %}
+              </div>
+              {%- if b.caption != blank -%}
+                <figcaption class="ap-review__caption">{{ b.caption | escape }}</figcaption>
+              {%- endif -%}
+            </figure>
+          {%- when 'quote' -%}
+            <figure class="ap-review" {{ block.shopify_attributes }}>
+              <blockquote class="ap-review__frame ap-review__quote ap-review__quote--{{ b.style }}">
+                {%- if b.stars != blank -%}
+                  <span class="ap-review__stars" aria-hidden="true">{{ b.stars | escape }}</span>
+                {%- endif -%}
+                <p class="ap-review__text">“{{ b.quote | escape }}”</p>
+                <footer class="ap-review__by">
+                  <span class="ap-review__name">{{ b.name | escape }}</span>
+                  {%- if b.verified_label != blank -%}
+                    <span class="ap-review__verified">
+                      {{- b.verified_label | escape -}}
+                      {%- render 'ap-icon', name: 'verified' -%}
+                    </span>
+                  {%- endif -%}
+                </footer>
+              </blockquote>
+            </figure>
+          {%- when 'video' -%}
+            <figure class="ap-review" {{ block.shopify_attributes }}>
+              <ap-video-card class="ap-review__frame ap-review__video">
+                <div class="ap-review__poster" data-video-target>
+                  {%- if b.video != blank and b.poster == blank -%}
+                    {{ b.video.preview_image | image_url: width: 600 | image_tag: class: 'ap-img-cover', loading: 'lazy', alt: '' }}
+                  {%- else -%}
+                    {% render 'ap-image',
+                      image: b.poster,
+                      fallback: 'ap-review-video.webp',
+                      fallback_width: 700,
+                      fallback_height: 1244,
+                      alt: '',
+                      class: 'ap-img-cover',
+                      sizes: '(min-width: 990px) 300px, 280px',
+                      widths: '300, 450, 600'
+                    %}
+                  {%- endif -%}
+                </div>
+                {%- if b.video != blank -%}
+                  <button type="button" class="ap-review__play ap-glass" data-video-play aria-label="{{ 'accessibility.play_video' | t }}">
+                    {%- render 'ap-icon', name: 'play' -%}
+                  </button>
+                  <template>
+                    {{ b.video | video_tag: autoplay: true, playsinline: true, controls: true, class: 'ap-img-cover' }}
+                  </template>
+                {%- else -%}
+                  <span class="ap-review__play ap-glass" aria-hidden="true">{%- render 'ap-icon', name: 'play' -%}</span>
+                {%- endif -%}
+              </ap-video-card>
+              {%- if b.caption != blank -%}
+                <figcaption class="ap-review__caption">{{ b.caption | escape }}</figcaption>
+              {%- endif -%}
+            </figure>
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+    {% render 'ap-rail-nav', label: s.heading %}
+  </ap-rail-scroller>
+</div>
+
+{% stylesheet %}
+  html .ap-reviews {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    background: var(--ap-reviews-bg);
+  }
+
+  html .ap-reviews__head {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  html .ap-reviews__scroller {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  html .ap-reviews__rail {
+    --ap-rail-gap: 12px;
+    align-items: flex-start;
+  }
+
+  html .ap-review {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 280px;
+    margin: 0;
+  }
+
+  html .ap-review__frame {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 498px;
+    margin: 0;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--ap-off-white);
+  }
+
+  html .ap-review__caption {
+    font-size: 12px;
+    line-height: 18px;
+    color: rgb(26 26 26 / 0.6);
+  }
+
+  html .ap-review__quote {
+    gap: 20px;
+    padding: 28px;
+    text-align: center;
+  }
+
+  html .ap-review__quote--dark {
+    background: var(--ap-ink);
+    color: var(--ap-yellow);
+    --ap-icon-contrast: var(--ap-ink);
+  }
+
+  html .ap-review__quote--yellow {
+    background: var(--ap-yellow);
+    color: var(--ap-ink);
+    --ap-icon-contrast: var(--ap-yellow);
+  }
+
+  html .ap-review__stars {
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 19px;
+    letter-spacing: 0.1em;
+  }
+
+  html .ap-review__text {
+    margin: 0;
+    font-family: var(--ap-font-display);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 34px;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  html .ap-review__by {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--ap-font-mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  html .ap-review__name {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 16px;
+  }
+
+  html .ap-review__verified {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+  }
+
+  html .ap-review__verified {
+    color: color-mix(in srgb, currentColor 60%, transparent);
+  }
+
+  html .ap-review__verified .ap-icon {
+    color: var(--ap-yellow);
+  }
+
+  html .ap-review__quote--yellow .ap-review__verified .ap-icon {
+    color: var(--ap-ink);
+  }
+
+  html .ap-review__poster {
+    position: absolute;
+    inset: 0;
+  }
+
+  html .ap-review__play {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    color: var(--ap-off-white);
+    cursor: pointer;
+  }
+
+  html .ap-review__play .ap-icon {
+    margin-inline-start: 3px;
+  }
+
+  html .ap-review__video[playing] .ap-review__play {
+    display: none;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-reviews {
+      gap: 48px;
+    }
+
+    html .ap-reviews__head {
+      align-items: center;
+      text-align: center;
+    }
+
+    html .ap-reviews__rail {
+      --ap-rail-gap: 24px;
+      --ap-rail-pad: 0px;
+    }
+
+    html .ap-review {
+      width: 300px;
+      gap: 14px;
+    }
+
+    html .ap-review__frame {
+      height: 533px;
+    }
+
+    html .ap-review__stars {
+      font-family: var(--ap-font-display);
+      font-size: 20px;
+      line-height: 24px;
+      letter-spacing: 0;
+    }
+
+    html .ap-review__text {
+      line-height: 32px;
+      letter-spacing: 0;
+    }
+
+    html .ap-review__name {
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    html .ap-review__verified {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 17px;
+    }
+
+    html .ap-reviews .ap-rail-nav {
+      width: 100%;
+      max-width: calc(var(--ap-max) + var(--ap-gutter) * 2);
+      margin-inline: auto;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent reviews",
+  "class": "ap-reviews-section",
+  "settings": [
+    { "type": "text", "id": "eyebrow", "label": "Eyebrow", "default": "Reviews" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "What our customers are saying." },
+    { "type": "color", "id": "background", "label": "Background", "default": "#ffffff" }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        {
+          "type": "select",
+          "id": "fallback",
+          "label": "Design image (when no image picked)",
+          "options": [
+            { "value": "ap-review-1.webp", "label": "Photo 1" },
+            { "value": "ap-review-2.webp", "label": "Photo 2" },
+            { "value": "ap-review-3.webp", "label": "Photo 3" }
+          ],
+          "default": "ap-review-1.webp"
+        },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "@coach.charles" }
+      ]
+    },
+    {
+      "type": "quote",
+      "name": "Quote",
+      "settings": [
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "dark", "label": "Dark" },
+            { "value": "yellow", "label": "Yellow" }
+          ],
+          "default": "dark"
+        },
+        { "type": "text", "id": "stars", "label": "Stars", "default": "★★★★★" },
+        { "type": "textarea", "id": "quote", "label": "Quote", "default": "Mixes clean, no chalk" },
+        { "type": "text", "id": "name", "label": "Name", "default": "Marcus D." },
+        { "type": "text", "id": "verified_label", "label": "Verified label", "default": "Verified buyer" }
+      ]
+    },
+    {
+      "type": "video",
+      "name": "Video",
+      "settings": [
+        { "type": "video", "id": "video", "label": "Video" },
+        { "type": "image_picker", "id": "poster", "label": "Poster image" },
+        { "type": "text", "id": "caption", "label": "Caption", "default": "@coach.charles" }
+      ]
+    }
+  ],
+  "max_blocks": 16,
+  "presets": [
+    {
+      "name": "Ascent reviews",
+      "blocks": [
+        { "type": "photo", "settings": { "fallback": "ap-review-1.webp" } },
+        { "type": "quote", "settings": { "style": "dark", "quote": "Mixes clean, no chalk", "name": "Marcus D." } },
+        { "type": "video" },
+        { "type": "quote", "settings": { "style": "yellow", "quote": "Recovery days feel completely different", "name": "Marcus D." } },
+        { "type": "photo", "settings": { "fallback": "ap-review-2.webp" } },
+        { "type": "quote", "settings": { "style": "dark", "quote": "The only one I re-order without thinking", "name": "Priya S." } },
+        { "type": "photo", "settings": { "fallback": "ap-review-3.webp" } },
+        { "type": "quote", "settings": { "style": "yellow", "quote": "Third-party tested, every batch", "name": "Marcus D." } }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

@@ -1,0 +1,124 @@
+{% comment %}
+  Section contract.
+  Ascent announcement strip: short messages separated by a mark. Static and centred
+  on desktop; scrolls as a marquee on small screens or when the messages overflow.
+  @example
+  <!-- Add to the header group, then add one Message block per announcement -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+{%- capture messages -%}
+  {%- for block in section.blocks -%}
+    {%- unless forloop.first -%}
+      <span class="ap-announce__sep" aria-hidden="true">{{ section.settings.separator | escape }}</span>
+    {%- endunless -%}
+    {%- if block.settings.link != blank -%}
+      <a href="{{ block.settings.link }}" class="ap-announce__msg" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</a>
+    {%- else -%}
+      <span class="ap-announce__msg" {{ block.shopify_attributes }}>{{ block.settings.text | escape }}</span>
+    {%- endif -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+{%- if section.blocks.size > 0 -%}
+  <div
+    class="ap-section ap-announce"
+    style="--ap-announce-bg: {{ section.settings.background }}; --ap-announce-fg: {{ section.settings.text_color }}; --ap-announce-accent: {{ section.settings.separator_color }};"
+  >
+    <div class="ap-announce__static">{{ messages }}</div>
+    <div class="ap-marquee ap-announce__marquee" style="--ap-marquee-duration: {{ section.settings.speed }}s; --ap-marquee-gap: 8px;">
+      <div class="ap-marquee__track">
+        {{ messages }}<span class="ap-announce__sep" aria-hidden="true">{{ section.settings.separator | escape }}</span>
+      </div>
+      <div class="ap-marquee__track" aria-hidden="true">
+        {{ messages }}<span class="ap-announce__sep">{{ section.settings.separator | escape }}</span>
+      </div>
+    </div>
+  </div>
+{%- endif -%}
+
+{% stylesheet %}
+  html .ap-announce {
+    background: var(--ap-announce-bg);
+    color: var(--ap-announce-fg);
+    padding-block: 12px;
+  }
+
+  html .ap-announce__static,
+  html .ap-announce .ap-marquee__track {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  html .ap-announce__msg {
+    font-family: var(--ap-font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    line-height: 17px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: inherit;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  html .ap-announce__sep {
+    font-family: var(--ap-font-mono);
+    font-weight: 500;
+    font-size: 10px;
+    line-height: 14px;
+    letter-spacing: 0.12em;
+    color: var(--ap-announce-accent);
+  }
+
+  html .ap-announce__static {
+    display: none;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-announce__static {
+      display: flex;
+    }
+
+    html .ap-announce__marquee {
+      display: none;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent announcements",
+  "class": "ap-announce-section",
+  "settings": [
+    { "type": "text", "id": "separator", "label": "Separator", "default": "///" },
+    { "type": "range", "id": "speed", "label": "Mobile scroll duration", "min": 10, "max": 60, "step": 2, "unit": "s", "default": 20 },
+    { "type": "color", "id": "background", "label": "Background", "default": "#1a1a1a" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#d0d0d0" },
+    { "type": "color", "id": "separator_color", "label": "Separator", "default": "#fbec00" }
+  ],
+  "blocks": [
+    {
+      "type": "message",
+      "name": "Message",
+      "settings": [
+        { "type": "text", "id": "text", "label": "Text", "default": "Free shipping on orders $75+" },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 6,
+  "presets": [
+    {
+      "name": "Ascent announcements",
+      "blocks": [
+        { "type": "message", "settings": { "text": "Free shipping on orders $75+" } },
+        { "type": "message", "settings": { "text": "Subscribe & save 15% on every order" } }
+      ]
+    }
+  ],
+  "enabled_on": { "groups": ["header"] }
+}
+{% endschema %}

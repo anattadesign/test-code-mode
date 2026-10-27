@@ -141,7 +141,8 @@
         "background_color": "{{ settings.color_palette.background }}",
         "padding-block-start": 30,
         "padding-block-end": 30
-      }
+      },
+      "disabled": true
     },
     "footer_utilities_jLGE8U": {
       "type": "footer-utilities",
@@ -189,10 +190,49 @@
         "background_color": "{{ settings.color_palette.background }}",
         "padding-block-start": 20,
         "padding-block-end": 48
+      },
+      "disabled": true
+    },
+    "ap_footer": {
+      "type": "ap-footer",
+      "blocks": {
+        "col_shop": {
+          "type": "menu",
+          "settings": {
+            "heading": "Shop",
+            "menu": "main-menu"
+          }
+        },
+        "col_learn": {
+          "type": "menu",
+          "settings": {
+            "heading": "Learn",
+            "menu": ""
+          }
+        },
+        "col_support": {
+          "type": "menu",
+          "settings": {
+            "heading": "Support",
+            "menu": "footer"
+          }
+        }
+      },
+      "block_order": [
+        "col_shop",
+        "col_learn",
+        "col_support"
+      ],
+      "settings": {
+        "tagline": "Clean, honest nutrition.\nMade in Colorado.",
+        "legal_menu": "footer",
+        "copyright": "Ascent Protein",
+        "background": "#1a1a1a"
       }
     }
   },
   "order": [
+    "ap_footer",
     "footer_m9NzUG",
     "footer_utilities_jLGE8U"
   ]

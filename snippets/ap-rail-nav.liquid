@@ -1,0 +1,20 @@
+{%- doc -%}
+  Previous/next buttons and progress track for an `ap-rail-scroller` rail.
+  Hidden by script when the rail does not overflow.
+
+  @param {string} [label] - Accessible name for the rail controls
+
+  @example
+  {% render 'ap-rail-nav', label: 'Bestsellers' %}
+{%- enddoc -%}
+<div class="ap-rail-nav" data-rail-nav role="group" aria-label="{{ label | default: 'Carousel controls' | escape }}">
+  <button type="button" class="ap-rail-nav__btn" data-rail-prev aria-label="{{ 'accessibility.slideshow_previous' | t }}">
+    {%- render 'ap-icon', name: 'arrow-left' -%}
+  </button>
+  <div class="ap-rail-nav__track" data-rail-track aria-hidden="true">
+    <span class="ap-rail-nav__thumb"></span>
+  </div>
+  <button type="button" class="ap-rail-nav__btn" data-rail-next aria-label="{{ 'accessibility.slideshow_next' | t }}">
+    {%- render 'ap-icon', name: 'arrow-right' -%}
+  </button>
+</div>
