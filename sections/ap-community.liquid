@@ -1,0 +1,180 @@
+{% comment %}
+  Section contract.
+  Community strip: an endlessly scrolling row of portrait and landscape photos with a
+  hashtag pill centred over it.
+  @example
+  <!-- Add Photo blocks (narrow or wide) and set the hashtag -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+{%- capture photos -%}
+  {%- for block in section.blocks -%}
+    {%- assign b = block.settings -%}
+    <div class="ap-community__photo ap-community__photo--{{ b.width }}" {{ block.shopify_attributes }}>
+      {% render 'ap-image',
+        image: b.image,
+        fallback: b.fallback,
+        fallback_width: 1000,
+        fallback_height: 750,
+        alt: b.alt,
+        class: 'ap-img-cover',
+        sizes: '(min-width: 990px) 560px, 373px',
+        widths: '240, 375, 560, 750, 1120'
+      %}
+    </div>
+  {%- endfor -%}
+{%- endcapture -%}
+
+<div class="ap-section ap-community" style="--ap-community-bg: {{ section.settings.background }};">
+  <div class="ap-community__strip">
+    <div class="ap-marquee" style="--ap-marquee-duration: {{ section.settings.speed }}s; --ap-marquee-gap: 8px;">
+      <div class="ap-marquee__track">{{ photos }}</div>
+      <div class="ap-marquee__track" aria-hidden="true">{{ photos }}</div>
+    </div>
+
+    {%- if section.settings.hashtag != blank -%}
+      {%- if section.settings.link != blank -%}
+        <a href="{{ section.settings.link }}" class="ap-community__tag ap-glass">{{ section.settings.hashtag | escape }}</a>
+      {%- else -%}
+        <p class="ap-community__tag ap-glass">{{ section.settings.hashtag | escape }}</p>
+      {%- endif -%}
+    {%- endif -%}
+  </div>
+</div>
+
+{% stylesheet %}
+  html .ap-community {
+    padding-block: 48px;
+    background: var(--ap-community-bg);
+  }
+
+  html .ap-community__strip {
+    position: relative;
+    display: grid;
+    place-items: center;
+  }
+
+  html .ap-community__strip > * {
+    grid-area: 1 / 1;
+  }
+
+  html .ap-community .ap-marquee {
+    width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  html .ap-community__photo {
+    position: relative;
+    flex: none;
+    height: 280px;
+    width: 210px;
+    overflow: hidden;
+  }
+
+  html .ap-community__photo--wide {
+    width: 373px;
+  }
+
+  html .ap-community__tag {
+    position: relative;
+    z-index: 1;
+    margin: 0;
+    padding: 16px 24px;
+    border: 1px solid var(--ap-yellow);
+    border-radius: 32px;
+    background: rgb(26 26 26 / 0.2);
+    font-family: var(--ap-font-display);
+    font-weight: 700;
+    font-size: 32px;
+    line-height: 30px;
+    color: var(--ap-yellow);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-community {
+      padding-block: 80px;
+    }
+
+    html .ap-community__photo {
+      height: 420px;
+      width: 315px;
+    }
+
+    html .ap-community__photo--wide {
+      width: 560px;
+    }
+
+    html .ap-community__tag {
+      padding: 16px 24px 20px;
+      border-width: 2px;
+      border-radius: 999px;
+      font-size: clamp(56px, 7.2vw, 104px);
+      line-height: 0.92;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent community",
+  "class": "ap-community-section",
+  "settings": [
+    { "type": "text", "id": "hashtag", "label": "Hashtag", "default": "#WhatMovesYou" },
+    { "type": "url", "id": "link", "label": "Hashtag link" },
+    { "type": "range", "id": "speed", "label": "Scroll duration", "min": 20, "max": 120, "step": 5, "unit": "s", "default": 60 },
+    { "type": "color", "id": "background", "label": "Background", "default": "#1a1a1a" }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        { "type": "image_picker", "id": "image", "label": "Image" },
+        {
+          "type": "select",
+          "id": "fallback",
+          "label": "Design image (when no image picked)",
+          "options": [
+            { "value": "ap-community-1.webp", "label": "Photo 1" },
+            { "value": "ap-community-2.webp", "label": "Photo 2" },
+            { "value": "ap-community-3.webp", "label": "Photo 3" },
+            { "value": "ap-community-4.webp", "label": "Photo 4" },
+            { "value": "ap-community-5.webp", "label": "Photo 5" },
+            { "value": "ap-goal-mobility.webp", "label": "Photo 6" }
+          ],
+          "default": "ap-community-1.webp"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Width",
+          "options": [
+            { "value": "narrow", "label": "Narrow" },
+            { "value": "wide", "label": "Wide" }
+          ],
+          "default": "narrow"
+        },
+        { "type": "text", "id": "alt", "label": "Alt text" }
+      ]
+    }
+  ],
+  "max_blocks": 16,
+  "presets": [
+    {
+      "name": "Ascent community",
+      "blocks": [
+        { "type": "photo", "settings": { "fallback": "ap-community-1.webp", "width": "narrow" } },
+        { "type": "photo", "settings": { "fallback": "ap-community-2.webp", "width": "wide" } },
+        { "type": "photo", "settings": { "fallback": "ap-goal-mobility.webp", "width": "narrow" } },
+        { "type": "photo", "settings": { "fallback": "ap-community-3.webp", "width": "wide" } },
+        { "type": "photo", "settings": { "fallback": "ap-community-4.webp", "width": "narrow" } },
+        { "type": "photo", "settings": { "fallback": "ap-community-5.webp", "width": "wide" } }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}

@@ -1,0 +1,149 @@
+{% comment %}
+  Section contract.
+  "As seen in" press strip: centred eyebrow and a row of publication logos
+  (two-column grid on mobile).
+  @example
+  <!-- Add Logo blocks; upload a logo or pick one of the bundled design logos -->
+{% endcomment %}
+{% render 'ap-base' %}
+
+<div class="ap-section ap-press" style="--ap-press-bg: {{ section.settings.background }};">
+  {%- if section.settings.heading != blank -%}
+    <h2 class="ap-eyebrow ap-press__title">{{ section.settings.heading | escape }}</h2>
+  {%- endif -%}
+  <ul class="ap-press__logos" role="list">
+    {%- for block in section.blocks -%}
+      {%- assign b = block.settings -%}
+      <li class="ap-press__logo" {{ block.shopify_attributes }}>
+        {%- if b.link != blank -%}<a href="{{ b.link }}" aria-label="{{ b.name | escape }}">{%- endif -%}
+        {% render 'ap-image',
+          image: b.image,
+          fallback: b.fallback,
+          fallback_width: 300,
+          fallback_height: 75,
+          alt: b.name,
+          sizes: '120px',
+          widths: '120, 240, 360'
+        %}
+        {%- if b.link != blank -%}</a>{%- endif -%}
+      </li>
+    {%- endfor -%}
+  </ul>
+</div>
+
+{% stylesheet %}
+  html .ap-press {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 48px var(--ap-gutter);
+    background: var(--ap-press-bg);
+  }
+
+  html .ap-press__title {
+    text-align: center;
+  }
+
+  html .ap-press__logos {
+    display: grid;
+    grid-template-columns: repeat(2, 102px);
+    justify-content: center;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  html .ap-press__logo {
+    display: grid;
+    place-items: center;
+    height: 24px;
+  }
+
+  html .ap-press__logo a {
+    display: contents;
+  }
+
+  html .ap-press__logo img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    filter: grayscale(1);
+    opacity: 0.85;
+    transition: opacity 0.2s, filter 0.2s;
+  }
+
+  html .ap-press__logo:hover img {
+    filter: none;
+    opacity: 1;
+  }
+
+  @media screen and (min-width: 990px) {
+    html .ap-press {
+      padding-block: 56px;
+    }
+
+    html .ap-press__logos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 64px;
+    }
+
+    html .ap-press__logo {
+      width: 120px;
+      height: 28px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Ascent press",
+  "class": "ap-press-section",
+  "settings": [
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Dont take our whey for it" },
+    { "type": "color", "id": "background", "label": "Background", "default": "#ffffff" }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        { "type": "text", "id": "name", "label": "Publication name", "default": "Forbes" },
+        { "type": "image_picker", "id": "image", "label": "Logo" },
+        {
+          "type": "select",
+          "id": "fallback",
+          "label": "Design logo (when no logo uploaded)",
+          "options": [
+            { "value": "ap-press-self.webp", "label": "SELF" },
+            { "value": "ap-press-outside.webp", "label": "Outside" },
+            { "value": "ap-press-womens-health.webp", "label": "Women's Health" },
+            { "value": "ap-press-mens-health.webp", "label": "Men's Health" },
+            { "value": "ap-press-forbes.webp", "label": "Forbes" },
+            { "value": "ap-press-shape.webp", "label": "Shape" }
+          ],
+          "default": "ap-press-forbes.webp"
+        },
+        { "type": "url", "id": "link", "label": "Link" }
+      ]
+    }
+  ],
+  "max_blocks": 12,
+  "presets": [
+    {
+      "name": "Ascent press",
+      "blocks": [
+        { "type": "logo", "settings": { "name": "SELF", "fallback": "ap-press-self.webp" } },
+        { "type": "logo", "settings": { "name": "Outside", "fallback": "ap-press-outside.webp" } },
+        { "type": "logo", "settings": { "name": "Women's Health", "fallback": "ap-press-womens-health.webp" } },
+        { "type": "logo", "settings": { "name": "Men's Health", "fallback": "ap-press-mens-health.webp" } },
+        { "type": "logo", "settings": { "name": "Forbes", "fallback": "ap-press-forbes.webp" } },
+        { "type": "logo", "settings": { "name": "Shape", "fallback": "ap-press-shape.webp" } }
+      ]
+    }
+  ],
+  "disabled_on": { "groups": ["header", "footer"] }
+}
+{% endschema %}
