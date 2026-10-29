@@ -62,3 +62,28 @@
     <p class="coupon-picker__message" data-message role="status" hidden></p>
   </div>
 </coupon-picker>
+{%- comment -%}
+  Fallback loader: if the CDN copy of coupon-picker.js didn't run (dev-version
+  CDN URLs often 404 during `shopify app dev`), load the same files from the
+  app through the store's /apps/coupons proxy. Does nothing when the CDN works.
+{%- endcomment -%}
+<script>
+  (function () {
+    if (window.__couponPickerFallback) return;
+    window.__couponPickerFallback = true;
+    function load() {
+      if (window.customElements.get('coupon-picker')) return;
+      var base = {{ routes.root_url | json }}.replace(/\/$/, '') + '/apps/coupons/assets/';
+      var css = document.createElement('link');
+      css.rel = 'stylesheet';
+      css.href = base + 'coupon-picker.css';
+      document.head.appendChild(css);
+      var js = document.createElement('script');
+      js.src = base + 'coupon-picker.js';
+      js.defer = true;
+      document.head.appendChild(js);
+    }
+    if (document.readyState === 'complete') load();
+    else window.addEventListener('load', load);
+  })();
+</script>
