@@ -3,12 +3,11 @@
 # it fills in client_id, name and the URLs below.
 client_id = "876c6e13ec9c73782b6f7dfd90cffafb"
 name = "Coupons & Tipping"
-application_url = "https://example.com"
+application_url = "https://coupons-tipping.star-rating.workers.dev"
 embedded = true
 
 [build]
-automatically_update_urls_on_dev = true
-include_config_on_deploy = true
+automatically_update_urls_on_dev = false
 
 [access_scopes]
 # write_discounts        coupon dashboard (create, edit, activate, deactivate, delete discount codes)
@@ -20,17 +19,17 @@ include_config_on_deploy = true
 scopes = "write_discounts,write_customers,write_products,write_publications,write_cart_transforms,write_validations"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://coupons-tipping.star-rating.workers.dev/auth/callback" ]
 
 # Servers that the app's extensions call from storefront and checkout pages.
 # The checkout coupon picker fetches /api/checkout/coupons from the app server,
 # so this must match application_url (set it to the production host before deploying).
 [network_access]
-allowed_sources = ["https://phrase-delight-independently-affair.trycloudflare.com"]
+allowed_sources = ["https://coupons-tipping.star-rating.workers.dev"]
 
 [app_proxy]
 # The storefront calls /apps/coupons/* and Shopify forwards the request, signed, to /proxy/*
-url = "https://example.com/proxy"
+url = "https://coupons-tipping.star-rating.workers.dev/proxy"
 subpath = "coupons"
 prefix = "apps"
 

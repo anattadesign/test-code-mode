@@ -1,4 +1,4 @@
-# Coupons & Tipping — handoff (2026-10-29)
+# Coupons & Tipping — handoff (updated 2026-10-29, production live)
 
 ## What it is
 A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopify.com`).
@@ -40,39 +40,20 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 - **Guard:** `tip-guard` blocks checkout when the tip isn't allowed.
 - **Keeping coupons off the tip:** "All products" coupons target the automated collection `discountable-products` (540854944046), which excludes tag `app-tip`.
 
-## Hosting: Cloudflare Workers (code done, not deployed)
-- Last commit: `eade64b`.
-- **What changed:**
-  - The server runs as Worker `coupons-tipping` on the workers.dev free plan, using `@cloudflare/vite-plugin` with `workers/app.ts` as the entry.
-  - It uses Shopify's web-api adapter.
-  - Sessions live in D1 database `coupons-tipping-sessions` (`app/lib/d1-session-storage.server.ts`, `migrations/0001_sessions.sql`).
-  - Prisma and Docker are removed.
-- **Settings:** in `wrangler.jsonc` `vars`. The secret `SHOPIFY_API_SECRET` is set with `wrangler secret put`.
-- **Verified locally in workerd:**
-  - pages render
-  - webhooks and proxy requests without a valid signature are rejected
-  - a correctly signed proxy request returns 200
-  - no secret in the build
-- **Blocker:** the Cloudflare token (Vision secrets `YJ_CLOUDFLARE_ACCOUNT_ID` and `YJ_CLOUDFLARE_API_TOKEN`) has client IP filtering. Cloudflare rejects the sandbox's address `2a06:98c0:3600::103` with error 9109.
-  - The user has to remove the filter, or add this address, and make sure the token has Workers Scripts Edit and D1 Edit.
-  - The token expires 2026-11-05.
+## Hosting: Cloudflare Workers (LIVE since 2026-10-29)
+- **URL:** https://coupons-tipping.star-rating.workers.dev (Worker `coupons-tipping`, free plan, account "Yogesh@anattadesign.com's Account").
+- **Sessions:** D1 `coupons-tipping-sessions` (id 802d3967-964f-4543-8619-9c0ae78c9be7); table from `migrations/0001_sessions.sql`. Don't touch `star-rating-db` (another project).
+- **Secret:** `SHOPIFY_API_SECRET` set with `wrangler secret put` (piped from `shopify app env show`, never printed).
+- **Shopify:** version `coupons-tipping-2` released. `shopify app dev` is stopped and its preview removed (`shopify app dev clean`).
+- **Cloudflare token:** Vision secrets `YJ_CLOUDFLARE_ACCOUNT_ID` / `YJ_CLOUDFLARE_API_TOKEN` (export them as `CLOUDFLARE_ACCOUNT_ID` / `CLOUDFLARE_API_TOKEN`). It **expires 2026-11-05**; roll or replace it before then.
+- **Verified live:** store URL `/apps/coupons/*` reaches the Worker (assets and eligible return 200); unsigned webhook/proxy requests rejected; cart transform 171475246 and validation "Tip guard" active; tipping config, tip product and `discountable-products` (96 products) intact.
+- **Free plan risk:** 10 ms CPU per request. If admin requests fail, Workers Paid ($5/month) fixes it.
 
-**Deploy steps once the token works** (run in `app/`, after `export CLOUDFLARE_ACCOUNT_ID=$YJ_CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN=$YJ_CLOUDFLARE_API_TOKEN`):
-1. `npx wrangler d1 create coupons-tipping-sessions`, then put the returned id into `wrangler.jsonc`.
-2. `npm run db:migrate`.
-3. `npx wrangler secret put SHOPIFY_API_SECRET`. Read the value from the Shopify CLI (`shopify app env show`); never print or commit it.
-4. `npm run deploy:worker`. This gives the URL `https://coupons-tipping.<subdomain>.workers.dev`.
-5. Replace the placeholder `coupons-tipping.example.workers.dev` and the old tunnel URL in these places:
-   - `wrangler.jsonc` `SHOPIFY_APP_URL`
-   - `react-router.config.ts` `allowedActionOrigins`
-   - `shopify.app.toml`: `application_url`, the redirect URL, `[app_proxy] url` (`…/proxy`), and `[network_access] allowed_sources`
-   - `extensions/checkout-coupons/src/config.js` `APP_URL`
-6. Redeploy the Worker. Then run `shopify app deploy`; the user agreed to release it. After that, stop `shopify app dev`.
-7. Smoke-test the admin, the cart picker and checkout against the Worker. Commit and push.
-
-**Free plan risk:** the CPU limit is 10 ms per request. If admin requests fail, Workers Paid ($5/month) fixes it.
+**Redeploy:** in `app/`: `npm run deploy:worker` (server), `npm run deploy -- --allow-updates` (Shopify extensions/config).
+**Logs:** `wrangler tail` is blocked from the sandbox; use Workers Observability (dashboard, or the `workers/observability/telemetry/query` API).
 
 ## Open items
+0. **Open the app once in Shopify admin** (link above). That creates the shop's session in D1; until then the storefront and checkout coupon lists are empty.
 1. **Protected customer data is not approved yet.** A `customers` query returns ACCESS_DENIED.
    - Until it's approved, the tip selector never shows and segment coupons can't check membership.
    - Request it at partners.shopify.com → Apps → Dev Dashboard apps → Coupons & Tipping → API access requests. Reason: app functionality; fields: Name and Email.
@@ -91,10 +72,7 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 
 ## Commands (run in `app/`)
 - **Checks:** `npm run typecheck && npm run lint && npm test && npm run build && npm run test:functions`, then `app-security .`
-- **Local dev:**
-  - `shopify app dev --store anatta-store.myshopify.com`. It runs in workerd; Vite passes the CLI's values to the Worker in dev only.
-  - Run `npx wrangler d1 migrations apply coupons-tipping-sessions --local` once first.
-  - Running dev rewrites the app's URLs to a tunnel. Run `npm run deploy` afterwards to restore production.
+- **Local dev:** `shopify app dev --store anatta-store.myshopify.com` runs in workerd (`npx wrangler d1 migrations apply coupons-tipping-sessions --local` once). `automatically_update_urls_on_dev = false`, so the tunnel won't replace production URLs, but the dev preview overrides the released version on the store: afterwards run `shopify app dev clean`, then re-check that the cart transform and Tip guard validation exist (they're removed with the preview; the app's Tipping → Set up recreates them).
 - **Push** (never store the token in git config):
   `H='!f(){ echo username=x-access-token; echo "password=$CODE_MODE_GIT_KEY"; }; f'; git -c credential.helper= -c credential.helper="$H" push origin master`
 

@@ -11,14 +11,14 @@
   "observability": { "enabled": true },
   "vars": {
     "SHOPIFY_API_KEY": "876c6e13ec9c73782b6f7dfd90cffafb",
-    "SHOPIFY_APP_URL": "https://coupons-tipping.example.workers.dev",
+    "SHOPIFY_APP_URL": "https://coupons-tipping.star-rating.workers.dev",
     "SCOPES": "write_discounts,write_customers,write_products,write_publications,write_cart_transforms,write_validations"
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "coupons-tipping-sessions",
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "802d3967-964f-4543-8619-9c0ae78c9be7",
       "migrations_dir": "migrations"
     }
   ]

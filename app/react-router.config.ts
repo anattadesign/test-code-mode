@@ -7,5 +7,5 @@ export default {
   // React Router 7.12+ rejects POST actions whose Origin differs from the request host.
   // Embedded admin requests come from admin.shopify.com; the production Worker host is
   // listed so its own form posts pass. Keep in sync with SHOPIFY_APP_URL in wrangler.jsonc.
-  allowedActionOrigins: ["coupons-tipping.example.workers.dev", "admin.shopify.com"],
+  allowedActionOrigins: ["coupons-tipping.star-rating.workers.dev", "admin.shopify.com"],
 } satisfies Config;

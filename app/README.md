@@ -68,8 +68,8 @@ npm run deploy:worker   # build + wrangler deploy
 npm run deploy          # release the Shopify app version (extensions, functions, config)
 ```
 
-Running `shopify app dev` against this app rewrites its URLs to a tunnel; run `npm run deploy`
-again afterwards to restore production. Local dev runs in workerd and uses a local D1:
+After `shopify app dev`, run `shopify app dev clean` (the dev preview overrides the released version
+and removes the cart transform/validation with it; re-run Tipping → Set up). Local dev uses a local D1:
 `npx wrangler d1 migrations apply coupons-tipping-sessions --local` once.
 
 ## Checks
