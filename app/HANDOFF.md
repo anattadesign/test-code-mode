@@ -20,7 +20,9 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
     - Extension names get "(Dev)" only while a dev command runs (`scripts/dev-names.mjs`); `npm run deploy` refuses to ship them. After a crash: `npm run dev:names:restore`.
     - Tipping → Set up is refused for the dev app on this store (`TIPPING_SETUP_BLOCKED_SHOPS`, set in `vite.config.ts` for dev only). Its tip guard would check the dev app's own customer flag and block real checkouts.
     - Coupons are real store data: editing or deleting one in the dev app changes it live.
-    - Dev sessions are in the local D1 copy (`.wrangler/state`), never the production database.
+    - Dev sessions are in the local D1 copy (`.wrangler/state`), never the production database. Don't create `.dev.vars` (it overrides the dev app's secret from the CLI).
+    - Both apps declare the app proxy `/apps/coupons`; on this store it stays with production (checked: requests reach the Worker). So the "(Dev)" theme blocks on the storefront call production's server.
+    - While dev runs, the 7 extension files show as modified (the "(Dev)" names). Don't commit them; `git add` specific files, or stop dev first.
   - Admin: https://admin.shopify.com/store/anatta-store/apps/876c6e13ec9c73782b6f7dfd90cffafb
 - **Themes**
   - The cart block is placed in "Code - End to End" #191274811694.
