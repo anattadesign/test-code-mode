@@ -8,5 +8,10 @@
   "removed": "No tip added.",
   "invalidAmount": "Enter an amount between {{min}} and {{max}}.",
   "error": "We couldn't update your tip. Try again.",
-  "notEditable": "The tip can't be changed in this checkout."
+  "notEditable": "The tip can't be changed in this checkout.",
+  "editorHeading": "Tip selector (hidden for this preview)",
+  "editorDisabled": "Tipping is turned off. Turn it on in the app under Tipping.",
+  "editorNotSetUp": "Tipping isn’t set up yet. Click “Set up tipping” in the app under Tipping.",
+  "editorNoCustomer": "Only logged-in customers whose “Allowed tipping” metafield is on see the tip selector. Shopify gives this block the customer only after protected customer data access is approved for the app.",
+  "editorNotAllowed": "This customer’s “Allowed tipping” metafield is off, so they don’t see the tip selector."
 }

@@ -23,5 +23,7 @@
   "msg_minimum_quantity": "Coupon {{code}} needs {{count}} or more items.",
   "msg_applicable": "Coupon {{code}} can't be combined with your other discounts or doesn't apply to these items.",
   "msg_error": "Coupon {{code}} couldn't be applied. Try again.",
-  "msg_not_supported": "Coupons can't be changed in this checkout."
+  "msg_not_supported": "Coupons can't be changed in this checkout.",
+  "editorFailedHeading": "Coupons couldn’t load",
+  "editorFailed": "The block couldn’t reach the app. Allow network access for the app (Dev Dashboard → API access) and check the app URL is reachable. Shoppers still see the manual code field."
 }

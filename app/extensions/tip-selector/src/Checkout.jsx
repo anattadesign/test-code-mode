@@ -68,7 +68,22 @@ function TipSelector() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subtotal]);
 
-  if (!visible) return null;
+  if (!visible) {
+    // Buyers never see a hidden tip selector; merchants in the checkout editor get the reason.
+    if (!shopify.extension.editor) return null;
+    const reason = !config?.enabled
+      ? t("editorDisabled")
+      : !config.variantId
+        ? t("editorNotSetUp")
+        : !customer
+          ? t("editorNoCustomer")
+          : t("editorNotAllowed");
+    return (
+      <s-banner tone="info" heading={t("editorHeading")}>
+        {reason}
+      </s-banner>
+    );
+  }
 
   if (!canEdit) {
     return (

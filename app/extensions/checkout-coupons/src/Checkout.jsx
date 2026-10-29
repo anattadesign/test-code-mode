@@ -117,6 +117,12 @@ function CouponPicker() {
       <s-stack gap="base">
         {state.loading ? <s-text color="subdued">{t("loading")}</s-text> : null}
 
+        {state.failed && shopify.extension.editor ? (
+          <s-banner tone="warning" heading={t("editorFailedHeading")}>
+            {t("editorFailed")}
+          </s-banner>
+        ) : null}
+
         {!state.loading && state.coupons.length === 0 && !state.failed ? (
           <s-text color="subdued">{state.loggedIn ? t("none") : `${t("none")} ${t("loginHint")}`}</s-text>
         ) : null}
