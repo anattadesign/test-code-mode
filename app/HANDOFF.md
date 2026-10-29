@@ -16,7 +16,11 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 - **Repo:** `anattadesign/test-code-mode`, branch `master`. The repo root is a Horizon theme; the app is in `app/`.
 - **Shopify apps** (Partner org Anatta Design, Inc, 129416914):
   - **Production:** "Coupons & Tipping", `shopify.app.toml`, client_id `876c6e13ec9c73782b6f7dfd90cffafb`, released to terraform-anatta. Deploy with `npm run deploy`.
-  - **Dev:** "Coupons & Tipping (Dev)", `shopify.app.dev.toml`, client_id `3446a6366f83bb38ebc288c0de5e8935`. Run with `npm run dev` on a development store, never on terraform-anatta. Dev store: not chosen yet.
+  - **Dev:** "Coupons & Tipping (Dev)", `shopify.app.dev.toml`, client_id `3446a6366f83bb38ebc288c0de5e8935`. Runs with `npm run dev` on **terraform-anatta too** (the user's choice). Safeguards:
+    - Extension names get "(Dev)" only while a dev command runs (`scripts/dev-names.mjs`); `npm run deploy` refuses to ship them. After a crash: `npm run dev:names:restore`.
+    - Tipping → Set up is refused for the dev app on this store (`TIPPING_SETUP_BLOCKED_SHOPS`, set in `vite.config.ts` for dev only). Its tip guard would check the dev app's own customer flag and block real checkouts.
+    - Coupons are real store data: editing or deleting one in the dev app changes it live.
+    - Dev sessions are in the local D1 copy (`.wrangler/state`), never the production database.
   - Admin: https://admin.shopify.com/store/anatta-store/apps/876c6e13ec9c73782b6f7dfd90cffafb
 - **Themes**
   - The cart block is placed in "Code - End to End" #191274811694.
@@ -73,7 +77,7 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 
 ## Commands (run in `app/`)
 - **Checks:** `npm run typecheck && npm run lint && npm test && npm run build && npm run test:functions`, then `app-security .`
-- **Local dev:** `npm run dev` (dev app, `--config dev`). Runs in workerd; run `npx wrangler d1 migrations apply coupons-tipping-sessions --local` once. Never run `shopify app dev` with the production config: its dev preview overrides the released version and, when removed, deletes the cart transform and Tip guard validation. On a new dev store, open the app and run Tipping → Set up.
+- **Local dev:** `npm run dev` (dev app, `--config dev`, names suffixed "(Dev)"). Runs in workerd; run `npx wrangler d1 migrations apply coupons-tipping-sessions --local` once. Never run `shopify app dev` with the production config: its dev preview overrides the released version and, when removed, deletes the cart transform and Tip guard validation. On a new dev store, open the app and run Tipping → Set up.
 - **Push** (never store the token in git config):
   `H='!f(){ echo username=x-access-token; echo "password=$CODE_MODE_GIT_KEY"; }; f'; git -c credential.helper= -c credential.helper="$H" push origin master`
 

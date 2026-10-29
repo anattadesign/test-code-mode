@@ -3,7 +3,7 @@
   "private": true,
   "scripts": {
     "build": "react-router build",
-    "dev": "shopify app dev --config dev",
+    "dev": "node scripts/dev-names.mjs run -- shopify app dev --config dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
     "deploy": "shopify app deploy --config shopify.app.toml",
@@ -19,11 +19,12 @@
     "test:functions": "npm run test --workspace extensions/tip-price --workspace extensions/tip-guard -- --run",
     "build:theme": "esbuild theme-src/coupon-picker.js --minify --target=es2019 --outfile=extensions/coupon-picker/assets/coupon-picker.js \"--banner:js=/* eslint-disable */ /* Built from theme-src/coupon-picker.js by npm run build:theme. Do not edit. */\"",
     "predev": "npm run build:theme",
-    "predeploy": "npm run build:theme",
+    "predeploy": "node scripts/dev-names.mjs check && npm run build:theme",
     "cf-typegen": "wrangler types --strict-vars=false",
     "deploy:worker": "npm run build && wrangler deploy",
     "db:migrate": "wrangler d1 migrations apply coupons-tipping-sessions --remote",
-    "deploy:dev": "shopify app deploy --config dev"
+    "deploy:dev": "npm run build:theme && node scripts/dev-names.mjs run -- shopify app deploy --config dev",
+    "dev:names:restore": "node scripts/dev-names.mjs restore"
   },
   "type": "module",
   "engines": {

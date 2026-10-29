@@ -3,6 +3,7 @@ import type { ActionFunctionArgs, HeadersFunction, LoaderFunctionArgs } from "re
 import { useActionData, useLoaderData, useNavigation, useSubmit } from "react-router";
 import { useAppBridge } from "@shopify/app-bridge-react";
 import { boundary } from "@shopify/shopify-app-react-router/server";
+import { env } from "cloudflare:workers";
 import { authenticate } from "../shopify.server";
 import { getShopBasics } from "../lib/coupons.server";
 import { parseTippingSettingsForm } from "../lib/tipping";
@@ -26,13 +27,32 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   return { config, status, currency: shop.currencyCode, storeHandle };
 };
 
+function tippingSetupBlocked(shop: string) {
+  return (env.TIPPING_SETUP_BLOCKED_SHOPS ?? "")
+    .split(",")
+    .map((s) => s.trim())
+    .includes(shop);
+}
+
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
   const formData = await request.formData();
   const intent = formData.get("intent");
   const { shopId, config } = await loadTippingConfig(admin);
 
   if (intent === "setup") {
+    // The dev app shares terraform-anatta with production. Its tip functions read the dev
+    // app's own metafields, so its tip guard would block real checkouts. Set in vite.config.ts
+    // for `vite dev` only; production never sets it.
+    if (tippingSetupBlocked(session.shop)) {
+      return {
+        intent: "setup",
+        errors: [
+          "Tipping setup is turned off for the dev app on this store, because production tipping already runs here. Use a separate development store to test tipping setup.",
+        ],
+        fieldErrors: {} as Record<string, string>,
+      };
+    }
     const { status, errors } = await setUpTipping(admin);
     const saveError = await saveTippingConfig(admin, shopId, {
       ...config,

@@ -39,11 +39,16 @@ if (host === "localhost") {
 // `shopify app dev` passes the app's settings as process env vars, but the server runs in
 // workerd, which only sees Worker bindings. Forward them during `vite dev` only, so the
 // API secret never lands in build output (production uses `wrangler secret put`).
-const cliVars = Object.fromEntries(
-  ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SHOPIFY_APP_URL", "SCOPES"]
-    .filter((k) => process.env[k])
-    .map((k) => [k, process.env[k] as string]),
-);
+const cliVars: Record<string, string> = {
+  ...Object.fromEntries(
+    ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SHOPIFY_APP_URL", "SCOPES"]
+      .filter((k) => process.env[k])
+      .map((k) => [k, process.env[k] as string]),
+  ),
+  // The dev app shares this store with production: never let it register its own tip
+  // functions here (its tip guard would block real checkouts). See app.tipping.tsx.
+  TIPPING_SETUP_BLOCKED_SHOPS: "anatta-store.myshopify.com",
+};
 
 export default defineConfig(({ command }) => ({
   server: {
@@ -61,7 +66,7 @@ export default defineConfig(({ command }) => ({
   plugins: [
     cloudflare({
       viteEnvironment: { name: "ssr" },
-      ...(command === "serve" && Object.keys(cliVars).length
+      ...(command === "serve"
         ? { config: { vars: cliVars } }
         : {}),
     }),
