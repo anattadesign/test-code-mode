@@ -202,7 +202,7 @@ async function createDiscountableCollection(admin: AdminClient): Promise<{ id: s
               inclusion: {
                 matchType: "ALL",
                 conditions: [
-                  { productStatus: { relation: "NOT_EQUALS", values: ["ARCHIVED"], matchType: "ANY" } },
+                  { productStatus: { relation: "NOT_EQUALS", values: ["ARCHIVED"], matchType: "ALL" } },
                 ],
               },
               exclusion: {
