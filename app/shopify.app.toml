@@ -12,12 +12,12 @@ include_config_on_deploy = true
 
 [access_scopes]
 # write_discounts        coupon dashboard (create, edit, activate, deactivate, delete discount codes)
-# read_customers         customer segments for segment coupons + segment membership checks
+# write_customers        customer segments + segment membership checks; declares the allowed_tipping customer metafield
 # write_products         hidden Tip product and the "Discountable products" collection; resource picker
 # write_publications     publish the Tip product to the Online Store so checkout can add it
 # write_cart_transforms  register the tip pricing Cart Transform function
 # write_validations      register the tip guard validation function
-scopes = "write_discounts,read_customers,write_products,write_publications,write_cart_transforms,write_validations"
+scopes = "write_discounts,write_customers,write_products,write_publications,write_cart_transforms,write_validations"
 
 [auth]
 redirect_urls = [ "https://example.com/api/auth" ]
