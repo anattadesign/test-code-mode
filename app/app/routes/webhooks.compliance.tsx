@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
-import db from "../db.server";
+import { deleteShopSessions } from "../lib/sessions.server";
 
 /**
  * Mandatory compliance webhooks. The app stores no customer data of its own
@@ -16,7 +16,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     case "CUSTOMERS_REDACT":
       break; // nothing stored per customer
     case "SHOP_REDACT":
-      await db.session.deleteMany({ where: { shop } });
+      await deleteShopSessions(shop);
       break;
   }
   return new Response();

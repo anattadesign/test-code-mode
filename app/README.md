@@ -45,6 +45,33 @@ npm run dev              # choose terraform-anatta.myshopify.com
    turn on the **Coupon picker in cart drawer** app embed.
 7. Settings → Checkout → Customize: add **Tip selector** and **Coupon picker** blocks.
 
+## Production hosting (Cloudflare Workers)
+
+The app server runs as the Worker `coupons-tipping` (workers.dev). Shopify sessions are in
+the D1 database `coupons-tipping-sessions` (`migrations/`, `app/lib/d1-session-storage.server.ts`).
+Needs `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN` (Workers Scripts + D1 edit).
+
+First time:
+
+```sh
+npx wrangler d1 create coupons-tipping-sessions   # put the id in wrangler.jsonc
+npm run db:migrate                                # creates the sessions table
+npx wrangler secret put SHOPIFY_API_SECRET        # the app's client secret
+```
+
+Set the Worker URL in `wrangler.jsonc` (`SHOPIFY_APP_URL`), `react-router.config.ts`
+(`allowedActionOrigins`), `shopify.app.toml` (`application_url`, redirect URL, `[app_proxy] url`,
+`[network_access]`) and `extensions/checkout-coupons/src/config.js` (`APP_URL`). Then:
+
+```sh
+npm run deploy:worker   # build + wrangler deploy
+npm run deploy          # release the Shopify app version (extensions, functions, config)
+```
+
+Running `shopify app dev` against this app rewrites its URLs to a tunnel; run `npm run deploy`
+again afterwards to restore production. Local dev runs in workerd and uses a local D1:
+`npx wrangler d1 migrations apply coupons-tipping-sessions --local` once.
+
 ## Checks
 
 ```sh

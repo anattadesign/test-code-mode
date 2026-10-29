@@ -2,6 +2,7 @@ name = "React Router"
 roles = ["frontend", "backend"]
 webhooks_path = "/webhooks/app/uninstalled"
 
+# Local development runs the app in workerd (Cloudflare's runtime) through Vite.
+# Apply the sessions table locally first: npx wrangler d1 migrations apply coupons-tipping-sessions --local
 [commands]
-predev = "npm exec prisma generate"
-dev = "npm exec prisma migrate deploy && npm exec react-router dev"
+dev = "npm exec react-router dev"

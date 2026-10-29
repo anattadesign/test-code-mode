@@ -1,0 +1,25 @@
+// Cloudflare Worker for the Coupons & Tipping app server.
+// Deploy: npm run deploy:worker   (build + wrangler deploy)
+// Secret: SHOPIFY_API_SECRET (wrangler secret put SHOPIFY_API_SECRET)
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "coupons-tipping",
+  "main": "./workers/app.ts",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "vars": {
+    "SHOPIFY_API_KEY": "876c6e13ec9c73782b6f7dfd90cffafb",
+    "SHOPIFY_APP_URL": "https://coupons-tipping.example.workers.dev",
+    "SCOPES": "write_discounts,write_customers,write_products,write_publications,write_cart_transforms,write_validations"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "coupons-tipping-sessions",
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

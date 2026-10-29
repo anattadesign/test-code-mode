@@ -1,3 +1,4 @@
+import { cloudflare } from "@cloudflare/vite-plugin";
 import { reactRouter } from "@react-router/dev/vite";
 import { defineConfig, type UserConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -35,7 +36,16 @@ if (host === "localhost") {
   };
 }
 
-export default defineConfig({
+// `shopify app dev` passes the app's settings as process env vars, but the server runs in
+// workerd, which only sees Worker bindings. Forward them during `vite dev` only, so the
+// API secret never lands in build output (production uses `wrangler secret put`).
+const cliVars = Object.fromEntries(
+  ["SHOPIFY_API_KEY", "SHOPIFY_API_SECRET", "SHOPIFY_APP_URL", "SCOPES"]
+    .filter((k) => process.env[k])
+    .map((k) => [k, process.env[k] as string]),
+);
+
+export default defineConfig(({ command }) => ({
   server: {
     allowedHosts: [host],
     cors: {
@@ -49,6 +59,12 @@ export default defineConfig({
     },
   },
   plugins: [
+    cloudflare({
+      viteEnvironment: { name: "ssr" },
+      ...(command === "serve" && Object.keys(cliVars).length
+        ? { config: { vars: cliVars } }
+        : {}),
+    }),
     reactRouter(),
     tsconfigPaths(),
   ],
@@ -58,4 +74,4 @@ export default defineConfig({
   optimizeDeps: {
     include: ["@shopify/app-bridge-react"],
   },
-}) satisfies UserConfig;
+}) satisfies UserConfig);

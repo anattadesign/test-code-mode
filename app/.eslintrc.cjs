@@ -19,7 +19,12 @@ module.exports = {
     commonjs: true,
     es6: true,
   },
-  ignorePatterns: ["!**/.server", "!**/.client"],
+  ignorePatterns: ["!**/.server", "!**/.client", "worker-configuration.d.ts"],
+
+  // Runtime/virtual modules provided by workerd and the React Router Vite plugin.
+  rules: {
+    "import/no-unresolved": ["error", { ignore: ["^cloudflare:", "^virtual:"] }],
+  },
 
   // Base config
   extends: ["eslint:recommended"],
