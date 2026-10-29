@@ -3,10 +3,10 @@
   "private": true,
   "scripts": {
     "build": "react-router build",
-    "dev": "shopify app dev",
+    "dev": "shopify app dev --config dev",
     "config:link": "shopify app config link",
     "generate": "shopify app generate",
-    "deploy": "shopify app deploy",
+    "deploy": "shopify app deploy --config shopify.app.toml",
     "config:use": "shopify app config use",
     "env": "shopify app env",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
@@ -22,7 +22,8 @@
     "predeploy": "npm run build:theme",
     "cf-typegen": "wrangler types --strict-vars=false",
     "deploy:worker": "npm run build && wrangler deploy",
-    "db:migrate": "wrangler d1 migrations apply coupons-tipping-sessions --remote"
+    "db:migrate": "wrangler d1 migrations apply coupons-tipping-sessions --remote",
+    "deploy:dev": "shopify app deploy --config dev"
   },
   "type": "module",
   "engines": {

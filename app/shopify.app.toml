@@ -1,6 +1,6 @@
-# Coupons & Tipping — custom app for a single store.
-# Run `npm run config:link` once to connect this folder to your Partner app;
-# it fills in client_id, name and the URLs below.
+# Coupons & Tipping — PRODUCTION app (Cloudflare Worker below), released to terraform-anatta.
+# Deploy with `npm run deploy`. Never run `shopify app dev` with this config; development
+# uses the separate app in shopify.app.dev.toml (`npm run dev`).
 client_id = "876c6e13ec9c73782b6f7dfd90cffafb"
 name = "Coupons & Tipping"
 application_url = "https://coupons-tipping.star-rating.workers.dev"
@@ -23,7 +23,7 @@ redirect_urls = [ "https://coupons-tipping.star-rating.workers.dev/auth/callback
 
 # Servers that the app's extensions call from storefront and checkout pages.
 # The checkout coupon picker fetches /api/checkout/coupons from the app server,
-# so this must match application_url (set it to the production host before deploying).
+# so this must match application_url.
 [network_access]
 allowed_sources = ["https://coupons-tipping.star-rating.workers.dev"]
 

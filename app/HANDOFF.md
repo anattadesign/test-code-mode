@@ -14,8 +14,9 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 
 ## Where things are
 - **Repo:** `anattadesign/test-code-mode`, branch `master`. The repo root is a Horizon theme; the app is in `app/`.
-- **Shopify app:** Dev Dashboard app "Coupons & Tipping" in the Partner org Anatta Design, Inc (129416914).
-  - client_id: `876c6e13ec9c73782b6f7dfd90cffafb`
+- **Shopify apps** (Partner org Anatta Design, Inc, 129416914):
+  - **Production:** "Coupons & Tipping", `shopify.app.toml`, client_id `876c6e13ec9c73782b6f7dfd90cffafb`, released to terraform-anatta. Deploy with `npm run deploy`.
+  - **Dev:** "Coupons & Tipping (Dev)", `shopify.app.dev.toml`, client_id `3446a6366f83bb38ebc288c0de5e8935`. Run with `npm run dev` on a development store, never on terraform-anatta. Dev store: not chosen yet.
   - Admin: https://admin.shopify.com/store/anatta-store/apps/876c6e13ec9c73782b6f7dfd90cffafb
 - **Themes**
   - The cart block is placed in "Code - End to End" #191274811694.
@@ -72,7 +73,7 @@ A custom Shopify app for **terraform-anatta** (CLI domain: `anatta-store.myshopi
 
 ## Commands (run in `app/`)
 - **Checks:** `npm run typecheck && npm run lint && npm test && npm run build && npm run test:functions`, then `app-security .`
-- **Local dev:** `shopify app dev --store anatta-store.myshopify.com` runs in workerd (`npx wrangler d1 migrations apply coupons-tipping-sessions --local` once). `automatically_update_urls_on_dev = false`, so the tunnel won't replace production URLs, but the dev preview overrides the released version on the store: afterwards run `shopify app dev clean`, then re-check that the cart transform and Tip guard validation exist (they're removed with the preview; the app's Tipping → Set up recreates them).
+- **Local dev:** `npm run dev` (dev app, `--config dev`). Runs in workerd; run `npx wrangler d1 migrations apply coupons-tipping-sessions --local` once. Never run `shopify app dev` with the production config: its dev preview overrides the released version and, when removed, deletes the cart transform and Tip guard validation. On a new dev store, open the app and run Tipping → Set up.
 - **Push** (never store the token in git config):
   `H='!f(){ echo username=x-access-token; echo "password=$CODE_MODE_GIT_KEY"; }; f'; git -c credential.helper= -c credential.helper="$H" push origin master`
 

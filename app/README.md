@@ -28,8 +28,8 @@ Built on Shopify's React Router app template, Admin GraphQL API `2026-10`.
 ```sh
 cd app
 npm install
-npm run config:link      # pick the Partner app (fills client_id in shopify.app.toml)
-npm run dev              # choose terraform-anatta.myshopify.com
+npm run dev              # dev app (shopify.app.dev.toml) on a development store
+npm run deploy           # production app (shopify.app.toml)
 ```
 
 1. Set `APP_URL` in `extensions/checkout-coupons/src/config.js` to the app URL
