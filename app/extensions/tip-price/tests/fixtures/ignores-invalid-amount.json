@@ -1,0 +1,50 @@
+{
+  "payload": {
+    "export": "cart-transform-run",
+    "target": "cart.transform.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "shop": {
+        "config": {
+          "jsonValue": {
+            "enabled": true,
+            "maxTip": 50
+          }
+        }
+      },
+      "cart": {
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/2",
+            "quantity": 1,
+            "tipAmount": {
+              "value": "abc"
+            },
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isTip": true
+              }
+            }
+          },
+          {
+            "id": "gid://shopify/CartLine/3",
+            "quantity": 1,
+            "tipAmount": {
+              "value": "-5"
+            },
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isTip": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

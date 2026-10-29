@@ -1,0 +1,54 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "shop": {
+        "config": {
+          "jsonValue": {
+            "enabled": false,
+            "maxTip": 50
+          }
+        }
+      },
+      "cart": {
+        "buyerIdentity": {
+          "customer": {
+            "allowedTipping": {
+              "value": "true"
+            }
+          }
+        },
+        "lines": [
+          {
+            "quantity": 1,
+            "tipAmount": {
+              "value": "5.00"
+            },
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isTip": true
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": [
+              {
+                "message": "Tipping isn't available for this order. Remove the tip to continue.",
+                "target": "$.cart"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

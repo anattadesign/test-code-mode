@@ -1,0 +1,43 @@
+{
+  "payload": {
+    "export": "cart-validations-generate-run",
+    "target": "cart.validations.generate.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "shop": {
+        "config": {
+          "jsonValue": {
+            "enabled": true,
+            "maxTip": 50
+          }
+        }
+      },
+      "cart": {
+        "buyerIdentity": {
+          "customer": null
+        },
+        "lines": [
+          {
+            "quantity": 1,
+            "tipAmount": null,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isTip": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": [
+        {
+          "validationAdd": {
+            "errors": []
+          }
+        }
+      ]
+    }
+  }
+}

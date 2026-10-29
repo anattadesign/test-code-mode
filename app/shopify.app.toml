@@ -1,0 +1,62 @@
+# Coupons & Tipping — custom app for a single store.
+# Run `npm run config:link` once to connect this folder to your Partner app;
+# it fills in client_id, name and the URLs below.
+client_id = ""
+name = "Coupons & Tipping"
+application_url = "https://example.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+include_config_on_deploy = true
+
+[access_scopes]
+# write_discounts        coupon dashboard (create, edit, activate, deactivate, delete discount codes)
+# read_customers         customer segments for segment coupons + segment membership checks
+# write_products         hidden Tip product and the "Discountable products" collection; resource picker
+# write_publications     publish the Tip product to the Online Store so checkout can add it
+# write_cart_transforms  register the tip pricing Cart Transform function
+# write_validations      register the tip guard validation function
+scopes = "write_discounts,read_customers,write_products,write_publications,write_cart_transforms,write_validations"
+
+[auth]
+redirect_urls = [ "https://example.com/api/auth" ]
+
+[app_proxy]
+# The storefront calls /apps/coupons/* and Shopify forwards the request, signed, to /proxy/*
+url = "https://example.com/proxy"
+subpath = "coupons"
+prefix = "apps"
+
+[webhooks]
+api_version = "2026-10"
+
+  # Handled by: /app/routes/webhooks.app.uninstalled.tsx
+  [[webhooks.subscriptions]]
+  uri = "/webhooks/app/uninstalled"
+  topics = ["app/uninstalled"]
+
+  # Handled by: /app/routes/webhooks.app.scopes_update.tsx
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  # Handled by: /app/routes/webhooks.compliance.tsx
+  [[webhooks.subscriptions]]
+  compliance_topics = ["customers/data_request", "customers/redact", "shop/redact"]
+  uri = "/webhooks/compliance"
+
+# Customer flag that controls who sees the checkout tip selector.
+# Merchants turn it on per customer in the Shopify admin (Customers > customer > Metafields).
+[customer.metafields.app.allowed_tipping]
+type = "boolean"
+name = "Allowed tipping"
+description = "When on, this customer sees the tip selector at checkout."
+access.admin = "merchant_read_write"
+
+# Tipping settings saved by the app and read by the checkout extension.
+[shop.metafields.app.tipping_config]
+type = "json"
+name = "Tipping settings"
+description = "Managed by the Coupons & Tipping app."
+access.admin = "merchant_read"

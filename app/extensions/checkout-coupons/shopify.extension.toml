@@ -1,0 +1,36 @@
+# Checkout coupon picker: eligible coupons + manual entry, applied in one click.
+api_version = "2026-10"
+
+[[extensions]]
+name = "Coupon picker"
+handle = "checkout-coupons"
+type = "ui_extension"
+
+[[extensions.targeting]]
+module = "./src/Checkout.jsx"
+# Shows right under the checkout discount field; merchants can hide it in the checkout editor.
+target = "purchase.checkout.reductions.render-after"
+
+[[extensions.targeting]]
+module = "./src/Checkout.jsx"
+# Optional: merchants can also place it anywhere as a block.
+target = "purchase.checkout.block.render"
+
+[extensions.capabilities]
+api_access = true
+# Calls the app backend (eligible coupons, reasons a code didn't apply).
+# Turn on "Allow network access" for this app in the Partner Dashboard.
+network_access = true
+
+[extensions.settings]
+  [[extensions.settings.fields]]
+  key = "heading"
+  type = "single_line_text_field"
+  name = "Heading"
+  description = "Shown above the coupon list."
+
+  [[extensions.settings.fields]]
+  key = "show_manual_entry"
+  type = "boolean"
+  name = "Show manual code entry"
+  description = "Off when the native checkout discount field sits right above this block."

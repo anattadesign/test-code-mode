@@ -1,0 +1,12 @@
+{
+  "noTip": "No tip",
+  "custom": "Custom amount",
+  "customLabel": "Tip amount",
+  "update": "Update tip",
+  "percentOption": "{{percent}}% ({{amount}})",
+  "added": "Tip of {{amount}} added. Thank you!",
+  "removed": "No tip added.",
+  "invalidAmount": "Enter an amount between {{min}} and {{max}}.",
+  "error": "We couldn't update your tip. Try again.",
+  "notEditable": "The tip can't be changed in this checkout."
+}

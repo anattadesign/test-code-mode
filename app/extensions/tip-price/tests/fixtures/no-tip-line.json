@@ -1,0 +1,35 @@
+{
+  "payload": {
+    "export": "cart-transform-run",
+    "target": "cart.transform.run",
+    "input": {
+      "presentmentCurrencyRate": "1.0",
+      "shop": {
+        "config": {
+          "jsonValue": {
+            "enabled": true,
+            "maxTip": 50
+          }
+        }
+      },
+      "cart": {
+        "lines": [
+          {
+            "id": "gid://shopify/CartLine/1",
+            "quantity": 1,
+            "tipAmount": null,
+            "merchandise": {
+              "__typename": "ProductVariant",
+              "product": {
+                "isTip": false
+              }
+            }
+          }
+        ]
+      }
+    },
+    "output": {
+      "operations": []
+    }
+  }
+}

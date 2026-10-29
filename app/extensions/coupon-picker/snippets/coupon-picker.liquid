@@ -1,0 +1,64 @@
+{%- comment -%}
+  Shared markup for the coupon picker block and the cart drawer embed.
+  @param block           the app block (settings)
+  @param context         'block' | 'drawer'
+{%- endcomment -%}
+{%- liquid
+  assign heading = block.settings.heading | default: ''
+  if heading == blank
+    assign heading = 'coupon_picker.heading' | t
+  endif
+  assign message_keys = 'apply,remove,loading,none,login_hint,ends_on,min_subtotal,min_quantity,msg_applied,msg_removed,msg_already,msg_not_found,msg_expired,msg_not_started,msg_usage_limit,msg_login_required,msg_not_eligible,msg_minimum_subtotal,msg_minimum_quantity,msg_applicable,msg_error' | split: ','
+  capture messages
+    echo '{'
+    for key in message_keys
+      assign t_key = 'coupon_picker.' | append: key
+      unless forloop.first
+        echo ','
+      endunless
+      echo key | json
+      echo ':'
+      echo t_key | t: code: '%CODE%', amount: '%AMOUNT%', count: '%COUNT%', date: '%DATE%' | json
+    endfor
+    echo '}'
+  endcapture
+-%}
+<coupon-picker
+  class="coupon-picker coupon-picker--{{ context }}"
+  data-root="{{ routes.root_url }}"
+  data-cart-url="{{ routes.cart_url }}"
+  data-refresh="{{ block.settings.refresh_mode | default: 'events' }}"
+  data-logged-in="{% if customer %}true{% else %}false{% endif %}"
+  data-money-format="{{ shop.money_format | escape }}"
+  style="--coupon-accent: {{ block.settings.accent_color | default: '#1a1a1a' }};"
+>
+  <script type="application/json" data-messages>{{ messages }}</script>
+  <div class="coupon-picker__inner">
+    <h2 class="coupon-picker__heading">{{ heading | escape }}</h2>
+    <ul class="coupon-picker__list" data-list aria-live="polite" aria-busy="true">
+      <li class="coupon-picker__empty">{{ 'coupon_picker.loading' | t }}</li>
+    </ul>
+    {%- if block.settings.show_manual_entry != false -%}
+      <form class="coupon-picker__form" data-form novalidate>
+        <label class="coupon-picker__label" for="CouponPickerCode-{{ block.id }}">
+          {{- 'coupon_picker.code_label' | t -}}
+        </label>
+        <div class="coupon-picker__row">
+          <input
+            id="CouponPickerCode-{{ block.id }}"
+            class="coupon-picker__input"
+            type="text"
+            name="code"
+            autocomplete="off"
+            autocapitalize="characters"
+            spellcheck="false"
+            maxlength="255"
+            placeholder="{{ 'coupon_picker.code_placeholder' | t }}"
+          >
+          <button type="submit" class="coupon-picker__button">{{ 'coupon_picker.apply' | t }}</button>
+        </div>
+      </form>
+    {%- endif -%}
+    <p class="coupon-picker__message" data-message role="status" hidden></p>
+  </div>
+</coupon-picker>

@@ -1,0 +1,4 @@
+{
+  "name": "Tip price",
+  "description": "Sets the Tip line to the amount the customer chose at checkout."
+}

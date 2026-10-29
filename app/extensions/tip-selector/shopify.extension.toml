@@ -1,0 +1,27 @@
+# Checkout tip selector. Shown only to logged-in customers whose
+# `$app.allowed_tipping` metafield is true, when tipping is enabled in the app.
+api_version = "2026-10"
+
+[[extensions]]
+name = "Tip selector"
+handle = "tip-selector"
+type = "ui_extension"
+
+[[extensions.targeting]]
+module = "./src/Checkout.jsx"
+# Merchant places the block anywhere in checkout (Settings > Checkout > Customize).
+target = "purchase.checkout.block.render"
+
+[extensions.capabilities]
+api_access = true
+# The tip line is a cart line; this extension adds, updates and removes it.
+
+# Customer flag (needs protected customer data access approved for the app).
+[[extensions.metafields]]
+namespace = "$app"
+key = "allowed_tipping"
+
+# Tipping settings saved by the app.
+[[extensions.metafields]]
+namespace = "$app"
+key = "tipping_config"

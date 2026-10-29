@@ -1,0 +1,79 @@
+{%- comment -%}
+  App embed: injects the coupon picker into the theme's cart drawer.
+  The markup renders hidden at the end of <body>; coupon-picker.js moves it
+  into the drawer (and back in again whenever the drawer re-renders).
+{%- endcomment -%}
+{%- unless template.name == 'cart' and block.settings.hide_on_cart_page -%}
+  <template
+    data-coupon-picker-embed
+    data-target="{{ block.settings.target_selector | escape }}"
+    data-position="{{ block.settings.position }}"
+  >
+    {% render 'coupon-picker', block: block, context: 'drawer' %}
+  </template>
+{%- endunless -%}
+
+{% schema %}
+{
+  "name": "Coupon picker in cart drawer",
+  "target": "body",
+  "stylesheet": "coupon-picker.css",
+  "javascript": "coupon-picker.js",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "info": "Leave empty for “Available coupons”."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_manual_entry",
+      "label": "Show manual code entry",
+      "default": false,
+      "info": "Most cart drawers already have a discount field."
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Button color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "select",
+      "id": "refresh_mode",
+      "label": "After applying a coupon",
+      "options": [
+        { "value": "events", "label": "Update the cart in place" },
+        { "value": "reload", "label": "Reload the page" }
+      ],
+      "default": "events"
+    },
+    {
+      "type": "text",
+      "id": "target_selector",
+      "label": "Cart drawer element (CSS selector)",
+      "default": "cart-drawer-component .cart-drawer__summary",
+      "info": "Where the picker goes. The default fits Horizon themes."
+    },
+    {
+      "type": "select",
+      "id": "position",
+      "label": "Position",
+      "options": [
+        { "value": "beforebegin", "label": "Before the element" },
+        { "value": "afterbegin", "label": "At the start of the element" },
+        { "value": "beforeend", "label": "At the end of the element" }
+      ],
+      "default": "afterbegin"
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_on_cart_page",
+      "label": "Hide on the cart page",
+      "default": true,
+      "info": "Use the Coupon picker block on the cart page instead."
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,25 @@
+query CartTransformRunInput {
+  presentmentCurrencyRate
+  shop {
+    config: metafield(namespace: "$app", key: "tipping_config") {
+      jsonValue
+    }
+  }
+  cart {
+    lines {
+      id
+      quantity
+      tipAmount: attribute(key: "_tip_amount") {
+        value
+      }
+      merchandise {
+        __typename
+        ... on ProductVariant {
+          product {
+            isTip: hasAnyTag(tags: ["app-tip"])
+          }
+        }
+      }
+    }
+  }
+}
