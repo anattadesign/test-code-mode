@@ -22,6 +22,12 @@ scopes = "write_discounts,write_customers,write_products,write_publications,writ
 [auth]
 redirect_urls = [ "https://example.com/api/auth" ]
 
+# Servers that the app's extensions call from storefront and checkout pages.
+# The checkout coupon picker fetches /api/checkout/coupons from the app server,
+# so this must match application_url (set it to the production host before deploying).
+[network_access]
+allowed_sources = ["https://phrase-delight-independently-affair.trycloudflare.com"]
+
 [app_proxy]
 # The storefront calls /apps/coupons/* and Shopify forwards the request, signed, to /proxy/*
 url = "https://example.com/proxy"
