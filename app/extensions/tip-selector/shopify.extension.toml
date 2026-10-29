@@ -5,6 +5,7 @@ api_version = "2026-10"
 [[extensions]]
 name = "Tip selector"
 handle = "tip-selector"
+uid = "d111862b-571f-093d-9179-e499eea02f978c1d75cc"
 type = "ui_extension"
 
 [[extensions.targeting]]

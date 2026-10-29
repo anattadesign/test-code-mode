@@ -3,6 +3,7 @@ api_version = "2026-07"
 [[extensions]]
 name = "t:name"
 handle = "tip-price"
+uid = "4fa645a4-e6f7-2460-92e3-c0b8a76ef20cf81ddece"
 type = "function"
 description = "t:description"
 

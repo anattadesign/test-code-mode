@@ -3,6 +3,7 @@ api_version = "2026-07"
 [[extensions]]
 name = "t:name"
 handle = "tip-guard"
+uid = "2d21643d-cf16-47e1-c6e0-304a9bda08cef15af39d"
 type = "function"
 description = "t:description"
 

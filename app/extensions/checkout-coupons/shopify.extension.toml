@@ -4,6 +4,7 @@ api_version = "2026-10"
 [[extensions]]
 name = "Coupon picker"
 handle = "checkout-coupons"
+uid = "c1d88293-7077-74e2-9508-f156792867c27e41b74f"
 type = "ui_extension"
 
 [[extensions.targeting]]

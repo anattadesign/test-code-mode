@@ -1,7 +1,7 @@
 # Coupons & Tipping — custom app for a single store.
 # Run `npm run config:link` once to connect this folder to your Partner app;
 # it fills in client_id, name and the URLs below.
-client_id = ""
+client_id = "876c6e13ec9c73782b6f7dfd90cffafb"
 name = "Coupons & Tipping"
 application_url = "https://example.com"
 embedded = true
