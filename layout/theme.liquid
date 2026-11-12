@@ -7,6 +7,14 @@
   dir="{{ request.locale.direction | default: 'ltr' }}"
 >
   <head>
+    {%- comment -%} Vision storefront error collector {%- endcomment -%}
+    <script
+      async
+      src="https://vision-collector-dev.anatta-ai.workers.dev/sdk/v1/sw.js"
+      data-key="pk_x57gbtiugjhsu3fgtlex62cz"
+      data-endpoint="https://vision-collector-dev.anatta-ai.workers.dev"
+    ></script>
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
@@ -33,6 +41,11 @@
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
     {% render 'skip-to-content-link', href: '#MainContent', text: 'accessibility.skip_to_text' %}
+
+    {%- comment -%} STOREFRONT-TEST BUG: remove after collector testing {%- endcomment -%}
+    {%- if template.name == 'index' -%}
+      {%- render 'storefront-test-bugs' -%}
+    {%- endif -%}
 
     {% render 'chat-drawer' %}
 

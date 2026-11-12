@@ -1,0 +1,47 @@
+{%- comment -%}
+  STOREFRONT-TEST BUG: deliberate home-page bugs to verify the Vision collector.
+  Remove this snippet (and its render in layout/theme.liquid) when testing is done.
+
+  Bugs:
+  1. Uncaught ReferenceError on load (undefined function)
+  2. Uncaught TypeError after 2s (property of undefined)
+  3. Unhandled promise rejection
+  4. Failed network request (404 on a missing JSON endpoint)
+  5. console.error call
+  6. Broken image (404 asset)
+{%- endcomment -%}
+<script>
+  // 1. ReferenceError: function does not exist
+  window.addEventListener('DOMContentLoaded', function () {
+    initHomeHeroCarousel({ autoplay: true });
+  });
+
+  // 2. TypeError: reading a property of undefined
+  setTimeout(function () {
+    var promo = window.__homePromoConfig;
+    console.log('Promo banner title:', promo.banner.title);
+  }, 2000);
+
+  window.addEventListener('load', function () {
+    // 3. Unhandled promise rejection
+    Promise.reject(new Error('STOREFRONT-TEST: featured products failed to load'));
+
+    // 4. Failed network request (404) -> also an unhandled rejection
+    fetch('/apps/storefront-test/featured-products.json').then(function (res) {
+      if (!res.ok) throw new Error('STOREFRONT-TEST: featured products request failed with ' + res.status);
+      return res.json();
+    });
+
+    // 5. console.error
+    console.error('STOREFRONT-TEST: newsletter widget config missing');
+  });
+</script>
+
+{%- comment -%} 6. Broken image {%- endcomment -%}
+<img
+  src="/cdn/shop/files/storefront-test-missing-banner.png"
+  alt=""
+  width="1"
+  height="1"
+  style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none"
+>
