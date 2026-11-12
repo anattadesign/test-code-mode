@@ -324,6 +324,11 @@ class ProductFormComponent extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
+    // STOREFRONT-TEST BUG: breaks add to cart entirely. Uncaught TypeError before the
+    // request is sent, so nothing is added. Remove after collector testing.
+    const cartConfig = /** @type {any} */ (window).__cartConfig;
+    if (cartConfig.maxQuantity < this.#getQuantity()) return;
+
     if (this.#variantChangeInProgress) {
       this.#addToCartQueue.push(this.#createQueuedAddToCartItem());
       this.refs.addToCartButtonContainer?.animateAddToCart?.();
