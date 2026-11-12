@@ -324,11 +324,6 @@ class ProductFormComponent extends Component {
   handleSubmit(event) {
     event.preventDefault();
 
-    // STOREFRONT-TEST BUG: breaks add to cart entirely. Uncaught TypeError before the
-    // request is sent, so nothing is added. Remove after collector testing.
-    const cartConfig = /** @type {any} */ (window).__cartConfig;
-    if (cartConfig.maxQuantity < this.#getQuantity()) return;
-
     if (this.#variantChangeInProgress) {
       this.#addToCartQueue.push(this.#createQueuedAddToCartItem());
       this.refs.addToCartButtonContainer?.animateAddToCart?.();
@@ -530,23 +525,6 @@ class ProductFormComponent extends Component {
           }
 
           if (!id) throw new Error('Form ID is required');
-
-          // STOREFRONT-TEST BUG: deliberate add-to-cart bugs to verify the Vision collector.
-          // Remove this block after testing. The real add to cart still succeeds.
-          setTimeout(() => {
-            // a) Failed request: 422 from /cart/add.js with an invalid variant ID ("upsell" add)
-            fetch(Theme.routes.cart_add_url, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-              body: JSON.stringify({ items: [{ id: 999999999999, quantity: 1 }] }),
-            }).then((res) => {
-              if (!res.ok) console.error(`STOREFRONT-TEST: upsell add to cart failed with ${res.status}`);
-            });
-
-            // b) Uncaught TypeError: analytics payload reads a missing property
-            const analyticsPayload = /** @type {any} */ (window).__addToCartAnalytics;
-            analyticsPayload.track('add_to_cart', { variantId: id });
-          }, 0);
 
           // Add aria-live region to inform screen readers that the item was added
           // Get the added text from any add-to-cart button
