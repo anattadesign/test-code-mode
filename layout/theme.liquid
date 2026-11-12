@@ -7,6 +7,14 @@
   dir="{{ request.locale.direction | default: 'ltr' }}"
 >
   <head>
+    {%- comment -%} Vision storefront error collector {%- endcomment -%}
+    <script
+      async
+      src="https://vision-collector-dev.anatta-ai.workers.dev/sdk/v1/sw.js"
+      data-key="pk_x57gbtiugjhsu3fgtlex62cz"
+      data-endpoint="https://vision-collector-dev.anatta-ai.workers.dev"
+    ></script>
+
     {%- if settings.favicon != blank -%}
       <link
         rel="icon"
